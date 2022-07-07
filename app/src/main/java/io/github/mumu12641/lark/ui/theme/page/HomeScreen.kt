@@ -22,10 +22,16 @@ import io.github.mumu12641.lark.R
 import io.github.mumu12641.lark.ui.theme.component.CardIcon
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.runtime.collectAsState
+import androidx.lifecycle.viewModelScope
+import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.stateIn
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun HomeScreen(){
+
     Box(
         modifier = Modifier.fillMaxSize()
     ){
@@ -34,7 +40,10 @@ fun HomeScreen(){
                 LarkTopBar()
             },
             content = {
-                paddingValues -> HomeContent(modifier = Modifier.padding(paddingValues), listOf(1,1,1,1,1))
+                paddingValues -> HomeContent(
+                    modifier = Modifier.padding(paddingValues),
+                    listOf(1,2,3,4)
+                )
             }
         )
     }
