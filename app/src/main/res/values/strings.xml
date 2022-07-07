@@ -1,0 +1,11 @@
+<resources>
+    <string name="app_name">Lark</string>
+    <string name="welcome_text">Welcome</string>
+    <string name="user">沐木木木木</string>
+    <string name="songList_text">SongList</string>
+    <string name="singer_text">Artist</string>
+    <string name="history_text">History</string>
+    <string name="local_text">Local</string>
+    <string name="download_text">Download</string>
+    <string name="cloud_text">Cloud</string>
+</resources>

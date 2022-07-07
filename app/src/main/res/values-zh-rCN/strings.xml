@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Lark</string>
+    <string name="welcome_text">欢迎</string>
+    <string name="user">沐木木木木</string>
+    <string name="songList_text">歌单</string>
+    <string name="singer_text">艺术家</string>
+    <string name="history_text">历史</string>
+    <string name="local_text">本地</string>
+    <string name="download_text">下载</string>
+    <string name="cloud_text">云盘</string>
+</resources>
