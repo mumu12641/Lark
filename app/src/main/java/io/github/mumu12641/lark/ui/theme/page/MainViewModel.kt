@@ -1,21 +1,23 @@
 package io.github.mumu12641.lark.ui.theme.page
 
+import androidx.compose.runtime.State
+import androidx.compose.runtime.collectAsState
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import io.github.mumu12641.lark.entity.SongList
+import io.github.mumu12641.lark.room.DataBaseUtils
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.launch
 
 class MainViewModel:ViewModel() {
-    val testList: Flow<List<Int>> = flow {
-        while (true){
-            val list = listOf(1,2,3,4)
-            emit(list)
-            delay(5000)
+    val allSongList = DataBaseUtils.queryAllSongList()
+
+    fun addSongList(){
+        viewModelScope.launch {
+            DataBaseUtils.insertSongList(
+                SongList(0L,"test","test",0,"test","test")
+            )
         }
     }
-    val testResult:StateFlow<List<Int>> = testList.stateIn(
-        scope = viewModelScope,
-        started = SharingStarted.WhileSubscribed(5000),
-        initialValue = listOf(1)
-    )
 }

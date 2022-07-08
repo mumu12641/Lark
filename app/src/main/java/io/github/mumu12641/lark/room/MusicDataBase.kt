@@ -3,7 +3,7 @@ package io.github.mumu12641.lark.room
 import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
-import io.github.mumu12641.lark.BaseApplication
+import io.github.mumu12641.lark.BaseApplication.Companion.context
 import io.github.mumu12641.lark.entity.PlaylistSongCrossRef
 import io.github.mumu12641.lark.entity.Song
 import io.github.mumu12641.lark.entity.SongList
@@ -18,10 +18,9 @@ abstract class MusicDataBase : RoomDatabase() {
 
     companion object {
         private val musicDataBase =
-            Room.databaseBuilder(BaseApplication.context, MusicDataBase::class.java, "name")
+            Room.databaseBuilder(context, MusicDataBase::class.java, "MusicDataBase")
                 .fallbackToDestructiveMigration()
                 .build()
-
         @Synchronized
         fun getInstance(): MusicDataBase {
             return musicDataBase

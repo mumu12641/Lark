@@ -3,6 +3,8 @@ package io.github.mumu12641.lark.ui.theme.page
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Face
@@ -10,6 +12,8 @@ import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -19,30 +23,31 @@ import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import io.github.mumu12641.lark.R
+import io.github.mumu12641.lark.entity.SongList
 import io.github.mumu12641.lark.ui.theme.component.CardIcon
-import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.runtime.collectAsState
-import androidx.lifecycle.viewModelScope
-import kotlinx.coroutines.flow.SharingStarted
-import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flow
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun HomeScreen(){
+fun HomeScreen(
+    flow:Flow<List<SongList>>,
+    addSongList: () -> Unit
+){
+
+    val allSongList by flow.collectAsState(initial = listOf())
 
     Box(
         modifier = Modifier.fillMaxSize()
     ){
         Scaffold(
             topBar = {
-                LarkTopBar()
+                LarkTopBar(addSongList)
             },
             content = {
                 paddingValues -> HomeContent(
                     modifier = Modifier.padding(paddingValues),
-                    listOf(1,2,3,4)
+                    allSongList
                 )
             }
         )
@@ -51,7 +56,9 @@ fun HomeScreen(){
 }
 
 @Composable
-fun LarkTopBar() {
+fun LarkTopBar(
+    addSongList: () -> Unit
+) {
     MediumTopAppBar(
         title = {
             Text(
@@ -60,7 +67,7 @@ fun LarkTopBar() {
             )
         },
         navigationIcon = {
-            IconButton(onClick = {  }) {
+            IconButton(onClick =  addSongList ) {
                 Icon(Icons.Filled.Home, contentDescription = "Home")
             }
         },
@@ -75,7 +82,7 @@ fun LarkTopBar() {
 @Composable
 fun HomeContent(
     modifier: Modifier,
-    list:List<Int>
+    list:List<SongList>
 ){
     Column(
         modifier = modifier.padding(horizontal = 10.dp, vertical = 10.dp)
@@ -89,7 +96,7 @@ fun HomeContent(
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-private fun ArtistRow(list: List<Int>) {
+private fun ArtistRow(list: List<SongList>) {
     Column(
         modifier = Modifier.fillMaxWidth()
     ) {
@@ -121,7 +128,7 @@ private fun ArtistRow(list: List<Int>) {
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-private fun SongListRow(list: List<Int>) {
+private fun SongListRow(list: List<SongList>) {
     Column(
         modifier = Modifier.fillMaxWidth()
     ) {
@@ -202,5 +209,10 @@ fun WelcomeUser() {
 @Preview
 @Composable
 fun PreviewTest(){
-    HomeScreen()
+    val flow:Flow<List<SongList>> = flow {
+        emit(listOf(SongList(0L,"test","test",0,"test","test")))
+    }
+    HomeScreen(flow){
+
+    }
 }

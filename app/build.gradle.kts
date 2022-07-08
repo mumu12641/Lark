@@ -1,6 +1,8 @@
 plugins {
     id ("com.android.application")
     id ("org.jetbrains.kotlin.android")
+    id("kotlin-kapt")
+    id("kotlin-android")
 }
 
 val compose_version = "1.2.0-beta03"
@@ -67,4 +69,5 @@ dependencies {
     implementation ("androidx.room:room-runtime:$room_version")
     annotationProcessor ("androidx.room:room-compiler:$room_version")
     implementation ("androidx.room:room-ktx:$room_version")
+    kapt("androidx.room:room-compiler:$room_version")
 }
