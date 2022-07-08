@@ -9,6 +9,8 @@ val composeVersion = "1.2.0-beta03"
 val roomVersion = "2.4.2"
 val navVersion = "2.4.2"
 
+val permissionXVersion = "1.6.4"
+
 android {
     compileSdk = 32
 
@@ -60,6 +62,7 @@ dependencies {
     implementation ("androidx.compose.material3:material3:1.0.0-alpha14")
     implementation ("androidx.compose.ui:ui-tooling-preview:$composeVersion")
     implementation ("androidx.lifecycle:lifecycle-runtime-ktx:2.5.0")
+    implementation ("androidx.lifecycle:lifecycle-viewmodel-compose:2.5.0")
     implementation ("androidx.activity:activity-compose:1.5.0")
     testImplementation ("junit:junit:4.13.2")
     androidTestImplementation ("androidx.test.ext:junit:1.1.3")
@@ -72,4 +75,7 @@ dependencies {
     implementation ("androidx.room:room-ktx:$roomVersion")
     kapt("androidx.room:room-compiler:$roomVersion")
     implementation("androidx.navigation:navigation-compose:$navVersion")
+
+    implementation("com.guolindev.permissionx:permissionx:$permissionXVersion")
+    implementation("com.github.getActivity:XXPermissions:15.0")
 }

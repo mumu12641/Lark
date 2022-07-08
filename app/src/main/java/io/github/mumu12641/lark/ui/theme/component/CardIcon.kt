@@ -1,5 +1,6 @@
 package io.github.mumu12641.lark.ui.theme.component
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -17,12 +18,13 @@ import androidx.compose.ui.unit.dp
 fun CardIcon(
     resourceId:Int,
     contentDescription:String,
-    modifier: Modifier
+    onClick:() -> Unit
 ){
     Card(
-        modifier = modifier
+        modifier = Modifier
             .padding(10.dp)
-            .size(width = 60.dp, height = 70.dp),
+            .size(width = 60.dp, height = 70.dp)
+            .clickable (onClick = onClick)
     ) {
         Column(
             modifier = Modifier.fillMaxWidth(),

@@ -9,4 +9,8 @@
     <string name="local_text">本地</string>
     <string name="download_text">下载</string>
     <string name="cloud_text">云盘</string>
+    <string name="get_media_permission_text">请求权限</string>
+    <string name="request_permission_message_text">Lark 将读取您手机的媒体内容，请务必允许！</string>
+    <string name="confirm_text">确认</string>
+    <string name="cancel_text">取消</string>
 </resources>

@@ -12,15 +12,16 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import io.github.mumu12641.lark.ui.theme.LarkTheme
-import io.github.mumu12641.lark.ui.theme.page.HomeScreen
-import io.github.mumu12641.lark.ui.theme.page.MainScreen
-import io.github.mumu12641.lark.ui.theme.page.MainViewModel
+import io.github.mumu12641.lark.ui.theme.page.function.FunctionViewModel
+import io.github.mumu12641.lark.ui.theme.page.home.MainScreen
+import io.github.mumu12641.lark.ui.theme.page.home.MainViewModel
 
 class MainActivity : ComponentActivity() {
 
     private val TAG = "MainActivity"
 
     private val mainViewModel by viewModels<MainViewModel>()
+    private val functionViewModel by viewModels<FunctionViewModel>()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -31,7 +32,7 @@ class MainActivity : ComponentActivity() {
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background
                 ) {
-                    MainScreen(mainViewModel)
+                    MainScreen(mainViewModel,functionViewModel)
                 }
             }
         }

@@ -8,4 +8,8 @@
     <string name="local_text">Local</string>
     <string name="download_text">Download</string>
     <string name="cloud_text">Cloud</string>
+    <string name="get_media_permission_text">Request Permission</string>
+    <string name="request_permission_message_text">Lark will read your phone\'s media, please allow it!</string>
+    <string name="confirm_text">Confirm</string>
+    <string name="cancel_text">Cancel</string>
 </resources>

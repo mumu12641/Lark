@@ -1,7 +1,6 @@
-package io.github.mumu12641.lark.ui.theme.page
+package io.github.mumu12641.lark.ui.theme.page.home
 
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
@@ -10,7 +9,6 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Face
 import androidx.compose.material.icons.filled.Home
-import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
@@ -78,7 +76,7 @@ fun HomeContent(
         modifier = modifier.padding(horizontal = 10.dp, vertical = 10.dp)
     ){
         WelcomeUser()
-        FunctionTab { navController.navigate(Route.ROUTE_LOCAL) }
+        FunctionTab(navController)
         SongListRow(list)
         ArtistRow(list)
     }
@@ -149,7 +147,9 @@ private fun SongListRow(list: List<SongList>) {
 }
 
 @Composable
-private fun FunctionTab(navigateToLocal:() -> Unit) {
+private fun FunctionTab(
+    navController: NavController
+) {
     Row(
         verticalAlignment = Alignment.CenterVertically,
         modifier = Modifier
@@ -159,25 +159,27 @@ private fun FunctionTab(navigateToLocal:() -> Unit) {
     ) {
         CardIcon(
             resourceId = R.drawable.history,
-            contentDescription = stringResource(id = R.string.history_text),
-            modifier = Modifier
-        )
+            contentDescription = stringResource(id = R.string.history_text)
+        ){
+            navController.navigate(Route.ROUTE_HISTORY)
+        }
         CardIcon(
             resourceId = R.drawable.file_icon,
-            contentDescription = stringResource(id = R.string.local_text),
-            modifier = Modifier.clickable (
-                onClick = navigateToLocal
-            )
-        )
+            contentDescription = stringResource(id = R.string.local_text)
+        ){
+            navController.navigate(Route.ROUTE_LOCAL)
+        }
         CardIcon(
             resourceId = R.drawable.download_icon,
-            contentDescription = stringResource(id = R.string.download_text),
-            modifier = Modifier
-        )
+            contentDescription = stringResource(id = R.string.download_text)
+        ) {
+            navController.navigate(Route.ROUTE_DOWNLOAD)
+        }
         CardIcon(resourceId = R.drawable.cloud_upload,
-            contentDescription = stringResource(id = R.string.cloud_text),
-            modifier = Modifier
-        )
+            contentDescription = stringResource(id = R.string.cloud_text)
+        ) {
+            navController.navigate(Route.ROUTE_CLOUD)
+        }
     }
 }
 
