@@ -1,6 +1,7 @@
 package io.github.mumu12641.lark.ui.theme.page
 
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
@@ -22,15 +23,20 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavController
+import androidx.navigation.compose.rememberNavController
 import io.github.mumu12641.lark.R
+import io.github.mumu12641.lark.entity.Route
 import io.github.mumu12641.lark.entity.SongList
 import io.github.mumu12641.lark.ui.theme.component.CardIcon
+import io.github.mumu12641.lark.ui.theme.component.LarkTopBar
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun HomeScreen(
+    navController: NavController,
     flow:Flow<List<SongList>>,
     addSongList: () -> Unit
 ){
@@ -42,12 +48,17 @@ fun HomeScreen(
     ){
         Scaffold(
             topBar = {
-                LarkTopBar(addSongList)
+                LarkTopBar(
+                    title = stringResource(id = R.string.app_name),
+                    Icons.Filled.Home,
+                    addSongList
+                )
             },
             content = {
                 paddingValues -> HomeContent(
                     modifier = Modifier.padding(paddingValues),
-                    allSongList
+                    allSongList,
+                    navController
                 )
             }
         )
@@ -55,40 +66,19 @@ fun HomeScreen(
 
 }
 
-@Composable
-fun LarkTopBar(
-    addSongList: () -> Unit
-) {
-    MediumTopAppBar(
-        title = {
-            Text(
-                text = stringResource(id = R.string.app_name),
-                fontFamily = FontFamily.Serif
-            )
-        },
-        navigationIcon = {
-            IconButton(onClick =  addSongList ) {
-                Icon(Icons.Filled.Home, contentDescription = "Home")
-            }
-        },
-        actions = {
-            IconButton(onClick = { }) {
-                Icon(Icons.Filled.Settings, contentDescription = "Setting")
-            }
-        }
-    )
-}
+
 
 @Composable
 fun HomeContent(
     modifier: Modifier,
-    list:List<SongList>
+    list:List<SongList>,
+    navController: NavController
 ){
     Column(
         modifier = modifier.padding(horizontal = 10.dp, vertical = 10.dp)
     ){
         WelcomeUser()
-        FunctionTab()
+        FunctionTab { navController.navigate(Route.ROUTE_LOCAL) }
         SongListRow(list)
         ArtistRow(list)
     }
@@ -159,7 +149,7 @@ private fun SongListRow(list: List<SongList>) {
 }
 
 @Composable
-private fun FunctionTab() {
+private fun FunctionTab(navigateToLocal:() -> Unit) {
     Row(
         verticalAlignment = Alignment.CenterVertically,
         modifier = Modifier
@@ -167,10 +157,27 @@ private fun FunctionTab() {
             .padding(vertical = 10.dp),
         horizontalArrangement = Arrangement.SpaceBetween
     ) {
-        CardIcon(resourceId = R.drawable.history, contentDescription = stringResource(id = R.string.history_text))
-        CardIcon(resourceId = R.drawable.file_icon, contentDescription = stringResource(id = R.string.local_text))
-        CardIcon(resourceId = R.drawable.download_icon, contentDescription = stringResource(id = R.string.download_text))
-        CardIcon(resourceId = R.drawable.cloud_upload, contentDescription = stringResource(id = R.string.cloud_text))
+        CardIcon(
+            resourceId = R.drawable.history,
+            contentDescription = stringResource(id = R.string.history_text),
+            modifier = Modifier
+        )
+        CardIcon(
+            resourceId = R.drawable.file_icon,
+            contentDescription = stringResource(id = R.string.local_text),
+            modifier = Modifier.clickable (
+                onClick = navigateToLocal
+            )
+        )
+        CardIcon(
+            resourceId = R.drawable.download_icon,
+            contentDescription = stringResource(id = R.string.download_text),
+            modifier = Modifier
+        )
+        CardIcon(resourceId = R.drawable.cloud_upload,
+            contentDescription = stringResource(id = R.string.cloud_text),
+            modifier = Modifier
+        )
     }
 }
 
@@ -212,7 +219,7 @@ fun PreviewTest(){
     val flow:Flow<List<SongList>> = flow {
         emit(listOf(SongList(0L,"test","test",0,"test","test")))
     }
-    HomeScreen(flow){
+    HomeScreen(rememberNavController(),flow){
 
     }
 }

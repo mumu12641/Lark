@@ -17,9 +17,10 @@ import androidx.compose.ui.unit.dp
 fun CardIcon(
     resourceId:Int,
     contentDescription:String,
+    modifier: Modifier
 ){
     Card(
-        modifier = Modifier
+        modifier = modifier
             .padding(10.dp)
             .size(width = 60.dp, height = 70.dp),
     ) {

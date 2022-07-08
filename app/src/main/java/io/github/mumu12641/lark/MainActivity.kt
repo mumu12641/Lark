@@ -13,6 +13,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import io.github.mumu12641.lark.ui.theme.LarkTheme
 import io.github.mumu12641.lark.ui.theme.page.HomeScreen
+import io.github.mumu12641.lark.ui.theme.page.MainScreen
 import io.github.mumu12641.lark.ui.theme.page.MainViewModel
 
 class MainActivity : ComponentActivity() {
@@ -30,11 +31,7 @@ class MainActivity : ComponentActivity() {
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background
                 ) {
-                    HomeScreen(
-                        mainViewModel.allSongList
-                    ) {
-                        mainViewModel.addSongList()
-                    }
+                    MainScreen(mainViewModel)
                 }
             }
         }
