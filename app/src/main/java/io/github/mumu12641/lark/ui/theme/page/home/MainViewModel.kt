@@ -10,7 +10,9 @@ import kotlinx.coroutines.launch
 
 class MainViewModel:ViewModel() {
     val allSongList = DataBaseUtils.queryAllSongList()
+
     private  val TAG = "MainViewModel"
+
     fun addSongList(){
         viewModelScope.launch (Dispatchers.IO) {
             DataBaseUtils.insertSongList(

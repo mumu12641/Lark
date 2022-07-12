@@ -1,39 +1,40 @@
 package io.github.mumu12641.lark.ui.theme.page.function
 
+import android.annotation.SuppressLint
+import android.os.Build
 import android.util.Log
+import android.widget.Toast
+import androidx.annotation.RequiresApi
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Notifications
 import androidx.compose.material3.*
-import androidx.compose.runtime.Composable
+import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.navigation.NavController
-import io.github.mumu12641.lark.entity.Route
-import io.github.mumu12641.lark.ui.theme.component.LarkTopBar
+import com.google.accompanist.permissions.ExperimentalPermissionsApi
+import com.google.accompanist.permissions.rememberMultiplePermissionsState
+import com.hjq.permissions.Permission
+import com.hjq.permissions.XXPermissions
+import io.github.mumu12641.lark.MainActivity.Companion.context
 import io.github.mumu12641.lark.R
+import io.github.mumu12641.lark.entity.Route
+import io.github.mumu12641.lark.entity.Song
+import io.github.mumu12641.lark.ui.theme.component.LarkAlertDialog
+import io.github.mumu12641.lark.ui.theme.component.LarkTopBar
+import io.github.mumu12641.lark.ui.theme.component.SongItem
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.launch
 
-//PermissionX.init(this)
-//                .permissions(
-//                    Manifest.permission.READ_EXTERNAL_STORAGE,
-//                    Manifest.permission.ACCESS_MEDIA_LOCATION,
-//                    Manifest.permission.WRITE_EXTERNAL_STORAGE
-//                )
-//                .request { allGranted, _, _ ->
-//                    if (allGranted) {
-//                        lifecycleScope.launch (Dispatchers.IO){
-//                            getLocalMusic()
-//                        }
-//                        Toast.makeText(requireContext(),"加载或更新本地歌曲完成",Toast.LENGTH_LONG).show()
-//                    } else {
-//                        Toast.makeText(requireContext(), "你拒绝了以上权限", Toast.LENGTH_LONG).show()
-//                    }
-//                }
 
+@RequiresApi(Build.VERSION_CODES.Q)
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun FunctionPage(
@@ -56,16 +57,9 @@ fun FunctionPage(
             },
             content = when(route) {
                 Route.ROUTE_LOCAL -> {
-                    { paddingValues -> LocalContent(
-                        modifier = Modifier.padding(paddingValues),
-                        viewModel.uiState.value.checkPermission,
-                        {
-                            viewModel.test()
-                        },
-                        {
-                            viewModel.uiState.value.checkPermission = false
-                        }
-                    )
+                    { paddingValues -> LocalSetUp(
+                        modifier = Modifier.padding(paddingValues)
+                    ) { viewModel.getLocalMusic() }
                     }
                 }
                 else -> { {} }
@@ -74,43 +68,76 @@ fun FunctionPage(
     }
 }
 
+@RequiresApi(Build.VERSION_CODES.Q)
+@SuppressLint("CoroutineCreationDuringComposition", "UnrememberedMutableState")
+@Composable
+fun LocalSetUp(
+    modifier: Modifier,
+    getLocalMusic:() -> Flow<List<Song>>
+){
+    var showDialog by remember {
+        mutableStateOf(
+            value = !XXPermissions.isGranted(context,Permission.ACCESS_MEDIA_LOCATION)
+        )
+    }
+    var request by remember {
+        mutableStateOf(false)
+    }
+    if (showDialog) {
+        LarkAlertDialog(
+            {},
+            stringResource(id = R.string.get_media_permission_text),
+            Icons.Filled.Notifications,
+            stringResource(id = R.string.request_permission_message_text),
+            {
+                showDialog = false
+                request = true
+            },
+            {
+                showDialog = false
+            }
+        )
+    }
+    if (request){
+        XXPermissions.with(context)
+            .permission(
+                listOf(
+                    Permission.ACCESS_MEDIA_LOCATION,
+                    Permission.READ_EXTERNAL_STORAGE,
+                    Permission.WRITE_EXTERNAL_STORAGE
+                )
+            )
+            .request { _, all ->
+                if (all) {
+
+                }
+            }
+    }
+    if (XXPermissions.isGranted(context,Permission.ACCESS_MEDIA_LOCATION) && !showDialog ){
+        LocalContent(modifier = modifier,getLocalMusic)
+    }
+}
+
+@SuppressLint("UnrememberedMutableState", "CoroutineCreationDuringComposition")
 @Composable
 fun LocalContent(
     modifier: Modifier,
-    checkPermission:Boolean,
-    confirmClick:()->Unit,
-    cancelClick:()->Unit
+    getLocalMusic:() -> Flow<List<Song>>
 ){
-    Log.d("TAG", "LocalContent: $checkPermission")
-    if (!checkPermission) {
-        AlertDialog(
-            onDismissRequest = {},
-            title = {
-                Text(
-                    text = stringResource(id = R.string.get_media_permission_text)
-                )
-            },
-            icon = { Icon(Icons.Filled.Notifications, contentDescription = null) },
-            text = {
-                Text(
-                    text = stringResource(id = R.string.request_permission_message_text),
-                )
-            },
-            confirmButton = {
-                TextButton(
-                    onClick = confirmClick,
-                ) {
-                    Text(stringResource(id = R.string.confirm_text))
-                }
-            },
-            dismissButton = {
-                TextButton(
-                    onClick = cancelClick
-                ) {
-                    Text(stringResource(id = R.string.cancel_text))
-                }
+    var localMusicList by mutableStateOf(emptyList<Song>())
+    rememberCoroutineScope().launch {
+        val flow = getLocalMusic()
+        flow.collect{
+            Log.d("TAG", "LocalContent: $it")
+            localMusicList = it
+        }
+    }
+    Box(modifier = modifier) {
+        LazyColumn {
+            items(localMusicList) { song: Song ->
+                SongItem(song = song)
             }
-        )
+        }
     }
 }
 
@@ -146,7 +173,7 @@ fun PreviewDialog(){
                 },
             ) {
                 Text(
-                    "确认"
+                    stringResource(id = R.string.confirm_text)
                 )
             }
         },
@@ -156,7 +183,7 @@ fun PreviewDialog(){
                 }
             ) {
                 Text(
-                    "取消",
+                    stringResource(id = R.string.cancel_text),
                 )
             }
         }

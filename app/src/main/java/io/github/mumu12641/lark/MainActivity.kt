@@ -1,5 +1,7 @@
 package io.github.mumu12641.lark
 
+import android.annotation.SuppressLint
+import android.content.Context
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -17,14 +19,18 @@ import io.github.mumu12641.lark.ui.theme.page.home.MainScreen
 import io.github.mumu12641.lark.ui.theme.page.home.MainViewModel
 
 class MainActivity : ComponentActivity() {
+    companion object {
+        @SuppressLint("StaticFieldLeak")
+        lateinit var context: Context
+    }
 
-    private val TAG = "MainActivity"
 
     private val mainViewModel by viewModels<MainViewModel>()
     private val functionViewModel by viewModels<FunctionViewModel>()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        context = this@MainActivity
         setContent {
             LarkTheme {
                 // A surface container using the 'background' color from the theme
@@ -39,6 +45,8 @@ class MainActivity : ComponentActivity() {
     }
 }
 
+
+
 @Composable
 fun Greeting(name: String) {
     Text(text = "Hello $name!")
@@ -51,3 +59,4 @@ fun DefaultPreview() {
         Greeting("Android")
     }
 }
+

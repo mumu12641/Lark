@@ -9,7 +9,9 @@ import io.github.mumu12641.lark.ui.theme.page.function.FunctionPage
 import io.github.mumu12641.lark.ui.theme.page.function.FunctionViewModel
 
 @Composable
-fun MainScreen(mainViewModel: MainViewModel,functionViewModel: FunctionViewModel){
+fun MainScreen(
+    mainViewModel: MainViewModel,functionViewModel: FunctionViewModel
+){
     val navController = rememberNavController()
 
     NavHost(navController = navController, startDestination = Route.ROUTE_HOME){

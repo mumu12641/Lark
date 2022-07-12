@@ -76,6 +76,9 @@ dependencies {
     kapt("androidx.room:room-compiler:$roomVersion")
     implementation("androidx.navigation:navigation-compose:$navVersion")
 
+    implementation("io.coil-kt:coil-compose:2.1.0")
+
     implementation("com.guolindev.permissionx:permissionx:$permissionXVersion")
     implementation("com.github.getActivity:XXPermissions:15.0")
+    implementation("com.google.accompanist:accompanist-permissions:0.24.0-alpha")
 }
