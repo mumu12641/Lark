@@ -39,8 +39,7 @@ fun CardIcon(
             )
             Text(
                 text = contentDescription,
-                style = MaterialTheme.typography.bodySmall,
-                fontFamily = FontFamily.Serif
+                style = MaterialTheme.typography.bodySmall
             )
         }
 

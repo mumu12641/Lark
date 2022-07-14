@@ -1,8 +1,6 @@
 package io.github.mumu12641.lark.ui.theme.component
 
-import android.net.Uri
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -15,46 +13,58 @@ import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import coil.compose.rememberAsyncImagePainter
+import com.skydoves.landscapist.glide.GlideImage
 import io.github.mumu12641.lark.R
 import io.github.mumu12641.lark.entity.Song
-import java.io.File
-import java.net.URI
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SongItem(
     song: Song
 ){
-
     Card(
         modifier = Modifier
             .fillMaxWidth()
             .height(80.dp)
-            .padding(start = 10.dp, end = 10.dp, top = 5.dp)
-            .clickable {
-
-            },
+            .padding(start = 10.dp, end = 10.dp, top = 5.dp, bottom = 5.dp)
+            .clickable {},
+        colors = CardDefaults.outlinedCardColors()
     ) {
         Row(
             verticalAlignment = Alignment.CenterVertically,
-            modifier = Modifier.padding(5.dp).fillMaxSize()
+            modifier = Modifier
+                .padding(5.dp)
+                .fillMaxSize()
         ) {
-            Image(
-                painter = rememberAsyncImagePainter(
-                    model = song.songAlbumFileUri,
-                    placeholder = painterResource(id = R.drawable.ornithology)
-                ),
-                contentDescription = "封面",
+            GlideImage(
+                imageModel = song.songAlbumFileUri,
                 modifier = Modifier
                     .size(50.dp)
                     .clip(RectangleShape)
                     .clip(RoundedCornerShape(10.dp)),
+                loading = {
+                    Box(modifier = Modifier.matchParentSize()) {
+                        CircularProgressIndicator(
+                            modifier = Modifier.align(Alignment.Center)
+                        )
+                    }
+                },
+                failure = {
+                    Image(
+                        painter = painterResource(id = R.drawable.music_note),
+                        contentDescription = "test",
+                        modifier = Modifier
+                            .size(50.dp)
+                            .clip(RectangleShape)
+                            .clip(RoundedCornerShape(10.dp))
+                    )
+                }
             )
             Column(
-                modifier = Modifier.padding(5.dp)
+                modifier = Modifier.padding(10.dp)
             ) {
-                Text(text = song.songTitle, style = MaterialTheme.typography.bodyLarge, softWrap = false)
+                Text(text = song.songTitle,
+                    style = MaterialTheme.typography.bodyLarge, softWrap = false)
                 Text(text = song.songSinger, style = MaterialTheme.typography.bodySmall)
             }
         }

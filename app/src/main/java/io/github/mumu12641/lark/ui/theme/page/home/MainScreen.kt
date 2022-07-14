@@ -1,5 +1,7 @@
 package io.github.mumu12641.lark.ui.theme.page.home
 
+import android.os.Build
+import androidx.annotation.RequiresApi
 import androidx.compose.runtime.Composable
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -8,6 +10,7 @@ import io.github.mumu12641.lark.entity.Route
 import io.github.mumu12641.lark.ui.theme.page.function.FunctionPage
 import io.github.mumu12641.lark.ui.theme.page.function.FunctionViewModel
 
+@RequiresApi(Build.VERSION_CODES.Q)
 @Composable
 fun MainScreen(
     mainViewModel: MainViewModel,functionViewModel: FunctionViewModel

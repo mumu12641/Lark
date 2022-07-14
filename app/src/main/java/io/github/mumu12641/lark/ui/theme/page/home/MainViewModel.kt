@@ -15,10 +15,16 @@ class MainViewModel:ViewModel() {
 
     fun addSongList(){
         viewModelScope.launch (Dispatchers.IO) {
+//            DataBaseUtils.insertSongList(
+//                SongList(0L,"Local","2022/7/14",0,"Local Music","Local Image")
+//            )
+//            DataBaseUtils.insertSongList(
+//                SongList(0L,"I Like ","2022/7/14",0,"I like","Like Image")
+//            )
             DataBaseUtils.insertSongList(
-                SongList(0L,"test","test",0,"test","test")
+                SongList(0L,"History","2022/7/14",0,"History Music","History Image")
             )
-            Log.d(TAG, "addSongList: done")
+//            Log.d(TAG, "addSongList: done")
         }
     }
 }

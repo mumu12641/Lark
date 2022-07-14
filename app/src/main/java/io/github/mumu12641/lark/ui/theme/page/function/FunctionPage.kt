@@ -13,14 +13,13 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Notifications
+import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.navigation.NavController
-import com.google.accompanist.permissions.ExperimentalPermissionsApi
-import com.google.accompanist.permissions.rememberMultiplePermissionsState
 import com.hjq.permissions.Permission
 import com.hjq.permissions.XXPermissions
 import io.github.mumu12641.lark.MainActivity.Companion.context
@@ -34,6 +33,7 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.launch
 
 
+@SuppressLint("UnrememberedMutableState")
 @RequiresApi(Build.VERSION_CODES.Q)
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -42,6 +42,8 @@ fun FunctionPage(
     route:String,
     viewModel: FunctionViewModel
 ){
+
+    val localMusicList : List<Song> by viewModel.getLocalMusic().collectAsState(initial = emptyList())
 
     Box(
         modifier = Modifier.fillMaxSize()
@@ -57,23 +59,35 @@ fun FunctionPage(
             },
             content = when(route) {
                 Route.ROUTE_LOCAL -> {
-                    { paddingValues -> LocalSetUp(
-                        modifier = Modifier.padding(paddingValues)
-                    ) { viewModel.getLocalMusic() }
+                    {
+                        paddingValues -> LocalSetUp(
+                            modifier = Modifier.padding(paddingValues),localMusicList)
+//                        ) {
+//                            viewModel.getLocalMusic()
+//                        }
                     }
                 }
                 else -> { {} }
+            },
+            floatingActionButton = {
+                FloatingActionButton(onClick = {
+                    Toast.makeText(context,"Refresh",Toast.LENGTH_LONG).show()
+                }) {
+                    Icon(Icons.Filled.Refresh, contentDescription = "Refresh")
+                }
             }
         )
     }
 }
+
 
 @RequiresApi(Build.VERSION_CODES.Q)
 @SuppressLint("CoroutineCreationDuringComposition", "UnrememberedMutableState")
 @Composable
 fun LocalSetUp(
     modifier: Modifier,
-    getLocalMusic:() -> Flow<List<Song>>
+//    getLocalMusic:() -> Flow<List<Song>>
+    localMusic:List<Song>
 ){
     var showDialog by remember {
         mutableStateOf(
@@ -107,14 +121,10 @@ fun LocalSetUp(
                     Permission.WRITE_EXTERNAL_STORAGE
                 )
             )
-            .request { _, all ->
-                if (all) {
-
-                }
-            }
+            .request { _, _ -> }
     }
     if (XXPermissions.isGranted(context,Permission.ACCESS_MEDIA_LOCATION) && !showDialog ){
-        LocalContent(modifier = modifier,getLocalMusic)
+        LocalContent(modifier = modifier,localMusic)
     }
 }
 
@@ -122,19 +132,20 @@ fun LocalSetUp(
 @Composable
 fun LocalContent(
     modifier: Modifier,
-    getLocalMusic:() -> Flow<List<Song>>
+//    getLocalMusic:() -> Flow<List<Song>>
+    localMusic: List<Song>
 ){
-    var localMusicList by mutableStateOf(emptyList<Song>())
-    rememberCoroutineScope().launch {
-        val flow = getLocalMusic()
-        flow.collect{
-            Log.d("TAG", "LocalContent: $it")
-            localMusicList = it
-        }
-    }
+//    var localMusicList by mutableStateOf(emptyList<Song>())
+//    rememberCoroutineScope().launch {
+//        val flow = getLocalMusic()
+//        flow.collect{
+//            Log.d("TAG", "LocalContent: $it")
+//            localMusicList = it
+//        }
+//    }
     Box(modifier = modifier) {
         LazyColumn {
-            items(localMusicList) { song: Song ->
+            items(localMusic) { song: Song ->
                 SongItem(song = song)
             }
         }
