@@ -10,3 +10,7 @@ object Route{
     val ROUTE_DOWNLOAD = context.getString(R.string.download_text)
     val ROUTE_CLOUD = context.getString(R.string.cloud_text)
 }
+
+const val LocalSongListId = 1L
+const val LikeSongListId = 2L
+const val HistorySongListId = 3L

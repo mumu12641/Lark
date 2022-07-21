@@ -2,7 +2,6 @@ package io.github.mumu12641.lark.ui.theme.page.function
 
 import android.annotation.SuppressLint
 import android.os.Build
-import android.util.Log
 import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.layout.Box
@@ -29,8 +28,6 @@ import io.github.mumu12641.lark.entity.Song
 import io.github.mumu12641.lark.ui.theme.component.LarkAlertDialog
 import io.github.mumu12641.lark.ui.theme.component.LarkTopBar
 import io.github.mumu12641.lark.ui.theme.component.SongItem
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.launch
 
 
 @SuppressLint("UnrememberedMutableState")
@@ -42,8 +39,7 @@ fun FunctionPage(
     route:String,
     viewModel: FunctionViewModel
 ){
-
-    val localMusicList : List<Song> by viewModel.getLocalMusic().collectAsState(initial = emptyList())
+    val localMusicList by viewModel.localMusicList.collectAsState(initial = emptyList())
 
     Box(
         modifier = Modifier.fillMaxSize()
@@ -62,16 +58,13 @@ fun FunctionPage(
                     {
                         paddingValues -> LocalSetUp(
                             modifier = Modifier.padding(paddingValues),localMusicList)
-//                        ) {
-//                            viewModel.getLocalMusic()
-//                        }
                     }
                 }
                 else -> { {} }
             },
             floatingActionButton = {
                 FloatingActionButton(onClick = {
-                    Toast.makeText(context,"Refresh",Toast.LENGTH_LONG).show()
+                    viewModel.reFreshLocalMusicList()
                 }) {
                     Icon(Icons.Filled.Refresh, contentDescription = "Refresh")
                 }
@@ -86,8 +79,7 @@ fun FunctionPage(
 @Composable
 fun LocalSetUp(
     modifier: Modifier,
-//    getLocalMusic:() -> Flow<List<Song>>
-    localMusic:List<Song>
+    localMusicList:List<Song>
 ){
     var showDialog by remember {
         mutableStateOf(
@@ -124,7 +116,7 @@ fun LocalSetUp(
             .request { _, _ -> }
     }
     if (XXPermissions.isGranted(context,Permission.ACCESS_MEDIA_LOCATION) && !showDialog ){
-        LocalContent(modifier = modifier,localMusic)
+        LocalContent(modifier = modifier,localMusicList)
     }
 }
 
@@ -132,17 +124,8 @@ fun LocalSetUp(
 @Composable
 fun LocalContent(
     modifier: Modifier,
-//    getLocalMusic:() -> Flow<List<Song>>
     localMusic: List<Song>
 ){
-//    var localMusicList by mutableStateOf(emptyList<Song>())
-//    rememberCoroutineScope().launch {
-//        val flow = getLocalMusic()
-//        flow.collect{
-//            Log.d("TAG", "LocalContent: $it")
-//            localMusicList = it
-//        }
-//    }
     Box(modifier = modifier) {
         LazyColumn {
             items(localMusic) { song: Song ->

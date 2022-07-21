@@ -3,6 +3,7 @@ package io.github.mumu12641.lark.room
 import io.github.mumu12641.lark.entity.PlaylistSongCrossRef
 import io.github.mumu12641.lark.entity.Song
 import io.github.mumu12641.lark.entity.SongList
+import io.github.mumu12641.lark.entity.SongListWithSongs
 import kotlinx.coroutines.flow.Flow
 
 class DataBaseUtils {
@@ -14,8 +15,12 @@ class DataBaseUtils {
             return musicDao.queryAllSong()
         }
 
-        suspend fun insertSong(song: Song){
-            musicDao.insertSong(song)
+        suspend fun querySongIdByMediaUri(songAlbumFileUri:String):Long{
+            return musicDao.querySongIdByMediaUri(songAlbumFileUri)
+        }
+
+        suspend fun insertSong(song: Song):Long{
+            return musicDao.insertSong(song)
         }
 
 
@@ -27,8 +32,20 @@ class DataBaseUtils {
             musicDao.insertSongList(songList)
         }
 
+        fun queryAllRef():List<PlaylistSongCrossRef>{
+            return musicDao.queryAllRef()
+        }
+
         suspend fun insertRef(playlistSongCrossRef: PlaylistSongCrossRef){
             musicDao.insertRef(playlistSongCrossRef)
+        }
+
+        fun querySongListWithSongsBySongListId(songListId:Long):Flow<SongListWithSongs>{
+            return musicDao.querySongListWithSongsBySongListId(songListId)
+        }
+
+        suspend fun queryAllMediaFileUri():List<String>{
+            return musicDao.queryAllMediaFileUri()
         }
 
 
