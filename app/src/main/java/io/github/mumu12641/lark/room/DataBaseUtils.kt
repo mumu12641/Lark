@@ -15,8 +15,8 @@ class DataBaseUtils {
             return musicDao.queryAllSong()
         }
 
-        suspend fun querySongIdByMediaUri(songAlbumFileUri:String):Long{
-            return musicDao.querySongIdByMediaUri(songAlbumFileUri)
+        suspend fun querySongIdByMediaUri(mediaFileUri:String):Long{
+            return musicDao.querySongIdByMediaUri(mediaFileUri)
         }
 
         suspend fun insertSong(song: Song):Long{

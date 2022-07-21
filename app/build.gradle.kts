@@ -10,6 +10,7 @@ val roomVersion = "2.4.2"
 val navVersion = "2.4.2"
 
 val permissionXVersion = "1.6.4"
+val lottieVersion = "5.2.0"
 
 android {
     compileSdk = 32
@@ -91,4 +92,6 @@ dependencies {
     implementation("com.google.accompanist:accompanist-permissions:0.24.0-alpha")
 
     implementation("com.tencent:mmkv:1.2.13")
+
+    implementation("com.airbnb.android:lottie-compose:$lottieVersion")
 }

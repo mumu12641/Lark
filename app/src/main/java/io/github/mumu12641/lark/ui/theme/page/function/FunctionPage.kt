@@ -2,6 +2,7 @@ package io.github.mumu12641.lark.ui.theme.page.function
 
 import android.annotation.SuppressLint
 import android.os.Build
+import android.util.Log
 import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.layout.Box
@@ -15,14 +16,17 @@ import androidx.compose.material.icons.filled.Notifications
 import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.navigation.NavController
+import com.airbnb.lottie.compose.*
 import com.hjq.permissions.Permission
 import com.hjq.permissions.XXPermissions
 import io.github.mumu12641.lark.MainActivity.Companion.context
 import io.github.mumu12641.lark.R
+import io.github.mumu12641.lark.entity.Load
 import io.github.mumu12641.lark.entity.Route
 import io.github.mumu12641.lark.entity.Song
 import io.github.mumu12641.lark.ui.theme.component.LarkAlertDialog
@@ -40,6 +44,7 @@ fun FunctionPage(
     viewModel: FunctionViewModel
 ){
     val localMusicList by viewModel.localMusicList.collectAsState(initial = emptyList())
+    val loadLocal by viewModel.loadLocal.collectAsState(initial = Load.NONE)
 
     Box(
         modifier = Modifier.fillMaxSize()
@@ -54,10 +59,9 @@ fun FunctionPage(
                 }
             },
             content = when(route) {
-                Route.ROUTE_LOCAL -> {
-                    {
-                        paddingValues -> LocalSetUp(
-                            modifier = Modifier.padding(paddingValues),localMusicList)
+                Route.ROUTE_LOCAL -> { {
+                        paddingValues ->
+                    LocalSetUp(modifier = Modifier.padding(paddingValues),localMusicList,loadLocal)
                     }
                 }
                 else -> { {} }
@@ -79,7 +83,8 @@ fun FunctionPage(
 @Composable
 fun LocalSetUp(
     modifier: Modifier,
-    localMusicList:List<Song>
+    localMusicList:List<Song>,
+    loadLocal:Int
 ){
     var showDialog by remember {
         mutableStateOf(
@@ -116,7 +121,7 @@ fun LocalSetUp(
             .request { _, _ -> }
     }
     if (XXPermissions.isGranted(context,Permission.ACCESS_MEDIA_LOCATION) && !showDialog ){
-        LocalContent(modifier = modifier,localMusicList)
+        LocalContent(modifier = modifier,localMusicList,loadLocal)
     }
 }
 
@@ -124,12 +129,31 @@ fun LocalSetUp(
 @Composable
 fun LocalContent(
     modifier: Modifier,
-    localMusic: List<Song>
+    localMusic: List<Song>,
+    loadLocal: Int
 ){
-    Box(modifier = modifier) {
-        LazyColumn {
-            items(localMusic) { song: Song ->
-                SongItem(song = song)
+    Log.d("TAG", "LocalContent: $loadLocal")
+    if (loadLocal == Load.LOADING){
+        val composition by rememberLottieComposition(LottieCompositionSpec.RawRes(R.raw.loading))
+        val progress by animateLottieCompositionAsState(
+            composition,
+            iterations = LottieConstants.IterateForever
+        )
+        Box(
+            modifier = modifier.fillMaxSize(),
+            contentAlignment = Alignment.Center
+        ) {
+            LottieAnimation(
+                composition,
+                progress,
+            )
+        }
+    }else {
+        Box(modifier = modifier) {
+            LazyColumn {
+                items(localMusic) { song: Song ->
+                    SongItem(song = song)
+                }
             }
         }
     }
@@ -181,5 +205,16 @@ fun PreviewDialog(){
                 )
             }
         }
+    )
+}
+
+@Preview
+@Composable
+fun PreviewAnimator() {
+    val composition by rememberLottieComposition(LottieCompositionSpec.RawRes(R.raw.loading))
+    val progress by animateLottieCompositionAsState(composition)
+    LottieAnimation(
+        composition,
+        progress,
     )
 }
