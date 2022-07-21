@@ -1,6 +1,7 @@
 package io.github.mumu12641.lark.ui.theme.page.home
 
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
@@ -23,6 +24,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
+import com.tencent.mmkv.MMKV
 import io.github.mumu12641.lark.R
 import io.github.mumu12641.lark.entity.Route
 import io.github.mumu12641.lark.entity.SongList
@@ -75,7 +77,7 @@ fun HomeContent(
     Column(
         modifier = modifier.padding(horizontal = 10.dp, vertical = 10.dp)
     ){
-        WelcomeUser()
+        WelcomeUser(navController)
         FunctionTab(navController)
         SongListRow(list)
         ArtistRow(list)
@@ -185,9 +187,11 @@ private fun FunctionTab(
 
 
 @Composable
-fun WelcomeUser() {
+fun WelcomeUser(navController: NavController) {
     Row(
-        modifier = Modifier.fillMaxWidth(),
+        modifier = Modifier
+            .fillMaxWidth()
+            ,
         verticalAlignment = Alignment.CenterVertically
     ) {
         Icon(
@@ -195,6 +199,9 @@ fun WelcomeUser() {
             modifier = Modifier
                 .clip(RoundedCornerShape(10.dp))
                 .size(40.dp)
+                .clickable {
+                    navController.navigate(Route.ROUTE_USER)
+                }
         )
         Column(
             modifier = Modifier.padding(horizontal = 10.dp)
@@ -205,7 +212,7 @@ fun WelcomeUser() {
                 fontFamily = FontFamily.Serif
             )
             Text(
-                text = stringResource(id = R.string.user),
+                text = MMKV.defaultMMKV().decodeString("UserName")!!,
                 style = MaterialTheme.typography.bodyLarge,
                 fontFamily = FontFamily.Serif
             )

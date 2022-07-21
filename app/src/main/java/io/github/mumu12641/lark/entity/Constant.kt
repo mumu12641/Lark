@@ -9,6 +9,7 @@ object Route{
     val ROUTE_HISTORY = context.getString(R.string.history_text)
     val ROUTE_DOWNLOAD = context.getString(R.string.download_text)
     val ROUTE_CLOUD = context.getString(R.string.cloud_text)
+    val ROUTE_USER = context.getString(R.string.user_message_text)
 }
 
 object Load{

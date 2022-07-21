@@ -1,6 +1,5 @@
 package io.github.mumu12641.lark.ui.theme.page.home
 
-import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import io.github.mumu12641.lark.entity.SongList

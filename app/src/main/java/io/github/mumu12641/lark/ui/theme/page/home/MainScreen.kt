@@ -9,11 +9,15 @@ import androidx.navigation.compose.rememberNavController
 import io.github.mumu12641.lark.entity.Route
 import io.github.mumu12641.lark.ui.theme.page.function.FunctionPage
 import io.github.mumu12641.lark.ui.theme.page.function.FunctionViewModel
+import io.github.mumu12641.lark.ui.theme.page.user.UserPage
+import io.github.mumu12641.lark.ui.theme.page.user.UserViewModel
 
 @RequiresApi(Build.VERSION_CODES.Q)
 @Composable
 fun MainScreen(
-    mainViewModel: MainViewModel,functionViewModel: FunctionViewModel
+    mainViewModel: MainViewModel,
+    functionViewModel: FunctionViewModel,
+    userViewModel: UserViewModel
 ){
     val navController = rememberNavController()
 
@@ -43,6 +47,9 @@ fun MainScreen(
             FunctionPage(navController = navController, route = Route.ROUTE_HISTORY,
                 functionViewModel
             )
+        }
+        composable(Route.ROUTE_USER){
+            UserPage(navController = navController,userViewModel)
         }
     }
 

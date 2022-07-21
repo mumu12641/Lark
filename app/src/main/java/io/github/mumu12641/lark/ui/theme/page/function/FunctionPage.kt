@@ -3,7 +3,6 @@ package io.github.mumu12641.lark.ui.theme.page.function
 import android.annotation.SuppressLint
 import android.os.Build
 import android.util.Log
-import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
@@ -64,7 +63,9 @@ fun FunctionPage(
                     LocalSetUp(modifier = Modifier.padding(paddingValues),localMusicList,loadLocal)
                     }
                 }
-                else -> { {} }
+                else -> { {
+                    Content(modifier = Modifier.padding(it))
+                } }
             },
             floatingActionButton = {
                 FloatingActionButton(onClick = {
@@ -163,7 +164,14 @@ fun LocalContent(
 fun Content(
     modifier: Modifier
 ){
-
+    Box(
+        modifier = modifier.fillMaxSize(), contentAlignment = Alignment.Center
+    ){
+        Text(
+            text = stringResource(id = R.string.coming_soon_text),
+            style = MaterialTheme.typography.titleMedium
+        )
+    }
 }
 
 @Preview
