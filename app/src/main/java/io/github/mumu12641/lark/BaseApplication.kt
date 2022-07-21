@@ -12,13 +12,15 @@ class BaseApplication : Application() {
         super.onCreate()
         context = applicationContext
         MMKV.initialize(this)
-        MMKV.defaultMMKV().encode("First",true)
-        MMKV.defaultMMKV().encode("UserName", context.getString(R.string.user))
+        if (MMKV.defaultMMKV().decodeInt("first") == 0){
+            MMKV.defaultMMKV().encode("first",1)
+            MMKV.defaultMMKV().encode("userName", context.getString(R.string.user))
+        }
     }
+
 
     companion object {
         @SuppressLint("StaticFieldLeak")
         lateinit var context: Context
-
     }
 }

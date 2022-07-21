@@ -17,4 +17,5 @@
     <string name="coming_soon_text">Coming Soon</string>
     <string name="my_name_text">My Name</string>
     <string name="description_text">Description</string>
+    <string name="save_success_test">Successfully saved</string>
 </resources>

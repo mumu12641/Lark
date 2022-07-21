@@ -17,4 +17,5 @@
     <string name="coming_soon_text">敬请期待</string>
     <string name="my_name_text">我的名字</string>
     <string name="description_text">描述</string>
+    <string name="save_success_test">保存成功</string>
 </resources>

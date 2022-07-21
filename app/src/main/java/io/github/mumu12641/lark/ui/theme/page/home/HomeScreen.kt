@@ -24,6 +24,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
+import com.skydoves.landscapist.glide.GlideImage
 import com.tencent.mmkv.MMKV
 import io.github.mumu12641.lark.R
 import io.github.mumu12641.lark.entity.Route
@@ -187,21 +188,39 @@ private fun FunctionTab(
 
 
 @Composable
-fun WelcomeUser(navController: NavController) {
+fun WelcomeUser(
+    navController: NavController
+) {
     Row(
         modifier = Modifier
-            .fillMaxWidth()
-            ,
+            .fillMaxWidth(),
         verticalAlignment = Alignment.CenterVertically
     ) {
-        Icon(
-            Icons.Filled.Face, contentDescription = "Face",
-            modifier = Modifier
-                .clip(RoundedCornerShape(10.dp))
-                .size(40.dp)
-                .clickable {
-                    navController.navigate(Route.ROUTE_USER)
-                }
+//        Icon(
+//            Icons.Filled.Face, contentDescription = "Face",
+//            modifier = Modifier
+//                .clip(RoundedCornerShape(10.dp))
+//                .size(40.dp)
+//                .clickable {
+//                    navController.navigate(Route.ROUTE_USER)
+//                }
+//        )
+        GlideImage(
+            imageModel = MMKV.defaultMMKV().decodeString("iconImageUri"),
+            modifier = Modifier.size(40.dp).clip(CircleShape).clickable {
+                navController.navigate(Route.ROUTE_USER)
+            },
+            failure = {
+                Icon(
+                    Icons.Filled.Face,
+                    contentDescription = "User Icon",
+                    modifier = Modifier
+                        .size(40.dp)
+                        .clickable {
+                            navController.navigate(Route.ROUTE_USER)
+                    }
+                )
+            }
         )
         Column(
             modifier = Modifier.padding(horizontal = 10.dp)
@@ -212,7 +231,7 @@ fun WelcomeUser(navController: NavController) {
                 fontFamily = FontFamily.Serif
             )
             Text(
-                text = MMKV.defaultMMKV().decodeString("UserName")!!,
+                text = MMKV.defaultMMKV().decodeString("userName")!!,
                 style = MaterialTheme.typography.bodyLarge,
                 fontFamily = FontFamily.Serif
             )
