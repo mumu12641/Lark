@@ -10,18 +10,13 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.ArrowForward
 import androidx.compose.material.icons.filled.Face
-import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.outlined.Favorite
-import androidx.compose.material.icons.rounded.Favorite
-import androidx.compose.material.icons.sharp.Favorite
-import androidx.compose.material.icons.twotone.Favorite
 import androidx.compose.material3.*
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -39,7 +34,11 @@ import io.github.mumu12641.lark.entity.Route
 import io.github.mumu12641.lark.entity.SongList
 import io.github.mumu12641.lark.ui.theme.component.CardIcon
 import io.github.mumu12641.lark.ui.theme.component.LarkTopBar
+import io.github.mumu12641.lark.ui.theme.component.SongListItemCard
+import io.github.mumu12641.lark.ui.theme.component.TextFieldDialog
+import io.github.mumu12641.lark.ui.theme.page.user.UserViewModel
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.flow
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -47,7 +46,7 @@ import kotlinx.coroutines.flow.flow
 fun HomeScreen(
     navController: NavController,
     flow:Flow<List<SongList>>,
-    addSongList: () -> Unit
+    addSongList: (SongList) -> Unit
 ){
 
     val allSongList by flow.collectAsState(initial = listOf())
@@ -59,15 +58,15 @@ fun HomeScreen(
             topBar = {
                 LarkTopBar(
                     title = stringResource(id = R.string.app_name),
-                    Icons.Filled.Home,
-                    addSongList
-                )
+                    Icons.Filled.Home
+                ) {}
             },
             content = {
                 paddingValues -> HomeContent(
                     modifier = Modifier.padding(paddingValues),
                     allSongList,
-                    navController
+                    navController,
+                    addSongList
                 )
             }
         )
@@ -81,14 +80,15 @@ fun HomeScreen(
 fun HomeContent(
     modifier: Modifier,
     list:List<SongList>,
-    navController: NavController
+    navController: NavController,
+    addSongList: (SongList) -> Unit
 ){
     Column(
         modifier = modifier.padding(horizontal = 10.dp, vertical = 10.dp)
     ){
         WelcomeUser(navController)
         FunctionTab(navController)
-        SongListRow(list)
+        SongListRow(list,addSongList)
         ArtistRow(list)
     }
 }
@@ -125,9 +125,37 @@ private fun ArtistRow(list: List<SongList>) {
 }
 
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
-private fun SongListRow(list: List<SongList>) {
+private fun SongListRow(
+    list: List<SongList>,
+    addSongList: (SongList) -> Unit
+) {
+
+    var showDialog by remember {
+        mutableStateOf(false)
+    }
+
+    var text by remember {
+        mutableStateOf("123")
+    }
+
+    if (showDialog){
+        TextFieldDialog(
+            onDismissRequest = { showDialog = false },
+            title = stringResource(id = R.string.add_songlist_text),
+            icon = Icons.Filled.Add,
+            confirmOnClick = {
+                addSongList(SongList(0L,text,"2022/7/22",0,"test","null",2))
+                showDialog = false
+            },
+            dismissOnClick = { showDialog = false },
+            content = text,
+            onValueChange = {
+                text = it
+            }
+        )
+    }
+
     Column(
         modifier = Modifier.fillMaxWidth()
     ) {
@@ -141,52 +169,41 @@ private fun SongListRow(list: List<SongList>) {
                 fontFamily = FontFamily.Serif,
                 modifier = Modifier.weight(1f)
             )
-            Icon(Icons.Filled.ArrowForward, contentDescription = "More")
+            Icon(
+                Icons.Filled.Add,
+                contentDescription = "More",
+                modifier = Modifier.clickable {
+                    showDialog = true
+                }
+            )
         }
-
-        Log.d("TAG", "SongListRow: " + list.size)
         if (list.size == 1 ){
-            Box(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(150.dp)
-                    .clip(RoundedCornerShape(50.dp))
-                    .background(MaterialTheme.colorScheme.primaryContainer),
-                contentAlignment = Alignment.Center
-            ) {
-                Image(
-                    Icons.Outlined.Favorite,
-                    modifier = Modifier
-                        .size(150.dp)
-                        .fillMaxWidth()
-                        .clip(RoundedCornerShape(40.dp))
-                        .padding(5.dp),
-                    contentDescription = "Test"
-                )
-            }
-
+            SongListItemCard(list[0])
         } else if (list.size > 1){
             LazyRow(
                 contentPadding = PaddingValues(5.dp)
             ) {
-                items(list) {
-                    Card(
-                        modifier = Modifier.padding(5.dp)
-                    ) {
-                        Image(
-                            modifier = Modifier
-                                .size(150.dp)
-                                .clip(RoundedCornerShape(20.dp))
-                                .padding(5.dp),
-                            painter = painterResource(id = R.drawable.favorite),
-                            contentDescription = "Test"
-                        )
-                    }
+                items(list) { item ->
+                    SongListItemCard(songList = item)
+//                    Card(
+//                        modifier = Modifier.padding(5.dp)
+//                    ) {
+//                        Image(
+//                            modifier = Modifier
+//                                .size(150.dp)
+//                                .clip(RoundedCornerShape(20.dp))
+//                                .padding(5.dp),
+//                            painter = painterResource(id = R.drawable.favorite),
+//                            contentDescription = "Test"
+//                        )
+//                    }
                 }
             }
         }
     }
 }
+
+
 
 @Composable
 private fun FunctionTab(
@@ -261,12 +278,12 @@ fun WelcomeUser(
             Text(
                 text = stringResource(id = R.string.welcome_text),
                 style = MaterialTheme.typography.bodySmall,
-                fontFamily = FontFamily.Serif
+                color = MaterialTheme.colorScheme.secondary
             )
             Text(
                 text = MMKV.defaultMMKV().decodeString("userName")!!,
                 style = MaterialTheme.typography.bodyLarge,
-                fontFamily = FontFamily.Serif
+                color = MaterialTheme.colorScheme.primary
             )
         }
     }
@@ -277,22 +294,4 @@ fun WelcomeUser(
 @Preview
 @Composable
 fun PreviewTest(){
-//    Box(
-//        modifier = Modifier
-//            .fillMaxWidth()
-//            .height(150.dp)
-//            .clip(RoundedCornerShape(50.dp))
-//            .background(MaterialTheme.colorScheme.onSurfaceVariant),
-//        contentAlignment = Alignment.Center
-//    ) {
-//        Image(
-//            Icons.Outlined.Favorite,
-//            modifier = Modifier
-//                .size(150.dp)
-//                .fillMaxWidth()
-//                .clip(RoundedCornerShape(40.dp))
-//                .padding(5.dp),
-//            contentDescription = "Test"
-//        )
-//    }
 }

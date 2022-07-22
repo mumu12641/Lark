@@ -18,4 +18,6 @@
     <string name="my_name_text">My Name</string>
     <string name="description_text">Description</string>
     <string name="save_success_test">Successfully saved</string>
+    <string name="songs_text">songs</string>
+    <string name="add_songlist_text">Add SongList</string>
 </resources>

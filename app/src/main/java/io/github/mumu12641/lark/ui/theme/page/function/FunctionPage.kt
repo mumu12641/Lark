@@ -2,7 +2,6 @@ package io.github.mumu12641.lark.ui.theme.page.function
 
 import android.annotation.SuppressLint
 import android.os.Build
-import android.util.Log
 import androidx.annotation.RequiresApi
 import androidx.compose.animation.*
 import androidx.compose.foundation.layout.Box
@@ -32,7 +31,6 @@ import io.github.mumu12641.lark.entity.Song
 import io.github.mumu12641.lark.ui.theme.component.LarkAlertDialog
 import io.github.mumu12641.lark.ui.theme.component.LarkTopBar
 import io.github.mumu12641.lark.ui.theme.component.SongItem
-import kotlinx.coroutines.delay
 
 
 @SuppressLint("UnrememberedMutableState")
@@ -98,18 +96,21 @@ fun LocalSetUp(
         mutableStateOf(false)
     }
     if (showDialog) {
-        LarkAlertDialog(
-            {},
+        LarkAlertDialog({},
             stringResource(id = R.string.get_media_permission_text),
             Icons.Filled.Notifications,
-            stringResource(id = R.string.request_permission_message_text),
+            {
+                Text(
+                    text = stringResource(id = R.string.get_media_permission_text),
+                )
+            },
             {
                 showDialog = false
                 request = true
             },
             {
                 showDialog = false
-            }
+            },
         )
     }
     if (request){

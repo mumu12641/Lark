@@ -22,19 +22,20 @@ class UserViewModel:ViewModel() {
 
 
     fun changeNameValue(value:String){
-        _userState.value = UserState(value,_userState.value.iconImageUri,_userState.value.backgroundImageUri)
+        _userState.value = _userState.value.copy(name = value)
     }
     fun changeBackgroundValue(uri:String){
-        _userState.value = UserState(_userState.value.name,_userState.value.iconImageUri,uri)
+        _userState.value = _userState.value.copy(backgroundImageUri = uri)
     }
     fun changeIconValue(uri:String){
-        _userState.value = UserState(_userState.value.name,uri,_userState.value.backgroundImageUri)
+        _userState.value = _userState.value.copy(iconImageUri = uri)
+
     }
 
     data class UserState(
-        var name:String,
-        var iconImageUri:String?,
-        var backgroundImageUri:String?
+        val name:String,
+        val iconImageUri:String?,
+        val backgroundImageUri:String?
     )
 
     companion object{

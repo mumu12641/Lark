@@ -14,7 +14,7 @@ fun LarkAlertDialog(
     onDismissRequest : () -> Unit,
     title:String,
     icon: ImageVector,
-    content:String,
+    text: @Composable () -> Unit,
     confirmOnClick : () -> Unit,
     dismissOnClick : () -> Unit
 ) {
@@ -25,12 +25,10 @@ fun LarkAlertDialog(
                 text = title
             )
         },
-        icon = { Icon(icon, contentDescription = title) },
-        text = {
-            Text(
-                text = content,
-            )
+        icon = {
+            Icon(icon, contentDescription = title)
         },
+        text = text,
         confirmButton = {
             TextButton(
                 onClick = confirmOnClick,

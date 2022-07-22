@@ -18,4 +18,6 @@
     <string name="my_name_text">我的名字</string>
     <string name="description_text">描述</string>
     <string name="save_success_test">保存成功</string>
+    <string name="songs_text">首</string>
+    <string name="add_songlist_text">添加歌单</string>
 </resources>
