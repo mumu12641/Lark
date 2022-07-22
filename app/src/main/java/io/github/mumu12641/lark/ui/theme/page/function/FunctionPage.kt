@@ -136,15 +136,6 @@ fun LocalContent(
     localMusic: List<Song>,
     loadLocal: Int
 ){
-//    var show by remember {
-//        mutableStateOf(value = loadLocal != Load.LOADING)
-//    }
-//    AnimatedVisibility(show,
-//        enter = fadeIn() + scaleIn(),
-//        exit = fadeOut() + scaleOut()
-//    ) {
-//        
-//    }
     AnimatedContent(
         targetState = loadLocal,
         transitionSpec =   {

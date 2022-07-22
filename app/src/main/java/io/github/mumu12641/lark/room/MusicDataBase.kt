@@ -12,7 +12,7 @@ import io.github.mumu12641.lark.entity.SongList
 
 @Database(
     entities = [SongList::class, Song::class, PlaylistSongCrossRef::class],
-    version = 13,
+    version = 14,
     exportSchema = true
 )
 abstract class MusicDataBase : RoomDatabase() {
@@ -35,9 +35,9 @@ abstract class MusicDataBase : RoomDatabase() {
             try {
                 if (MMKV.defaultMMKV().decodeInt("first") <= 1) {
                     MMKV.defaultMMKV().encode("first",2)
-                    execSQL("INSERT INTO SongList (songListId,songListTitle,createDate,songNumber,description,imageFileUri) VALUES(1,'Local','2022/7/14',0,'Local Music','Local Image');")
-                    execSQL("INSERT INTO SongList (songListId,songListTitle,createDate,songNumber,description,imageFileUri) VALUES(2,'I like','2022/7/14',0,'Like Music','Like Image');")
-                    execSQL("INSERT INTO SongList (songListId,songListTitle,createDate,songNumber,description,imageFileUri) VALUES(3,'History','2022/7/14',0,'History Music','History Image');")
+                    execSQL("INSERT INTO SongList (songListId,songListTitle,createDate,songNumber,description,imageFileUri,type) VALUES(1,'Local','2022/7/14',0,'Local Music','Local Image',0);")
+                    execSQL("INSERT INTO SongList (songListId,songListTitle,createDate,songNumber,description,imageFileUri,type) VALUES(2,'I like','2022/7/14',0,'Like Music','Like Image',1);")
+                    execSQL("INSERT INTO SongList (songListId,songListTitle,createDate,songNumber,description,imageFileUri,type) VALUES(3,'History','2022/7/14',0,'History Music','History Image',0);")
                     setTransactionSuccessful()
                 }
             } finally {

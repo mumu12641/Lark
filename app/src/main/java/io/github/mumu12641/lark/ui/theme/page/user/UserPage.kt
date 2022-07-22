@@ -6,6 +6,7 @@ import android.graphics.ImageDecoder
 import android.net.Uri
 import android.os.Build
 import android.provider.MediaStore
+import android.util.Log
 import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
@@ -77,27 +78,30 @@ fun UserContent(
     modifier: Modifier,
     viewModel: UserViewModel
 ) {
-    val user by viewModel.userNameState.collectAsState(
-        initial = INIT_USER
-    )
-    var name by remember {
-        mutableStateOf(user.name)
-    }
+    val user by viewModel.userState.collectAsState(initial = INIT_USER)
     val launcherBackground = rememberLauncherForActivityResult(contract =
     ActivityResultContracts.GetContent()) { uri: Uri? ->
-        viewModel.changeBackgroundValue(uri.toString())
+        uri?.let {
+            viewModel.changeBackgroundValue(uri.toString())
+        } ?: INIT_USER.backgroundImageUri?.let {
+            viewModel.changeBackgroundValue(it)
+        }
     }
     val launcherIcon = rememberLauncherForActivityResult(contract =
     ActivityResultContracts.GetContent()) { uri: Uri? ->
-        viewModel.changeIconValue(uri.toString())
+        uri?.let {
+            viewModel.changeIconValue(uri.toString())
+        } ?: INIT_USER.iconImageUri?.let {
+            viewModel.changeIconValue(it)
+        }
     }
+
     Box(
         modifier = modifier.fillMaxSize()
     ){
         Column(
             modifier = Modifier.padding(15.dp)
         ) {
-
             GlideImage(
                 imageModel = user.backgroundImageUri,
                 modifier = Modifier
@@ -156,23 +160,11 @@ fun UserContent(
                     modifier = Modifier
                         .padding(start = 20.dp)
                         .weight(1f),
-                    value = name,
-                    onValueChange = {
-                        viewModel.changeNameValue(it)
-                        name = it
-                                    },
+                    value = user.name,
+                    onValueChange = { viewModel.changeNameValue(it) },
                     label = { Text(stringResource(id = R.string.my_name_text)) }
                 )
             }
-//            OutlinedTextField(
-//                modifier = Modifier
-//                    .padding(top = 20.dp)
-//                    .fillMaxWidth()
-//                    .height(200.dp),
-//                value = description,
-//                onValueChange = {description = it},
-//                label = { Text(stringResource(id = R.string.description_text)) }
-//            )
         }
 
     }

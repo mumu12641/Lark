@@ -6,7 +6,7 @@ Coming Soon		done
 
 User Page			done
 
-Animation
+Animation			Wip
 
 UI Improvement
 

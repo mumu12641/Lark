@@ -1,6 +1,8 @@
 package io.github.mumu12641.lark.ui.theme.page.home
 
+import android.util.Log
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyRow
@@ -8,8 +10,14 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowForward
 import androidx.compose.material.icons.filled.Face
+import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.Home
+import androidx.compose.material.icons.outlined.Favorite
+import androidx.compose.material.icons.rounded.Favorite
+import androidx.compose.material.icons.sharp.Favorite
+import androidx.compose.material.icons.twotone.Favorite
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
@@ -123,26 +131,57 @@ private fun SongListRow(list: List<SongList>) {
     Column(
         modifier = Modifier.fillMaxWidth()
     ) {
-        Text(
-            text = stringResource(id = R.string.songList_text),
-            style = MaterialTheme.typography.titleLarge,
-            fontFamily = FontFamily.Serif
-        )
-        LazyRow(
-            contentPadding = PaddingValues(5.dp)
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            verticalAlignment = Alignment.CenterVertically
         ) {
-            items(list) {
-                Card(
-                    modifier = Modifier.padding(5.dp)
-                ) {
-                    Image(
-                        modifier = Modifier
-                            .size(150.dp)
-                            .clip(RoundedCornerShape(20.dp))
-                            .padding(5.dp),
-                        painter = painterResource(id = R.drawable.favorite),
-                        contentDescription = "Test"
-                    )
+            Text(
+                text = stringResource(id = R.string.songList_text),
+                style = MaterialTheme.typography.titleLarge,
+                fontFamily = FontFamily.Serif,
+                modifier = Modifier.weight(1f)
+            )
+            Icon(Icons.Filled.ArrowForward, contentDescription = "More")
+        }
+
+        Log.d("TAG", "SongListRow: " + list.size)
+        if (list.size == 1 ){
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(150.dp)
+                    .clip(RoundedCornerShape(50.dp))
+                    .background(MaterialTheme.colorScheme.primaryContainer),
+                contentAlignment = Alignment.Center
+            ) {
+                Image(
+                    Icons.Outlined.Favorite,
+                    modifier = Modifier
+                        .size(150.dp)
+                        .fillMaxWidth()
+                        .clip(RoundedCornerShape(40.dp))
+                        .padding(5.dp),
+                    contentDescription = "Test"
+                )
+            }
+
+        } else if (list.size > 1){
+            LazyRow(
+                contentPadding = PaddingValues(5.dp)
+            ) {
+                items(list) {
+                    Card(
+                        modifier = Modifier.padding(5.dp)
+                    ) {
+                        Image(
+                            modifier = Modifier
+                                .size(150.dp)
+                                .clip(RoundedCornerShape(20.dp))
+                                .padding(5.dp),
+                            painter = painterResource(id = R.drawable.favorite),
+                            contentDescription = "Test"
+                        )
+                    }
                 }
             }
         }
@@ -196,20 +235,14 @@ fun WelcomeUser(
             .fillMaxWidth(),
         verticalAlignment = Alignment.CenterVertically
     ) {
-//        Icon(
-//            Icons.Filled.Face, contentDescription = "Face",
-//            modifier = Modifier
-//                .clip(RoundedCornerShape(10.dp))
-//                .size(40.dp)
-//                .clickable {
-//                    navController.navigate(Route.ROUTE_USER)
-//                }
-//        )
         GlideImage(
             imageModel = MMKV.defaultMMKV().decodeString("iconImageUri"),
-            modifier = Modifier.size(40.dp).clip(CircleShape).clickable {
-                navController.navigate(Route.ROUTE_USER)
-            },
+            modifier = Modifier
+                .size(40.dp)
+                .clip(CircleShape)
+                .clickable {
+                    navController.navigate(Route.ROUTE_USER)
+                },
             failure = {
                 Icon(
                     Icons.Filled.Face,
@@ -218,7 +251,7 @@ fun WelcomeUser(
                         .size(40.dp)
                         .clickable {
                             navController.navigate(Route.ROUTE_USER)
-                    }
+                        }
                 )
             }
         )
@@ -244,10 +277,22 @@ fun WelcomeUser(
 @Preview
 @Composable
 fun PreviewTest(){
-    val flow:Flow<List<SongList>> = flow {
-        emit(listOf(SongList(0L,"test","test",0,"test","test")))
-    }
-    HomeScreen(rememberNavController(),flow){
-
-    }
+//    Box(
+//        modifier = Modifier
+//            .fillMaxWidth()
+//            .height(150.dp)
+//            .clip(RoundedCornerShape(50.dp))
+//            .background(MaterialTheme.colorScheme.onSurfaceVariant),
+//        contentAlignment = Alignment.Center
+//    ) {
+//        Image(
+//            Icons.Outlined.Favorite,
+//            modifier = Modifier
+//                .size(150.dp)
+//                .fillMaxWidth()
+//                .clip(RoundedCornerShape(40.dp))
+//                .padding(5.dp),
+//            contentDescription = "Test"
+//        )
+//    }
 }
