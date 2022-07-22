@@ -4,6 +4,7 @@ import android.annotation.SuppressLint
 import android.os.Build
 import android.util.Log
 import androidx.annotation.RequiresApi
+import androidx.compose.animation.*
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
@@ -31,6 +32,7 @@ import io.github.mumu12641.lark.entity.Song
 import io.github.mumu12641.lark.ui.theme.component.LarkAlertDialog
 import io.github.mumu12641.lark.ui.theme.component.LarkTopBar
 import io.github.mumu12641.lark.ui.theme.component.SongItem
+import kotlinx.coroutines.delay
 
 
 @SuppressLint("UnrememberedMutableState")
@@ -126,6 +128,7 @@ fun LocalSetUp(
     }
 }
 
+@OptIn(ExperimentalAnimationApi::class)
 @SuppressLint("UnrememberedMutableState", "CoroutineCreationDuringComposition")
 @Composable
 fun LocalContent(
@@ -133,27 +136,43 @@ fun LocalContent(
     localMusic: List<Song>,
     loadLocal: Int
 ){
-    Log.d("TAG", "LocalContent: $loadLocal")
-    if (loadLocal == Load.LOADING){
-        val composition by rememberLottieComposition(LottieCompositionSpec.RawRes(R.raw.loading))
-        val progress by animateLottieCompositionAsState(
-            composition,
-            iterations = LottieConstants.IterateForever
-        )
-        Box(
-            modifier = modifier.fillMaxSize(),
-            contentAlignment = Alignment.Center
-        ) {
-            LottieAnimation(
-                composition,
-                progress,
-            )
+//    var show by remember {
+//        mutableStateOf(value = loadLocal != Load.LOADING)
+//    }
+//    AnimatedVisibility(show,
+//        enter = fadeIn() + scaleIn(),
+//        exit = fadeOut() + scaleOut()
+//    ) {
+//        
+//    }
+    AnimatedContent(
+        targetState = loadLocal,
+        transitionSpec =   {
+            slideInVertically { height -> height } + fadeIn() with
+                slideOutVertically { height -> -height } + fadeOut()
         }
-    }else {
-        Box(modifier = modifier) {
-            LazyColumn {
-                items(localMusic) { song: Song ->
-                    SongItem(song = song)
+    ) { targetState ->
+        when(targetState){
+            Load.LOADING -> {
+                val composition by rememberLottieComposition(LottieCompositionSpec.RawRes(R.raw.loading))
+                val progress by animateLottieCompositionAsState(
+                    composition,
+                    iterations = LottieConstants.IterateForever
+                )
+                Box(
+                    modifier = modifier.fillMaxSize(),
+                    contentAlignment = Alignment.Center
+                ) {
+                    LottieAnimation(composition, progress)
+                }
+            }
+            else -> {
+                Box(modifier = modifier) {
+                    LazyColumn {
+                        items(localMusic) { song: Song ->
+                            SongItem(song = song)
+                        }
+                    }
                 }
             }
         }
@@ -213,16 +232,5 @@ fun PreviewDialog(){
                 )
             }
         }
-    )
-}
-
-@Preview
-@Composable
-fun PreviewAnimator() {
-    val composition by rememberLottieComposition(LottieCompositionSpec.RawRes(R.raw.loading))
-    val progress by animateLottieCompositionAsState(composition)
-    LottieAnimation(
-        composition,
-        progress,
     )
 }

@@ -2,10 +2,12 @@ Media Session
 
 Add Song List
 
-Coming Soon
+Coming Soon		done
 
-User Page
+User Page			done
 
+Animation
 
+UI Improvement
 
 Artist
