@@ -37,7 +37,9 @@ interface MusicDao {
 
     @Transaction
     @Query("SELECT * FROM SongList WHERE songListId = :songListId")
-    fun querySongListWithSongsBySongListId(songListId:Long):Flow<SongListWithSongs>
+    fun querySongListWithSongsBySongListIdFlow(songListId:Long):Flow<SongListWithSongs>
+    @Query("SELECT * FROM SongList WHERE songListId = :songListId")
+    suspend fun querySongListWithSongsBySongListId(songListId:Long):SongListWithSongs
 
     @Query("SELECT mediaFileUri FROM Song")
     suspend fun queryAllMediaFileUri():List<String>

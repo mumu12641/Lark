@@ -161,7 +161,9 @@ fun LocalContent(
             else -> {
                 Box(modifier = modifier) {
                     LazyColumn {
-                        items(localMusic) { song: Song ->
+                        items(items = localMusic,key = {
+                            it.songId
+                        }) { song: Song ->
                             SongItem(song = song)
                         }
                     }

@@ -20,14 +20,14 @@ import io.github.mumu12641.lark.R
 import io.github.mumu12641.lark.entity.SongList
 
 @Composable
-fun SongListItemCard(songList: SongList) {
+fun SongListItemCard(songList: SongList,modifier: Modifier) {
 
-    val modifier = Modifier
+    val modifierImage = Modifier
         .size(150.dp)
         .clip(RoundedCornerShape(20.dp))
         .padding(5.dp)
 
-    Column(modifier = Modifier.padding(bottom = 10.dp, end = 10.dp)) {
+    Column(modifier = modifier.padding(bottom = 10.dp, end = 10.dp)) {
         Box(
             modifier = Modifier
                 .padding(top = 20.dp)
@@ -37,11 +37,11 @@ fun SongListItemCard(songList: SongList) {
             contentAlignment = Alignment.Center
         ) {
             if (songList.type == 1){
-                SongListPicture(modifier,R.drawable.favorite)
+                SongListPicture(modifierImage,R.drawable.favorite)
             }else {
                 GlideImage(
                     imageModel = songList.imageFileUri,
-                    modifier = modifier,
+                    modifier = modifierImage,
                     loading = {
                         Box(modifier = Modifier.matchParentSize()) {
                             CircularProgressIndicator(

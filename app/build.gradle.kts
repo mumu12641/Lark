@@ -1,3 +1,5 @@
+import android.annotation.SuppressLint
+
 plugins {
     id ("com.android.application")
     id ("org.jetbrains.kotlin.android")
@@ -90,4 +92,8 @@ dependencies {
     implementation("com.google.accompanist:accompanist-permissions:0.24.0-alpha")
     implementation("com.tencent:mmkv:1.2.13")
     implementation("com.airbnb.android:lottie-compose:$lottieVersion")
+
+    implementation ("androidx.media:media:1.6.0")
+    implementation ("com.google.android.exoplayer:exoplayer-core:2.17.1")
+    implementation ("com.google.android.exoplayer:exoplayer-dash:2.17.1")
 }

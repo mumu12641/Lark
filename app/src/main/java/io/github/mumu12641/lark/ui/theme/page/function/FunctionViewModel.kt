@@ -23,7 +23,7 @@ import kotlinx.coroutines.launch
 
 class FunctionViewModel:ViewModel() {
 
-    val localMusicList = DataBaseUtils.querySongListWithSongsBySongListId(LocalSongListId).map {
+    val localMusicList = DataBaseUtils.querySongListWithSongsBySongListIdFlow(LocalSongListId).map {
         it.songs
     }
 

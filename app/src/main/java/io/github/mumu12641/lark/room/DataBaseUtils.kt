@@ -40,7 +40,11 @@ class DataBaseUtils {
             musicDao.insertRef(playlistSongCrossRef)
         }
 
-        fun querySongListWithSongsBySongListId(songListId:Long):Flow<SongListWithSongs>{
+        fun querySongListWithSongsBySongListIdFlow(songListId:Long):Flow<SongListWithSongs>{
+            return musicDao.querySongListWithSongsBySongListIdFlow(songListId)
+        }
+
+        suspend fun querySongListWithSongsBySongListId(songListId:Long):SongListWithSongs{
             return musicDao.querySongListWithSongsBySongListId(songListId)
         }
 

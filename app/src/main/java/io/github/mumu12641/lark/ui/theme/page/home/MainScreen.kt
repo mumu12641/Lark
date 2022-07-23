@@ -30,7 +30,8 @@ fun MainScreen(
         AnimationComposable(
             route = Route.ROUTE_HOME
         ){
-            HomeScreen(navController,flow = mainViewModel.allSongList) {
+            HomeScreen(navController,flow = mainViewModel.allSongList,
+                { mainViewModel.playMedia() }) {
                 mainViewModel.addSongList(it)
             }
         }
