@@ -15,6 +15,11 @@ class DataBaseUtils {
             return musicDao.queryAllSong()
         }
 
+        suspend fun querySongById(songId:Long):Song{
+            return musicDao.querySongById(songId)
+        }
+
+
         suspend fun querySongIdByMediaUri(mediaFileUri:String):Long{
             return musicDao.querySongIdByMediaUri(mediaFileUri)
         }
@@ -26,6 +31,10 @@ class DataBaseUtils {
 
         fun queryAllSongList():Flow<List<SongList>>{
             return musicDao.queryAllSongList()
+        }
+
+        suspend fun querySongListById(songListId: Long):SongList{
+            return musicDao.querySongListById(songListId)
         }
 
         suspend fun insertSongList(songList: SongList){

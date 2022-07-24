@@ -2,14 +2,24 @@ package io.github.mumu12641.lark.service
 
 import android.content.ComponentName
 import android.content.Context
+import android.os.Bundle
 import android.support.v4.media.MediaBrowserCompat
 import android.support.v4.media.MediaMetadataCompat
 import android.support.v4.media.session.MediaControllerCompat
+import android.support.v4.media.session.MediaSessionCompat
 import android.support.v4.media.session.PlaybackStateCompat
 import android.util.Log
+import com.tencent.mmkv.MMKV
+import io.github.mumu12641.lark.entity.Song
+import io.github.mumu12641.lark.room.DataBaseUtils
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.launch
 
 class MediaServiceConnection(context: Context,componentName: ComponentName) {
+
+    private val scope = CoroutineScope(Dispatchers.IO)
 
     private val _isConnected = MutableStateFlow(false)
     val isConnected = _isConnected
@@ -19,6 +29,10 @@ class MediaServiceConnection(context: Context,componentName: ComponentName) {
 
     private val _playMetadata = MutableStateFlow(NOTHING_PLAYING)
     val playMetadata = _playMetadata
+
+    // 播放列表
+    private val _playList = MutableStateFlow(emptyList<Song>())
+    val playList = _playList
 
     val transportControls: MediaControllerCompat.TransportControls
         get() = mediaController.transportControls
@@ -48,6 +62,19 @@ class MediaServiceConnection(context: Context,componentName: ComponentName) {
         override fun onPlaybackStateChanged(state: PlaybackStateCompat?) {
             _playState.value = state ?: EMPTY_PLAYBACK_STATE
         }
+
+        override fun onQueueChanged(queue: MutableList<MediaSessionCompat.QueueItem>?) {
+            super.onQueueChanged(queue)
+            scope.launch {
+                _playList.value = queue?.map {
+                    Log.d(TAG, "onQueueChanged: " + it.queueId)
+                    DataBaseUtils.querySongById(it.queueId)
+                } ?: emptyList()
+                Log.d(TAG, "onQueueChanged: " + _playList.value.toString())
+                transportControls.play()
+            }
+
+        }
     }
 
     private var mBrowserSubscriptionCallback : MediaBrowserCompat.SubscriptionCallback =
@@ -58,12 +85,21 @@ class MediaServiceConnection(context: Context,componentName: ComponentName) {
             }
         }
 
+//    private val initBundle:Bundle get() {
+//        return Bundle().apply {
+//            putLong("lastPlaySongList",MMKV.defaultMMKV().decodeLong("lastPlaySongList"))
+//            putLong("lastPlaySong",MMKV.defaultMMKV().decodeLong("lastPlaySong"))
+//        }
+//    }
+
     private val mediaBrowser : MediaBrowserCompat = MediaBrowserCompat(
         context,
         componentName,
         mediaBrowserConnectionCallback,
         null
-    ).apply { connect() }
+    ).apply {
+        connect()
+    }
 
 
     companion object {

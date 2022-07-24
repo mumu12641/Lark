@@ -25,12 +25,15 @@ interface MusicDao {
 
     @Query("SELECT * FROM Song")
     fun queryAllSong():Flow<List<Song>>
-
+    @Query("SELECT * FROM Song WHERE songId = :songId")
+    suspend fun querySongById(songId:Long):Song
     @Query("SELECT songId FROM Song WHERE mediaFileUri = :mediaFileUri")
     suspend fun querySongIdByMediaUri(mediaFileUri:String):Long
 
     @Query("SELECT * FROM SongList")
     fun queryAllSongList():Flow<List<SongList>>
+    @Query("SELECT * FROM SongList WHERE songListId = :songListId")
+    suspend fun querySongListById(songListId: Long):SongList
 
     @Query("SELECT * FROM playlistsongcrossref")
     fun queryAllRef():List<PlaylistSongCrossRef>

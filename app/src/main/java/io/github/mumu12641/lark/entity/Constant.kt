@@ -22,3 +22,11 @@ object Load{
 const val LocalSongListId = 1L
 const val LikeSongListId = 2L
 const val HistorySongListId = 3L
+
+
+const val CHANGE_PLAY_LIST = "CHANGE_PLAY_LIST"
+
+const val ACTION_PAUSE = "PAUSE"
+const val ACTION_NEXT = "NEXT"
+const val ACTION_PREVIOUS = "PREVIOUS"
+const val ACTION_PLAY = "PLAY"
