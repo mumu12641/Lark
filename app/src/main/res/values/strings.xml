@@ -2,7 +2,7 @@
 <resources>
     <string name="app_name">Lark</string>
     <string name="welcome_text">Welcome</string>
-    <string name="user">沐木木木木</string>
+    <string name="user">Newcomer</string>
     <string name="songList_text">SongList</string>
     <string name="singer_text">Artist</string>
     <string name="history_text">History</string>
@@ -20,4 +20,5 @@
     <string name="save_success_test">Successfully saved</string>
     <string name="songs_text">songs</string>
     <string name="add_songlist_text">Add SongList</string>
+    <string name="song_list_details_text">Playlist Details</string>
 </resources>

@@ -96,4 +96,9 @@ dependencies {
     implementation ("androidx.media:media:1.6.0")
     implementation ("com.google.android.exoplayer:exoplayer-core:2.17.1")
     implementation ("com.google.android.exoplayer:exoplayer-dash:2.17.1")
+
+    implementation ("com.google.accompanist:accompanist-insets:0.24.13-rc")
+    implementation ("com.google.accompanist:accompanist-insets-ui:0.24.13-rc")
+    implementation ("com.google.accompanist:accompanist-systemuicontroller:0.24.13-rc")
+
 }

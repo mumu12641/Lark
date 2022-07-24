@@ -8,6 +8,8 @@ import com.google.accompanist.navigation.animation.AnimatedNavHost
 import com.google.accompanist.navigation.animation.rememberAnimatedNavController
 import io.github.mumu12641.lark.entity.Route
 import io.github.mumu12641.lark.ui.theme.component.AnimationComposable
+import io.github.mumu12641.lark.ui.theme.page.details.SongListDetailsPage
+import io.github.mumu12641.lark.ui.theme.page.details.SongListDetailsViewModel
 import io.github.mumu12641.lark.ui.theme.page.function.FunctionPage
 import io.github.mumu12641.lark.ui.theme.page.function.FunctionViewModel
 import io.github.mumu12641.lark.ui.theme.page.user.UserPage
@@ -68,6 +70,13 @@ fun MainScreen(
             Route.ROUTE_USER
         ){
             UserPage(navController = navController,userViewModel)
+        }
+        AnimationComposable(
+            Route.ROUTE_SONG_LIST_DETAILS + "{songListId}"
+        ){
+            backStackEntry ->
+            backStackEntry.arguments?.getString("songListId")
+                ?.let { SongListDetailsPage(navController,SongListDetailsViewModel(), it) }
         }
     }
 

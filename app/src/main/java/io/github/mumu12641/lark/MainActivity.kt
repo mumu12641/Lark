@@ -8,10 +8,9 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
 import androidx.annotation.RequiresApi
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
-import androidx.compose.ui.Modifier
+import androidx.core.view.WindowCompat
 import io.github.mumu12641.lark.ui.theme.LarkTheme
 import io.github.mumu12641.lark.ui.theme.page.function.FunctionViewModel
 import io.github.mumu12641.lark.ui.theme.page.home.MainScreen
@@ -32,14 +31,13 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         context = this@MainActivity
+        WindowCompat.setDecorFitsSystemWindows(window, false)
         setContent {
             LarkTheme {
-                Surface(
-                    modifier = Modifier.fillMaxSize(),
-                    color = MaterialTheme.colorScheme.background
-                ) {
-                    MainScreen(mainViewModel,functionViewModel,userViewModel)
+                Surface(color = MaterialTheme.colorScheme.background) {
+                    MainScreen(mainViewModel, functionViewModel , userViewModel )
                 }
+
             }
         }
     }

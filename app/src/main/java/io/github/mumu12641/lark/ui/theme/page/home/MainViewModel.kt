@@ -2,7 +2,6 @@ package io.github.mumu12641.lark.ui.theme.page.home
 
 import android.content.ComponentName
 import android.os.Bundle
-import android.support.v4.media.session.PlaybackStateCompat
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import io.github.mumu12641.lark.MainActivity.Companion.context

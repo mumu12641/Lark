@@ -1,6 +1,5 @@
 package io.github.mumu12641.lark.ui.theme.page.home
 
-import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
@@ -82,7 +81,9 @@ fun HomeContent(
     ){
         WelcomeUser(navController)
         FunctionTab(navController)
-        SongListRow(list,addSongList)
+        SongListRow(list,addSongList){
+            navController.navigate(Route.ROUTE_SONG_LIST_DETAILS + it.toString())
+        }
         ArtistRow(list)
     }
 }
@@ -119,11 +120,11 @@ private fun ArtistRow(list: List<SongList>) {
 }
 
 
-@OptIn(ExperimentalFoundationApi::class)
 @Composable
 private fun SongListRow(
     list: List<SongList>,
-    addSongList: (SongList) -> Unit
+    addSongList: (SongList) -> Unit,
+    navigationToDetails:(Long) -> Unit
 ) {
 
     var showDialog by remember {
@@ -142,6 +143,7 @@ private fun SongListRow(
             confirmOnClick = {
                 addSongList(SongList(0L,text,"2022/7/22",0,"test","null",2))
                 showDialog = false
+                text = ""
             },
             dismissOnClick = { showDialog = false },
             content = text,
@@ -173,7 +175,7 @@ private fun SongListRow(
             )
         }
         if (list.size == 1 ){
-            SongListItemCard(list[0],Modifier)
+            SongListItemCard(list[0],navigationToDetails)
         } else if (list.size > 1){
             LazyRow(
                 contentPadding = PaddingValues(5.dp)
@@ -181,19 +183,7 @@ private fun SongListRow(
                 items(list, key =  {
                     it.songListId
                 }) { item ->
-                    SongListItemCard(songList = item,Modifier.animateItemPlacement())
-//                    Card(
-//                        modifier = Modifier.padding(5.dp)
-//                    ) {
-//                        Image(
-//                            modifier = Modifier
-//                                .size(150.dp)
-//                                .clip(RoundedCornerShape(20.dp))
-//                                .padding(5.dp),
-//                            painter = painterResource(id = R.drawable.favorite),
-//                            contentDescription = "Test"
-//                        )
-//                    }
+                    SongListItemCard(songList = item,navigationToDetails)
                 }
             }
         }

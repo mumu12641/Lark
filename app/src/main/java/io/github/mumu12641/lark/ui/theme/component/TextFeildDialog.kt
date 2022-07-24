@@ -1,24 +1,16 @@
 package io.github.mumu12641.lark.ui.theme.component
 
 import androidx.compose.foundation.background
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Close
 import androidx.compose.material3.*
+import androidx.compose.material3.TextFieldDefaults.textFieldColors
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.stringResource
 import io.github.mumu12641.lark.R
-
-//@Preview
-//@Composable
-//fun Test() {
-//    TextFieldDialog(
-//        onDismissRequest = { /*TODO*/ },
-//        title = "Test",
-//        icon = Icons.Default.Notifications,
-//        confirmOnClick = { /*TODO*/ }) {
-//
-//    }
-//}
 
 @Composable
 fun TextFieldDialog(
@@ -41,9 +33,17 @@ fun TextFieldDialog(
 
         text = {
             TextField(
-                modifier = Modifier.background(MaterialTheme.colorScheme.background),
+                modifier = Modifier.background(Color.Transparent),
                 value = content,
                 onValueChange = onValueChange,
+                trailingIcon = {
+                    IconButton(onClick = { onValueChange("") }) {
+                        Icon(Icons.Filled.Close, contentDescription = "close")
+                    }
+                },
+                colors = textFieldColors(
+                    containerColor = Color.Transparent
+                )
             )
         },
         confirmButton = {
