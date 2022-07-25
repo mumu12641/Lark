@@ -62,6 +62,10 @@ class DataBaseUtils {
         }
 
 
+        suspend fun updateSongList(songList: SongList){
+            musicDao.updateSongList(songList)
+        }
+
     }
 
 }

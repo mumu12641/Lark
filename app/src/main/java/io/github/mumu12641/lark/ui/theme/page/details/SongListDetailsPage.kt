@@ -1,7 +1,10 @@
 package io.github.mumu12641.lark.ui.theme.page.details
 
 import android.annotation.SuppressLint
+import android.net.Uri
 import android.util.Log
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -23,6 +26,8 @@ import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.foundation.lazy.items
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.google.accompanist.navigation.animation.rememberAnimatedNavController
@@ -30,6 +35,7 @@ import io.github.mumu12641.lark.R
 import io.github.mumu12641.lark.entity.Song
 import io.github.mumu12641.lark.entity.SongList
 import io.github.mumu12641.lark.ui.theme.component.*
+import io.github.mumu12641.lark.ui.theme.page.user.UserViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @SuppressLint("StateFlowValueCalledInComposition")
@@ -39,7 +45,10 @@ fun SongListDetailsPage(
     viewModel: SongListDetailsViewModel,
     songListId:String
 ) {
-    viewModel.getSongList(songListId.toLong())
+    if (viewModel.songList.value == null){
+        viewModel.getSongList(songListId.toLong())
+
+    }
     Log.d("TAG", "SongListDetailsPage: $songListId " +viewModel.songList.value.toString())
     Box(
         modifier = Modifier.fillMaxSize()
@@ -69,10 +78,12 @@ fun SongListDetailsPage(
             },
             content = {
                 paddingValues ->
-                viewModel.songList.value?.let {
+                viewModel.songList.value?.let { it ->
                     SongListDetailsContent(
                         modifier = Modifier.padding(paddingValues), it
-                    )
+                    ){
+                            uri -> viewModel.changeSongListImage(uri)
+                    }
                 }
             }
         )
@@ -83,8 +94,15 @@ fun SongListDetailsPage(
 @Composable
 fun SongListDetailsContent(
     modifier: Modifier,
-    songList:SongList
+    songList:SongList,
+    changeSongListImage:(String) -> Unit
 ) {
+
+    val launcherBackground = rememberLauncherForActivityResult(contract =
+    ActivityResultContracts.GetContent()) { uri: Uri? ->
+        changeSongListImage(uri.toString())
+    }
+
     Column(
         modifier = modifier.padding(top = 10.dp)
     ) {
@@ -97,12 +115,11 @@ fun SongListDetailsContent(
                     .size(300.dp)
                     .padding(20.dp)
                     .clip(RectangleShape)
-                    .clip(
-                        RoundedCornerShape(50.dp)
-                    )
+                    .clip(RoundedCornerShape(50.dp))
                     .background(MaterialTheme.colorScheme.primaryContainer)
-                    .clickable { },
+                    .clickable { launcherBackground.launch("image/*") },
                 contentAlignment = Alignment.Center,
+
             ){
                 if (songList.type == 1) {
                     SongListPicture(Modifier.size(300.dp), R.drawable.favorite)
@@ -130,40 +147,52 @@ fun SongListDetailsContent(
         )
         Row(modifier = Modifier
             .padding(start = 20.dp, end = 20.dp)
-            .fillMaxWidth()) {
+            .fillMaxWidth(),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
             OutlinedButton(modifier = Modifier.weight(1f),onClick = { /*TODO*/ }) {
-                Row {
+                Row(verticalAlignment = Alignment.CenterVertically) {
                     Icon(Icons.Filled.PlayArrow, contentDescription = "play")
-                    Text(text = "Play all")
+                    Text(text  = stringResource(id = R.string.play_all_text))
                 }
             }
             Spacer(modifier = Modifier.weight(0.25f))
             Button(modifier = Modifier.weight(1f),onClick = { /*TODO*/ }) {
-                Row {
-                    Icon(Icons.Filled.Star, contentDescription = "play")
-                    Text(text = "Shuffle")
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    Icon(painter = painterResource(id = R.drawable.ic_baseline_shuffle_24), contentDescription = "play")
+                    Text(text = stringResource(id = R.string.shuffle_text))
                 }
             }
         }
-        Surface(
-            shape = RoundedCornerShape(topStart = 20.dp, topEnd = 20.dp),
-            modifier = Modifier.fillMaxWidth().background(MaterialTheme.colorScheme.primaryContainer)
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .fillMaxHeight()
+                .padding(top = 20.dp)
+                .clip(RoundedCornerShape(topStart = 20.dp, topEnd = 20.dp))
+                .background(MaterialTheme.colorScheme.primaryContainer),
+            horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            val list = listOf<Song>(
+            val list = listOf(
                 Song(0L,"周杰倫 Jay Chou【最偉大的作品 Greatest Works of Art】Official MV",
                     "周杰倫 Jay Chou","content://media/external/audio/albumart/1345866317463737330",
                     "qw",3000),
                 Song(0L,"周杰倫 - 暗號 (2002 The One 演唱會_TAIPEI)",
                     "周杰倫 Jay Chou","content://media/external/audio/albumart/6668605274195041921",
                     "qw",3000),
+                Song(0L,"周杰倫 - 暗號 (2002 The One 演唱會_TAIPEI)",
+                    "周杰倫 Jay Chou","content://media/external/audio/albumart/6668605274195041921",
+                    "qw",3000),
+                Song(0L,"周杰倫 - 暗號 (2002 The One 演唱會_TAIPEI)",
+                    "周杰倫 Jay Chou","content://media/external/audio/albumart/6668605274195041921",
+                    "qw",3000)
             )
             LazyColumn{
                 items(list){
-                    item ->
-                    SongItem(item)
+                    item -> SongItemRow(item)
                 }
             }
-
+            Text(text = "加载到底啦~", color = MaterialTheme.colorScheme.onSecondary, style = MaterialTheme.typography.bodySmall)
         }
     }
 }
@@ -171,14 +200,23 @@ fun SongListDetailsContent(
 @Preview
 @Composable
 fun PreviewDetail() {
-    Row(modifier = Modifier.size(100.dp),
-    horizontalArrangement = Arrangement.Center) {
-        Text(text = "test")
-        Text(text = "test")
-    }
-    Column(modifier = Modifier.size(100.dp),
-        verticalArrangement = Arrangement.Center) {
-        Text(text = "test")
-        Text(text = "test")
+    Row(modifier = Modifier
+        .padding(start = 20.dp, end = 20.dp)
+        .fillMaxWidth(),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        OutlinedButton(modifier = Modifier.weight(1f),onClick = { /*TODO*/ }) {
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Icon(Icons.Filled.PlayArrow, contentDescription = "play")
+                Text(text = "Play all")
+            }
+        }
+        Spacer(modifier = Modifier.weight(0.25f))
+        Button(modifier = Modifier.weight(1f),onClick = { /*TODO*/ }) {
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Icon(painter = painterResource(id = R.drawable.ic_baseline_shuffle_24), contentDescription = "play")
+                Text(text = "Shuffle")
+            }
+        }
     }
 }

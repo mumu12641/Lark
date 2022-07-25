@@ -101,7 +101,7 @@ fun LocalSetUp(
             Icons.Filled.Notifications,
             {
                 Text(
-                    text = stringResource(id = R.string.get_media_permission_text),
+                    text = stringResource(id = R.string.request_permission_message_text),
                 )
             },
             {
@@ -124,7 +124,7 @@ fun LocalSetUp(
             )
             .request { _, _ -> }
     }
-    if (XXPermissions.isGranted(context,Permission.ACCESS_MEDIA_LOCATION) && !showDialog ){
+    if (XXPermissions.isGranted(context,Permission.READ_EXTERNAL_STORAGE) && !showDialog ){
         LocalContent(modifier = modifier,localMusicList,loadLocal)
     }
 }

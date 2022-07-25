@@ -21,4 +21,6 @@
     <string name="songs_text">songs</string>
     <string name="add_songlist_text">Add SongList</string>
     <string name="song_list_details_text">Playlist Details</string>
+    <string name="play_all_text">Play all</string>
+    <string name="shuffle_text">Shuffle</string>
 </resources>

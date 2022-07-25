@@ -28,9 +28,10 @@ fun SongListItemCard(
     val modifierImage = Modifier
         .size(150.dp)
         .clip(RoundedCornerShape(20.dp))
-        .padding(5.dp)
 
-    Column(modifier = Modifier.padding(bottom = 10.dp, end = 10.dp)) {
+    Column(
+        modifier = Modifier.padding(bottom = 10.dp, end = 10.dp)
+    ) {
         SongListAlbumCard(onClickToNavigate, songList, modifierImage)
         Row(verticalAlignment = Alignment.Bottom) {
             Text(

@@ -149,7 +149,6 @@ class MediaPlaybackService:MediaBrowserServiceCompat() {
                     )
                 )
                 mExoPlayer.addMediaItem(MediaItem.fromUri(i.mediaFileUri))
-
             }
             mExoPlayer.prepare()
             result.sendResult(mediaItems)
