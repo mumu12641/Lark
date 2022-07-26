@@ -4,6 +4,7 @@ import android.os.Build
 import androidx.annotation.RequiresApi
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.runtime.Composable
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.google.accompanist.navigation.animation.AnimatedNavHost
 import com.google.accompanist.navigation.animation.rememberAnimatedNavController
 import io.github.mumu12641.lark.entity.Route
@@ -21,64 +22,75 @@ import io.github.mumu12641.lark.ui.theme.page.user.UserViewModel
 fun MainScreen(
     mainViewModel: MainViewModel,
     functionViewModel: FunctionViewModel,
-    userViewModel: UserViewModel
-){
+    userViewModel: UserViewModel,
+    songListDetailsViewModel: SongListDetailsViewModel
+) {
     val navController = rememberAnimatedNavController()
+
+    val playMedia = { songListId: Long, songId: Long ->
+        MainViewModel.playMedia(songListId, songId)
+    }
 
     AnimatedNavHost(
         navController = navController,
         startDestination = Route.ROUTE_HOME
-    ){
+    ) {
         AnimationComposable(
             route = Route.ROUTE_HOME
-        ){
-            HomeScreen(navController,flow = mainViewModel.allSongList,
-                { mainViewModel.playMedia() }) {
+        ) {
+            HomeScreen(navController, flow = mainViewModel.allSongList) {
                 mainViewModel.addSongList(it)
             }
         }
         AnimationComposable(
             Route.ROUTE_LOCAL
-        ){
+        ) {
             FunctionPage(
                 navController = navController, route = Route.ROUTE_LOCAL,
-                functionViewModel
+                functionViewModel,
+                playMedia
             )
         }
         AnimationComposable(
             Route.ROUTE_CLOUD
-        ){
-            FunctionPage(navController = navController, route = Route.ROUTE_CLOUD,
-                functionViewModel
+        ) {
+            FunctionPage(
+                navController = navController, route = Route.ROUTE_CLOUD,
+                functionViewModel,
+                playMedia
             )
         }
         AnimationComposable(
             Route.ROUTE_DOWNLOAD
-        ){
-            FunctionPage(navController = navController, route = Route.ROUTE_DOWNLOAD,
-                functionViewModel
+        ) {
+            FunctionPage(
+                navController = navController, route = Route.ROUTE_DOWNLOAD,
+                functionViewModel,
+                playMedia
             )
         }
         AnimationComposable(
             Route.ROUTE_HISTORY
-        ){
-            FunctionPage(navController = navController, route = Route.ROUTE_HISTORY,
-                functionViewModel
+        ) {
+            FunctionPage(
+                navController = navController, route = Route.ROUTE_HISTORY,
+                functionViewModel,
+                playMedia
             )
         }
         AnimationComposable(
             Route.ROUTE_USER
-        ){
-            UserPage(navController = navController,userViewModel)
+        ) {
+            UserPage(navController = navController, userViewModel)
         }
         AnimationComposable(
             Route.ROUTE_SONG_LIST_DETAILS + "{songListId}"
-        ){
-            backStackEntry ->
-            backStackEntry.arguments?.getString("songListId")
-                ?.let { SongListDetailsPage(navController,SongListDetailsViewModel(), it) }
+        ) { backStackEntry -> backStackEntry.arguments?.getString("songListId")
+                ?.let {
+                    songListDetailsViewModel.refreshId(it.toLong())
+                    SongListDetailsPage(navController, songListDetailsViewModel,
+                        playMedia)
+                }
         }
     }
-
-
 }

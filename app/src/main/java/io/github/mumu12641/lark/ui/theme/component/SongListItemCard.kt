@@ -67,7 +67,8 @@ fun SongListAlbumCard(
             AsyncImage(
                 modifier = modifier,
                 imageModel = songList.imageFileUri,
-                failure = R.drawable.album)
+                failure = R.drawable.album
+            )
         }
     }
 }

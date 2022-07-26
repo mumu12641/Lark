@@ -2,28 +2,36 @@ package io.github.mumu12641.lark.ui.theme.page.details
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import io.github.mumu12641.lark.entity.Song
 import io.github.mumu12641.lark.entity.SongList
 import io.github.mumu12641.lark.room.DataBaseUtils
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.runBlocking
 
-class SongListDetailsViewModel:ViewModel() {
-    private val _songList = MutableStateFlow<SongList?>(null)
-    val songList = _songList
+class SongListDetailsViewModel : ViewModel() {
 
+    var currentSongListId = 1L
 
-    fun getSongList(songListId:Long) = run {
-        runBlocking (Dispatchers.IO){
-            _songList.value = DataBaseUtils.querySongListById(songListId)
+    var songList: Flow<SongList> = DataBaseUtils.querySongListFlowById(currentSongListId)
+
+    var songs: Flow<List<Song>> =
+        DataBaseUtils.querySongListWithSongsBySongListIdFlow(currentSongListId).map {
+            it.songs
+        }
+
+    fun refreshId(id: Long) {
+        currentSongListId = id
+        songList = DataBaseUtils.querySongListFlowById(id)
+        songs = DataBaseUtils.querySongListWithSongsBySongListIdFlow(id).map {
+            it.songs
         }
     }
 
-    fun changeSongListImage(uri:String){
-        viewModelScope.launch (Dispatchers.IO) {
-            _songList.value?.let {
-                _songList.value = it.copy(imageFileUri = uri)
+    fun changeSongListImage(uri: String) {
+        viewModelScope.launch(Dispatchers.IO) {
+            songList.collect {
                 DataBaseUtils.updateSongList(it.copy(imageFileUri = uri))
             }
         }

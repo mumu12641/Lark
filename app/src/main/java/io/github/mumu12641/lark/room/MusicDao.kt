@@ -28,6 +28,9 @@ interface MusicDao {
 
     @Query("SELECT * FROM SongList")
     fun queryAllSongList():Flow<List<SongList>>
+
+    @Query("SELECT * FROM SongList WHERE songListId = :songListId")
+    fun querySongListFlowById(songListId: Long):Flow<SongList>
     @Query("SELECT * FROM SongList WHERE songListId = :songListId")
     suspend fun querySongListById(songListId: Long):SongList
 

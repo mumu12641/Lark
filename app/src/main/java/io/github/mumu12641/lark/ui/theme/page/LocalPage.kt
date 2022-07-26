@@ -20,7 +20,7 @@ import io.github.mumu12641.lark.ui.theme.component.LarkTopBar
 @Composable
 fun LocalPage(
     navController: NavController
-){
+) {
     Box(
         modifier = Modifier.fillMaxSize()
     ) {
@@ -33,9 +33,9 @@ fun LocalPage(
                     navController.popBackStack()
                 }
             },
-            content = {
-                    paddingValues -> LocalContent(
-                        modifier = Modifier.padding(paddingValues)
+            content = { paddingValues ->
+                LocalContent(
+                    modifier = Modifier.padding(paddingValues)
                 )
             }
         )
@@ -45,12 +45,12 @@ fun LocalPage(
 @Composable
 fun LocalContent(
     modifier: Modifier
-){
+) {
 
 }
 
 @Preview
 @Composable
-fun PreviewLocalPage(){
+fun PreviewLocalPage() {
     LocalPage(navController = rememberNavController())
 }

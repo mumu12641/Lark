@@ -15,7 +15,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
 
-class MediaServiceConnection(context: Context,componentName: ComponentName) {
+class MediaServiceConnection(context: Context, componentName: ComponentName) {
 
     private val scope = CoroutineScope(Dispatchers.IO)
 
@@ -35,28 +35,38 @@ class MediaServiceConnection(context: Context,componentName: ComponentName) {
     val transportControls: MediaControllerCompat.TransportControls
         get() = mediaController.transportControls
 
-    private lateinit var mediaController:MediaControllerCompat
+    private lateinit var mediaController: MediaControllerCompat
 
     private val mediaBrowserConnectionCallback = object : MediaBrowserCompat.ConnectionCallback() {
         override fun onConnected() {
             Log.d("TAG", "onConnected")
             _isConnected.value = true
-            mediaController = MediaControllerCompat(context,mediaBrowser.sessionToken).apply {
+            mediaController = MediaControllerCompat(context, mediaBrowser.sessionToken).apply {
                 registerCallback(controllerCallback)
             }
             mediaBrowser.unsubscribe(mediaBrowser.root)
-            mediaBrowser.subscribe(mediaBrowser.root,mBrowserSubscriptionCallback)
+            mediaBrowser.subscribe(mediaBrowser.root, mBrowserSubscriptionCallback)
         }
-        override fun onConnectionSuspended() { _isConnected.value = false }
-        override fun onConnectionFailed() { _isConnected.value = false }
+
+        override fun onConnectionSuspended() {
+            _isConnected.value = false
+        }
+
+        override fun onConnectionFailed() {
+            _isConnected.value = false
+        }
     }
 
     private var controllerCallback = object : MediaControllerCompat.Callback() {
 
         override fun onMetadataChanged(metadata: MediaMetadataCompat?) {
             _playMetadata.value = metadata ?: NOTHING_PLAYING
-            Log.d(TAG, "onMetadataChanged: "+metadata?.getString(MediaMetadataCompat.METADATA_KEY_TITLE))
+            Log.d(
+                TAG,
+                "onMetadataChanged: " + metadata?.getString(MediaMetadataCompat.METADATA_KEY_TITLE)
+            )
         }
+
         override fun onPlaybackStateChanged(state: PlaybackStateCompat?) {
             _playState.value = state ?: EMPTY_PLAYBACK_STATE
         }
@@ -71,26 +81,21 @@ class MediaServiceConnection(context: Context,componentName: ComponentName) {
                 Log.d(TAG, "onQueueChanged: " + _playList.value.toString())
                 transportControls.play()
             }
-
         }
     }
 
-    private var mBrowserSubscriptionCallback : MediaBrowserCompat.SubscriptionCallback =
+    private var mBrowserSubscriptionCallback: MediaBrowserCompat.SubscriptionCallback =
         object : MediaBrowserCompat.SubscriptionCallback() {
-            override fun onChildrenLoaded(parentId: String, children: MutableList<MediaBrowserCompat.MediaItem>) {
+            override fun onChildrenLoaded(
+                parentId: String,
+                children: MutableList<MediaBrowserCompat.MediaItem>
+            ) {
                 super.onChildrenLoaded(parentId, children)
                 Log.d("TAG", "onChildrenLoaded: $children")
             }
         }
 
-//    private val initBundle:Bundle get() {
-//        return Bundle().apply {
-//            putLong("lastPlaySongList",MMKV.defaultMMKV().decodeLong("lastPlaySongList"))
-//            putLong("lastPlaySong",MMKV.defaultMMKV().decodeLong("lastPlaySong"))
-//        }
-//    }
-
-    private val mediaBrowser : MediaBrowserCompat = MediaBrowserCompat(
+    private val mediaBrowser: MediaBrowserCompat = MediaBrowserCompat(
         context,
         componentName,
         mediaBrowserConnectionCallback,
@@ -111,6 +116,7 @@ class MediaServiceConnection(context: Context,componentName: ComponentName) {
             .putString(MediaMetadataCompat.METADATA_KEY_MEDIA_ID, "")
             .putLong(MediaMetadataCompat.METADATA_KEY_DURATION, 0)
             .build()
+
         @Volatile
         private var instance: MediaServiceConnection? = null
 

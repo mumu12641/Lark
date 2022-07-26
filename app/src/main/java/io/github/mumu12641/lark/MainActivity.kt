@@ -12,6 +12,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.core.view.WindowCompat
 import io.github.mumu12641.lark.ui.theme.LarkTheme
+import io.github.mumu12641.lark.ui.theme.page.details.SongListDetailsViewModel
 import io.github.mumu12641.lark.ui.theme.page.function.FunctionViewModel
 import io.github.mumu12641.lark.ui.theme.page.home.MainScreen
 import io.github.mumu12641.lark.ui.theme.page.home.MainViewModel
@@ -26,6 +27,7 @@ class MainActivity : ComponentActivity() {
     private val mainViewModel by viewModels<MainViewModel>()
     private val functionViewModel by viewModels<FunctionViewModel>()
     private val userViewModel by viewModels<UserViewModel>()
+    private val songListDetailsViewModel by viewModels<SongListDetailsViewModel>()
 
     @RequiresApi(Build.VERSION_CODES.Q)
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -35,7 +37,12 @@ class MainActivity : ComponentActivity() {
         setContent {
             LarkTheme {
                 Surface(color = MaterialTheme.colorScheme.background) {
-                    MainScreen(mainViewModel, functionViewModel , userViewModel )
+                    MainScreen(
+                        mainViewModel,
+                        functionViewModel,
+                        userViewModel,
+                        songListDetailsViewModel
+                    )
                 }
 
             }

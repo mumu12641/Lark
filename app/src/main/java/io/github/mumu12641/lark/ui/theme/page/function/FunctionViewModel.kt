@@ -5,6 +5,10 @@ import android.database.Cursor
 import android.net.Uri
 import android.provider.MediaStore
 import android.util.Log
+import androidx.compose.material.BottomSheetScaffoldState
+import androidx.compose.material.BottomSheetState
+import androidx.compose.material.BottomSheetValue
+import androidx.compose.material.ExperimentalMaterialApi
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import io.github.mumu12641.lark.BaseApplication.Companion.context
@@ -21,21 +25,26 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 
 
-class FunctionViewModel:ViewModel() {
+class FunctionViewModel : ViewModel() {
 
     val localMusicList = DataBaseUtils.querySongListWithSongsBySongListIdFlow(LocalSongListId).map {
         it.songs
     }
 
     private val _loadState = MutableStateFlow(Load.NONE)
-    val loadLocal:StateFlow<Int> = _loadState
+    val loadLocal: StateFlow<Int> = _loadState
+
+    @OptIn(ExperimentalMaterialApi::class)
+    private val _bottomSheetScaffoldState = MutableStateFlow(BottomSheetState(BottomSheetValue.Collapsed))
+    @OptIn(ExperimentalMaterialApi::class)
+    val bottomSheetScaffoldState:StateFlow<BottomSheetState> = _bottomSheetScaffoldState
 
     @SuppressLint("Range", "Recycle")
-    fun reFreshLocalMusicList(){
-        viewModelScope.launch(Dispatchers.IO){
+    fun reFreshLocalMusicList() {
+        viewModelScope.launch(Dispatchers.IO) {
             _loadState.value = Load.LOADING
             Log.d(TAG, "reFreshLocalMusicList: $loadLocal")
-            val allRef : List<PlaylistSongCrossRef> = DataBaseUtils.queryAllRef()
+            val allRef: List<PlaylistSongCrossRef> = DataBaseUtils.queryAllRef()
             val allMediaFileUri = DataBaseUtils.queryAllMediaFileUri()
             val cursor: Cursor? = context.contentResolver.query(
                 MediaStore.Audio.Media.EXTERNAL_CONTENT_URI,
@@ -44,7 +53,7 @@ class FunctionViewModel:ViewModel() {
                 null,
                 MediaStore.Audio.AudioColumns.IS_MUSIC
             )
-            if (cursor != null){
+            if (cursor != null) {
                 while (cursor.moveToNext()) {
                     if (cursor.getInt(cursor.getColumnIndexOrThrow(MediaStore.Audio.Media.DURATION)) > 100 * 1000) {
                         var id = 0L
@@ -56,17 +65,37 @@ class FunctionViewModel:ViewModel() {
                             cursor.getString(cursor.getColumnIndexOrThrow(MediaStore.Audio.Media.DATA)),
                             cursor.getInt(cursor.getColumnIndexOrThrow(MediaStore.Audio.Media.DURATION))
                         )
-                        if (allMediaFileUri.isEmpty() || !allMediaFileUri.contains(song.mediaFileUri)){
+                        if (allMediaFileUri.isEmpty() || !allMediaFileUri.contains(song.mediaFileUri)) {
                             id = DataBaseUtils.insertSong(song)
-                            DataBaseUtils.insertRef(PlaylistSongCrossRef(LocalSongListId,id))
-                        }else{
-                            if (!allRef.contains(PlaylistSongCrossRef(LocalSongListId,DataBaseUtils.querySongIdByMediaUri(song.mediaFileUri)))){
-                                DataBaseUtils.insertRef(PlaylistSongCrossRef(LocalSongListId,DataBaseUtils.querySongIdByMediaUri(song.mediaFileUri)))
+                            DataBaseUtils.insertRef(PlaylistSongCrossRef(LocalSongListId, id))
+                        } else {
+                            if (!allRef.contains(
+                                    PlaylistSongCrossRef(
+                                        LocalSongListId,
+                                        DataBaseUtils.querySongIdByMediaUri(song.mediaFileUri)
+                                    )
+                                )
+                            ) {
+                                DataBaseUtils.insertRef(
+                                    PlaylistSongCrossRef(
+                                        LocalSongListId,
+                                        DataBaseUtils.querySongIdByMediaUri(song.mediaFileUri)
+                                    )
+                                )
                             }
                         }
                     }
                 }
             }
+
+            DataBaseUtils.updateSongList(
+                DataBaseUtils.querySongListById(LocalSongListId).copy(
+                    songNumber = DataBaseUtils.querySongListWithSongsBySongListId(
+                        LocalSongListId
+                    ).songs.size
+                )
+            )
+
             delay(2000)
             _loadState.value = Load.SUCCESS
         }
@@ -78,6 +107,7 @@ class FunctionViewModel:ViewModel() {
 
 
 }
+
 fun getAlbumImageUri(id: Long): Uri {
     val sArtworkUri = Uri.parse("content://media/external/audio/albumart")
     return Uri.withAppendedPath(sArtworkUri, id.toString())

@@ -13,7 +13,7 @@ object Route {
     val ROUTE_SONG_LIST_DETAILS = context.getString(R.string.song_list_details_text)
 }
 
-object Load{
+object Load {
     const val LOADING = 0
     const val SUCCESS = 1
     const val ERROR = 2

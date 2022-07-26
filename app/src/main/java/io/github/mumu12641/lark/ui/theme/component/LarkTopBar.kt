@@ -31,8 +31,10 @@ fun LarkTopBar(
         modifier = Modifier.padding(
             WindowInsets
                 .statusBars
-                .only(WindowInsetsSides.Horizontal
-                        + WindowInsetsSides.Top).asPaddingValues()
+                .only(
+                    WindowInsetsSides.Horizontal
+                            + WindowInsetsSides.Top
+                ).asPaddingValues()
         )
     )
 }

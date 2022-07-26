@@ -11,11 +11,11 @@ import com.google.accompanist.navigation.animation.composable
 
 @OptIn(ExperimentalAnimationApi::class)
 fun NavGraphBuilder.AnimationComposable(
-    route:String,
-    arguments : List<NamedNavArgument> = emptyList(),
+    route: String,
+    arguments: List<NamedNavArgument> = emptyList(),
     deepLinks: List<NavDeepLink> = emptyList(),
     content: @Composable AnimatedVisibilityScope.(NavBackStackEntry) -> Unit
-) = composable (
+) = composable(
     route = route,
     arguments = arguments,
     deepLinks = deepLinks,
@@ -42,4 +42,4 @@ fun NavGraphBuilder.AnimationComposable(
     },
 
 
-)
+    )

@@ -7,62 +7,66 @@ import io.github.mumu12641.lark.entity.SongListWithSongs
 import kotlinx.coroutines.flow.Flow
 
 class DataBaseUtils {
-    companion object{
-        private val DataBase : MusicDataBase = MusicDataBase.getInstance()
-        private val musicDao : MusicDao = DataBase.musicDao
+    companion object {
+        private val DataBase: MusicDataBase = MusicDataBase.getInstance()
+        private val musicDao: MusicDao = DataBase.musicDao
 
         fun queryAllSong(): Flow<List<Song>> {
             return musicDao.queryAllSong()
         }
 
-        suspend fun querySongById(songId:Long):Song{
+        suspend fun querySongById(songId: Long): Song {
             return musicDao.querySongById(songId)
         }
 
 
-        suspend fun querySongIdByMediaUri(mediaFileUri:String):Long{
+        suspend fun querySongIdByMediaUri(mediaFileUri: String): Long {
             return musicDao.querySongIdByMediaUri(mediaFileUri)
         }
 
-        suspend fun insertSong(song: Song):Long{
+        suspend fun insertSong(song: Song): Long {
             return musicDao.insertSong(song)
         }
 
 
-        fun queryAllSongList():Flow<List<SongList>>{
+        fun queryAllSongList(): Flow<List<SongList>> {
             return musicDao.queryAllSongList()
         }
 
-        suspend fun querySongListById(songListId: Long):SongList{
+        fun querySongListFlowById(songListId: Long): Flow<SongList> {
+            return musicDao.querySongListFlowById(songListId)
+        }
+
+        suspend fun querySongListById(songListId: Long): SongList {
             return musicDao.querySongListById(songListId)
         }
 
-        suspend fun insertSongList(songList: SongList){
+        suspend fun insertSongList(songList: SongList) {
             musicDao.insertSongList(songList)
         }
 
-        fun queryAllRef():List<PlaylistSongCrossRef>{
+        fun queryAllRef(): List<PlaylistSongCrossRef> {
             return musicDao.queryAllRef()
         }
 
-        suspend fun insertRef(playlistSongCrossRef: PlaylistSongCrossRef){
+        suspend fun insertRef(playlistSongCrossRef: PlaylistSongCrossRef) {
             musicDao.insertRef(playlistSongCrossRef)
         }
 
-        fun querySongListWithSongsBySongListIdFlow(songListId:Long):Flow<SongListWithSongs>{
+        fun querySongListWithSongsBySongListIdFlow(songListId: Long): Flow<SongListWithSongs> {
             return musicDao.querySongListWithSongsBySongListIdFlow(songListId)
         }
 
-        suspend fun querySongListWithSongsBySongListId(songListId:Long):SongListWithSongs{
+        suspend fun querySongListWithSongsBySongListId(songListId: Long): SongListWithSongs {
             return musicDao.querySongListWithSongsBySongListId(songListId)
         }
 
-        suspend fun queryAllMediaFileUri():List<String>{
+        suspend fun queryAllMediaFileUri(): List<String> {
             return musicDao.queryAllMediaFileUri()
         }
 
 
-        suspend fun updateSongList(songList: SongList){
+        suspend fun updateSongList(songList: SongList) {
             musicDao.updateSongList(songList)
         }
 

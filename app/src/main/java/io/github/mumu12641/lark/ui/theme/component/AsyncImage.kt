@@ -13,9 +13,9 @@ import com.skydoves.landscapist.glide.GlideImage
 @Composable
 fun AsyncImage(
     modifier: Modifier,
-    imageModel:Any?,
-    @DrawableRes failure:Int,
-){
+    imageModel: Any?,
+    @DrawableRes failure: Int,
+) {
     GlideImage(
         imageModel = imageModel,
         modifier = modifier,
@@ -27,7 +27,11 @@ fun AsyncImage(
             }
         },
         failure = {
-            Image(painter = painterResource(id = failure), contentDescription = "failure",modifier = modifier)
+            Image(
+                painter = painterResource(id = failure),
+                contentDescription = "failure",
+                modifier = modifier
+            )
         }
 
     )

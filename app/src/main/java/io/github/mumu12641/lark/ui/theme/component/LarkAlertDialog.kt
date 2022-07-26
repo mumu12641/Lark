@@ -11,12 +11,12 @@ import io.github.mumu12641.lark.R
 
 @Composable
 fun LarkAlertDialog(
-    onDismissRequest : () -> Unit,
-    title:String,
+    onDismissRequest: () -> Unit,
+    title: String,
     icon: ImageVector,
     text: @Composable () -> Unit,
-    confirmOnClick : () -> Unit,
-    dismissOnClick : () -> Unit
+    confirmOnClick: () -> Unit,
+    dismissOnClick: () -> Unit
 ) {
     AlertDialog(
         onDismissRequest = onDismissRequest,

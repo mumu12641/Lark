@@ -39,7 +39,7 @@ fun UserPage(
 ) {
     Box(
         modifier = Modifier.fillMaxSize()
-    ){
+    ) {
         Scaffold(
             topBar = {
                 LarkTopBar(
@@ -49,14 +49,17 @@ fun UserPage(
                     navController.popBackStack()
                 }
             },
-            content = {
-                paddingValues ->
-                    UserContent(modifier = Modifier.padding(paddingValues),viewModel)
+            content = { paddingValues ->
+                UserContent(modifier = Modifier.padding(paddingValues), viewModel)
             },
             floatingActionButton = {
                 FloatingActionButton(onClick = {
                     viewModel.saveInformation()
-                    Toast.makeText(context, context.getString(R.string.save_success_test),Toast.LENGTH_LONG).show()
+                    Toast.makeText(
+                        context,
+                        context.getString(R.string.save_success_test),
+                        Toast.LENGTH_LONG
+                    ).show()
                 }) {
                     Icon(Icons.Filled.Check, contentDescription = "Save")
                 }
@@ -72,16 +75,20 @@ fun UserContent(
     viewModel: UserViewModel
 ) {
     val user by viewModel.userState.collectAsState(initial = INIT_USER)
-    val launcherBackground = rememberLauncherForActivityResult(contract =
-    ActivityResultContracts.GetContent()) { uri: Uri? ->
+    val launcherBackground = rememberLauncherForActivityResult(
+        contract =
+        ActivityResultContracts.GetContent()
+    ) { uri: Uri? ->
         uri?.let {
             viewModel.changeBackgroundValue(uri.toString())
         } ?: INIT_USER.backgroundImageUri?.let {
             viewModel.changeBackgroundValue(it)
         }
     }
-    val launcherIcon = rememberLauncherForActivityResult(contract =
-    ActivityResultContracts.GetContent()) { uri: Uri? ->
+    val launcherIcon = rememberLauncherForActivityResult(
+        contract =
+        ActivityResultContracts.GetContent()
+    ) { uri: Uri? ->
         uri?.let {
             viewModel.changeIconValue(uri.toString())
         } ?: INIT_USER.iconImageUri?.let {
@@ -91,7 +98,7 @@ fun UserContent(
 
     Box(
         modifier = modifier.fillMaxSize()
-    ){
+    ) {
         Column(
             modifier = Modifier.padding(15.dp)
         ) {
@@ -112,7 +119,7 @@ fun UserContent(
                     }
                 },
                 failure = {
-                   GlideImage(imageModel = R.drawable.userbackground,
+                    GlideImage(imageModel = R.drawable.userbackground,
                         modifier = Modifier
                             .fillMaxWidth()
                             .height(200.dp)
@@ -124,10 +131,10 @@ fun UserContent(
 
             )
 
-            Row (
+            Row(
                 modifier = Modifier.padding(top = 20.dp),
                 verticalAlignment = Alignment.CenterVertically
-            ){
+            ) {
                 GlideImage(
                     imageModel = user.iconImageUri,
                     modifier = Modifier
@@ -162,6 +169,7 @@ fun UserContent(
 
     }
 }
+
 @OptIn(ExperimentalAnimationApi::class)
 @Preview
 @Composable
@@ -174,11 +182,15 @@ fun PreviewAnimation() {
             Text("Click")
         }
 
-        AnimatedVisibility (visible,
-            enter = fadeIn()+ scaleIn(),
-            exit = fadeOut() + scaleOut()) {
-            Image(painter = painterResource(id = R.drawable.ornithology),
-                contentDescription = null)
+        AnimatedVisibility(
+            visible,
+            enter = fadeIn() + scaleIn(),
+            exit = fadeOut() + scaleOut()
+        ) {
+            Image(
+                painter = painterResource(id = R.drawable.ornithology),
+                contentDescription = null
+            )
         }
     }
 }

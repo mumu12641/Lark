@@ -35,27 +35,26 @@ import kotlinx.coroutines.flow.Flow
 @Composable
 fun HomeScreen(
     navController: NavController,
-    flow:Flow<List<SongList>>,
-    testPlay: () ->Unit,
+    flow: Flow<List<SongList>>,
     addSongList: (SongList) -> Unit
-){
+) {
 
     val allSongList by flow.collectAsState(initial = listOf())
 
     Box(
         modifier = Modifier.fillMaxSize()
-    ){
+    ) {
         Scaffold(
             topBar = {
                 LarkTopBar(
                     title = stringResource(id = R.string.app_name),
                     Icons.Filled.Home,
-                    testPlay
-                )
-
+                ) {
+                    MainViewModel.playMedia(1L,1L)
+                }
             },
-            content = {
-                paddingValues -> HomeContent(
+            content = { paddingValues ->
+                HomeContent(
                     modifier = Modifier.padding(paddingValues),
                     allSongList,
                     navController,
@@ -68,20 +67,19 @@ fun HomeScreen(
 }
 
 
-
 @Composable
 fun HomeContent(
     modifier: Modifier,
-    list:List<SongList>,
+    list: List<SongList>,
     navController: NavController,
     addSongList: (SongList) -> Unit
-){
+) {
     Column(
         modifier = modifier.padding(horizontal = 10.dp, vertical = 10.dp)
-    ){
+    ) {
         WelcomeUser(navController)
         FunctionTab(navController)
-        SongListRow(list,addSongList){
+        SongListRow(list, addSongList) {
             navController.navigate(Route.ROUTE_SONG_LIST_DETAILS + it.toString())
         }
         ArtistRow(list)
@@ -124,7 +122,7 @@ private fun ArtistRow(list: List<SongList>) {
 private fun SongListRow(
     list: List<SongList>,
     addSongList: (SongList) -> Unit,
-    navigationToDetails:(Long) -> Unit
+    navigationToDetails: (Long) -> Unit
 ) {
 
     var showDialog by remember {
@@ -135,13 +133,13 @@ private fun SongListRow(
         mutableStateOf("")
     }
 
-    if (showDialog){
+    if (showDialog) {
         TextFieldDialog(
             onDismissRequest = { showDialog = false },
             title = stringResource(id = R.string.add_songlist_text),
             icon = Icons.Filled.Add,
             confirmOnClick = {
-                addSongList(SongList(0L,text,"2022/7/22",0,"test","null",2))
+                addSongList(SongList(0L, text, "2022/7/22", 0, "test", "null", 2))
                 showDialog = false
                 text = ""
             },
@@ -174,22 +172,21 @@ private fun SongListRow(
                 }
             )
         }
-        if (list.size == 1 ){
-            SongListItemCard(list[0],navigationToDetails)
-        } else if (list.size > 1){
+        if (list.size == 1) {
+            SongListItemCard(list[0], navigationToDetails)
+        } else if (list.size > 1) {
             LazyRow(
                 contentPadding = PaddingValues(5.dp)
             ) {
-                items(list, key =  {
+                items(list, key = {
                     it.songListId
                 }) { item ->
-                    SongListItemCard(songList = item,navigationToDetails)
+                    SongListItemCard(songList = item, navigationToDetails)
                 }
             }
         }
     }
 }
-
 
 
 @Composable
@@ -206,13 +203,13 @@ private fun FunctionTab(
         CardIcon(
             resourceId = R.drawable.history,
             contentDescription = stringResource(id = R.string.history_text)
-        ){
+        ) {
             navController.navigate(Route.ROUTE_HISTORY)
         }
         CardIcon(
             resourceId = R.drawable.file_icon,
             contentDescription = stringResource(id = R.string.local_text)
-        ){
+        ) {
             navController.navigate(Route.ROUTE_LOCAL)
         }
         CardIcon(
@@ -221,7 +218,8 @@ private fun FunctionTab(
         ) {
             navController.navigate(Route.ROUTE_DOWNLOAD)
         }
-        CardIcon(resourceId = R.drawable.cloud_upload,
+        CardIcon(
+            resourceId = R.drawable.cloud_upload,
             contentDescription = stringResource(id = R.string.cloud_text)
         ) {
             navController.navigate(Route.ROUTE_CLOUD)
@@ -277,8 +275,7 @@ fun WelcomeUser(
 }
 
 
-
 @Preview
 @Composable
-fun PreviewTest(){
+fun PreviewTest() {
 }

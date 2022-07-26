@@ -12,8 +12,8 @@ class BaseApplication : Application() {
         super.onCreate()
         context = applicationContext
         MMKV.initialize(this)
-        if (MMKV.defaultMMKV().decodeInt("first") == 0){
-            MMKV.defaultMMKV().encode("first",1)
+        if (MMKV.defaultMMKV().decodeInt("first") == 0) {
+            MMKV.defaultMMKV().encode("first", 1)
             MMKV.defaultMMKV().encode("userName", context.getString(R.string.user))
         }
     }

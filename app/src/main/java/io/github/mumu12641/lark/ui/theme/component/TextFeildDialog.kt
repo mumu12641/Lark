@@ -14,13 +14,13 @@ import io.github.mumu12641.lark.R
 
 @Composable
 fun TextFieldDialog(
-    onDismissRequest : () -> Unit,
-    title:String,
+    onDismissRequest: () -> Unit,
+    title: String,
     icon: ImageVector,
-    confirmOnClick : () -> Unit,
-    dismissOnClick : () -> Unit,
-    content:String,
-    onValueChange:(String) -> Unit
+    confirmOnClick: () -> Unit,
+    dismissOnClick: () -> Unit,
+    content: String,
+    onValueChange: (String) -> Unit
 ) {
     AlertDialog(
         onDismissRequest = onDismissRequest,

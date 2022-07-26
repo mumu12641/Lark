@@ -9,16 +9,23 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Notifications
 import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.material3.*
+import androidx.compose.material3.FloatingActionButton
+import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.airbnb.lottie.compose.*
 import com.hjq.permissions.Permission
@@ -26,29 +33,46 @@ import com.hjq.permissions.XXPermissions
 import io.github.mumu12641.lark.MainActivity.Companion.context
 import io.github.mumu12641.lark.R
 import io.github.mumu12641.lark.entity.Load
+import io.github.mumu12641.lark.entity.LocalSongListId
 import io.github.mumu12641.lark.entity.Route
 import io.github.mumu12641.lark.entity.Song
 import io.github.mumu12641.lark.ui.theme.component.LarkAlertDialog
 import io.github.mumu12641.lark.ui.theme.component.LarkTopBar
 import io.github.mumu12641.lark.ui.theme.component.SongItem
+import kotlinx.coroutines.launch
 
 
 @SuppressLint("UnrememberedMutableState")
 @RequiresApi(Build.VERSION_CODES.Q)
-@OptIn(ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterialApi::class)
 @Composable
 fun FunctionPage(
     navController: NavController,
-    route:String,
-    viewModel: FunctionViewModel
-){
+    route: String,
+    viewModel: FunctionViewModel,
+    playMedia: (Long, Long) -> Unit
+) {
     val localMusicList by viewModel.localMusicList.collectAsState(initial = emptyList())
     val loadLocal by viewModel.loadLocal.collectAsState(initial = Load.NONE)
+    val scaffoldState by viewModel.bottomSheetScaffoldState.collectAsState(
+        initial = BottomSheetState(
+            BottomSheetValue.Collapsed
+        )
+    )
+    val bottomSheetScaffoldState = rememberBottomSheetScaffoldState(
+        bottomSheetState = scaffoldState
+    )
+    val coroutineScope = rememberCoroutineScope()
 
     Box(
         modifier = Modifier.fillMaxSize()
     ) {
-        Scaffold(
+        BottomSheetScaffold(
+            scaffoldState = bottomSheetScaffoldState,
+            sheetContent = {
+                Text(text = "test")
+            },
+            sheetPeekHeight = 0.dp,
             topBar = {
                 LarkTopBar(
                     title = route,
@@ -57,15 +81,31 @@ fun FunctionPage(
                     navController.popBackStack()
                 }
             },
-            content = when(route) {
-                Route.ROUTE_LOCAL -> { {
-                        paddingValues ->
-                    LocalSetUp(modifier = Modifier.padding(paddingValues),localMusicList,loadLocal)
+            content = when (route) {
+                Route.ROUTE_LOCAL -> {
+                    { paddingValues ->
+                        LocalSetUp(
+                            modifier = Modifier.padding(paddingValues),
+                            localMusicList,
+                            loadLocal,
+                            {
+                                coroutineScope.launch {
+                                    if (viewModel.bottomSheetScaffoldState.value.isCollapsed) {
+                                        bottomSheetScaffoldState.bottomSheetState.expand()
+                                    } else {
+                                        bottomSheetScaffoldState.bottomSheetState.collapse()
+                                    }
+                                }
+                            },
+                            playMedia,
+                        )
                     }
                 }
-                else -> { {
-                    Content(modifier = Modifier.padding(it))
-                } }
+                else -> {
+                    {
+                        Content(modifier = Modifier.padding(it))
+                    }
+                }
             },
             floatingActionButton = {
                 FloatingActionButton(onClick = {
@@ -84,19 +124,22 @@ fun FunctionPage(
 @Composable
 fun LocalSetUp(
     modifier: Modifier,
-    localMusicList:List<Song>,
-    loadLocal:Int
-){
+    localMusicList: List<Song>,
+    loadLocal: Int,
+    showBottomSheet: () -> Unit,
+    playMedia: (Long, Long) -> Unit
+) {
     var showDialog by remember {
         mutableStateOf(
-            value = !XXPermissions.isGranted(context,Permission.ACCESS_MEDIA_LOCATION)
+            value = !XXPermissions.isGranted(context, Permission.ACCESS_MEDIA_LOCATION)
         )
     }
     var request by remember {
         mutableStateOf(false)
     }
     if (showDialog) {
-        LarkAlertDialog({},
+        LarkAlertDialog(
+            {},
             stringResource(id = R.string.get_media_permission_text),
             Icons.Filled.Notifications,
             {
@@ -113,7 +156,7 @@ fun LocalSetUp(
             },
         )
     }
-    if (request){
+    if (request) {
         XXPermissions.with(context)
             .permission(
                 listOf(
@@ -124,8 +167,8 @@ fun LocalSetUp(
             )
             .request { _, _ -> }
     }
-    if (XXPermissions.isGranted(context,Permission.READ_EXTERNAL_STORAGE) && !showDialog ){
-        LocalContent(modifier = modifier,localMusicList,loadLocal)
+    if (XXPermissions.isGranted(context, Permission.READ_EXTERNAL_STORAGE) && !showDialog) {
+        LocalContent(modifier = modifier, localMusicList, loadLocal,showBottomSheet, playMedia)
     }
 }
 
@@ -135,16 +178,18 @@ fun LocalSetUp(
 fun LocalContent(
     modifier: Modifier,
     localMusic: List<Song>,
-    loadLocal: Int
-){
+    loadLocal: Int,
+    showBottomSheet: () -> Unit,
+    playMedia: (Long, Long) -> Unit
+) {
     AnimatedContent(
         targetState = loadLocal,
-        transitionSpec =   {
+        transitionSpec = {
             slideInVertically { height -> height } + fadeIn() with
-                slideOutVertically { height -> -height } + fadeOut()
+                    slideOutVertically { height -> -height } + fadeOut()
         }
     ) { targetState ->
-        when(targetState){
+        when (targetState) {
             Load.LOADING -> {
                 val composition by rememberLottieComposition(LottieCompositionSpec.RawRes(R.raw.loading))
                 val progress by animateLottieCompositionAsState(
@@ -161,10 +206,12 @@ fun LocalContent(
             else -> {
                 Box(modifier = modifier) {
                     LazyColumn {
-                        items(items = localMusic,key = {
+                        items(items = localMusic, key = {
                             it.songId
                         }) { song: Song ->
-                            SongItem(song = song)
+                            SongItem(song = song,showBottomSheet = showBottomSheet) {
+                                playMedia(LocalSongListId, song.songId)
+                            }
                         }
                     }
                 }
@@ -176,10 +223,10 @@ fun LocalContent(
 @Composable
 fun Content(
     modifier: Modifier
-){
+) {
     Box(
         modifier = modifier.fillMaxSize(), contentAlignment = Alignment.Center
-    ){
+    ) {
         Text(
             text = stringResource(id = R.string.coming_soon_text),
             style = MaterialTheme.typography.titleMedium
@@ -189,7 +236,7 @@ fun Content(
 
 @Preview
 @Composable
-fun PreviewDialog(){
+fun PreviewDialog() {
     AlertDialog(
         onDismissRequest = {
 

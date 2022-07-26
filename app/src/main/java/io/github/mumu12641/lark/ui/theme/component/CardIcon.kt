@@ -15,15 +15,15 @@ import androidx.compose.ui.unit.dp
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun CardIcon(
-    resourceId:Int,
-    contentDescription:String,
-    onClick:() -> Unit
-){
+    resourceId: Int,
+    contentDescription: String,
+    onClick: () -> Unit
+) {
     Card(
         modifier = Modifier
             .padding(10.dp)
             .size(width = 60.dp, height = 70.dp)
-            .clickable (onClick = onClick)
+            .clickable(onClick = onClick)
     ) {
         Column(
             modifier = Modifier.fillMaxWidth(),
