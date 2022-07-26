@@ -31,3 +31,7 @@ const val ACTION_PAUSE = "PAUSE"
 const val ACTION_NEXT = "NEXT"
 const val ACTION_PREVIOUS = "PREVIOUS"
 const val ACTION_PLAY = "PLAY"
+
+val INIT_SONG = Song(
+    0L, "最伟大的作品", "周杰伦", "11", "11", 100
+)

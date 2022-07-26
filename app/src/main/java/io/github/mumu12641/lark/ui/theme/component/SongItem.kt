@@ -1,7 +1,5 @@
 package io.github.mumu12641.lark.ui.theme.component
 
-import android.util.Log
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
@@ -9,8 +7,10 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.MoreVert
-import androidx.compose.material3.*
 import androidx.compose.material3.Button
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -22,24 +22,18 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.RectangleShape
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.skydoves.landscapist.glide.LocalGlideRequestBuilder
 import io.github.mumu12641.lark.R
-import io.github.mumu12641.lark.entity.LocalSongListId
-import io.github.mumu12641.lark.entity.PlaylistSongCrossRef
 import io.github.mumu12641.lark.entity.Song
-import io.github.mumu12641.lark.room.DataBaseUtils
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SongItem(
     song: Song,
-    showBottomSheet: () -> Unit,
+    showBottomSheet: (Song) -> Unit,
     onClick: () -> Unit
 ) {
     Card(
@@ -53,12 +47,10 @@ fun SongItem(
     }
 }
 
-@OptIn(ExperimentalMaterialApi::class)
 @Composable
 fun SongItemRow(
-    song: Song, showBottomSheet: () -> Unit, onClick: () -> Unit
+    song: Song, showBottomSheet: (Song) -> Unit, onClick: () -> Unit
 ) {
-    val coroutineScope = rememberCoroutineScope()
     Row(
         verticalAlignment = Alignment.CenterVertically,
         modifier = Modifier
@@ -91,23 +83,7 @@ fun SongItemRow(
             )
             Text(text = song.songSinger, style = MaterialTheme.typography.bodySmall)
         }
-        IconButton(onClick = {
-            showBottomSheet
-//            coroutineScope.launch(Dispatchers.IO) {
-//                if (!DataBaseUtils.queryAllRef().contains(PlaylistSongCrossRef(4L, song.songId))) {
-//                    DataBaseUtils.insertRef(PlaylistSongCrossRef(4L, song.songId))
-//                    DataBaseUtils.updateSongList(
-//                        DataBaseUtils.querySongListById(4L).copy(
-//                            songNumber = DataBaseUtils.querySongListWithSongsBySongListId(
-//                                4L
-//                            ).songs.size
-//                        )
-//                    )
-//                }
-//                DataBaseUtils.updateSongList()
-
-//            }
-        }, Modifier.weight(0.15f)) {
+        IconButton(onClick = { showBottomSheet(song) }, Modifier.weight(0.15f)) {
             Icon(Icons.Filled.MoreVert, contentDescription = "more")
         }
     }
@@ -176,7 +152,6 @@ fun PreviewBottomSheet() {
     ) {
         Button(onClick = {
             coroutineScope.launch {
-
                 if (bottomSheetScaffoldState.bottomSheetState.isCollapsed) {
                     bottomSheetScaffoldState.bottomSheetState.expand()
                 } else {

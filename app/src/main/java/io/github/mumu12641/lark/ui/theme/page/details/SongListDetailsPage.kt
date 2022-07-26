@@ -16,24 +16,24 @@ import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material.icons.filled.PlayArrow
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.RectangleShape
-import androidx.compose.ui.text.font.FontFamily
-import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.runtime.State
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontFamily
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import io.github.mumu12641.lark.R
 import io.github.mumu12641.lark.entity.Song
 import io.github.mumu12641.lark.entity.SongList
-import io.github.mumu12641.lark.ui.theme.component.*
-import io.github.mumu12641.lark.ui.theme.page.home.MainViewModel
+import io.github.mumu12641.lark.ui.theme.component.AsyncImage
+import io.github.mumu12641.lark.ui.theme.component.SongItemRow
+import io.github.mumu12641.lark.ui.theme.component.SongListPicture
 
 @OptIn(ExperimentalMaterial3Api::class)
 @SuppressLint("StateFlowValueCalledInComposition")

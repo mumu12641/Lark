@@ -6,8 +6,6 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.compose.ui.res.stringResource
-import io.github.mumu12641.lark.R
 
 @Composable
 fun LarkAlertDialog(
@@ -16,7 +14,8 @@ fun LarkAlertDialog(
     icon: ImageVector,
     text: @Composable () -> Unit,
     confirmOnClick: () -> Unit,
-    dismissOnClick: () -> Unit
+    confirmText:String,
+    dismissButton: @Composable (() -> Unit)? = null,
 ) {
     AlertDialog(
         onDismissRequest = onDismissRequest,
@@ -33,15 +32,11 @@ fun LarkAlertDialog(
             TextButton(
                 onClick = confirmOnClick,
             ) {
-                Text(stringResource(id = R.string.confirm_text))
+                Text(confirmText)
             }
         },
-        dismissButton = {
-            TextButton(
-                onClick = dismissOnClick
-            ) {
-                Text(stringResource(id = R.string.cancel_text))
-            }
-        }
+        dismissButton = dismissButton
+
     )
 }
+

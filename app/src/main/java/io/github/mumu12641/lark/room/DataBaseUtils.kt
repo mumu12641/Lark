@@ -49,6 +49,10 @@ class DataBaseUtils {
             return musicDao.queryAllRef()
         }
 
+        suspend fun isRefExist(songListId: Long,songId: Long) : Boolean{
+            return musicDao.isRefExist(songListId,songId)
+        }
+
         suspend fun insertRef(playlistSongCrossRef: PlaylistSongCrossRef) {
             musicDao.insertRef(playlistSongCrossRef)
         }

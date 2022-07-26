@@ -5,27 +5,27 @@ import android.database.Cursor
 import android.net.Uri
 import android.provider.MediaStore
 import android.util.Log
-import androidx.compose.material.BottomSheetScaffoldState
-import androidx.compose.material.BottomSheetState
-import androidx.compose.material.BottomSheetValue
-import androidx.compose.material.ExperimentalMaterialApi
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import io.github.mumu12641.lark.BaseApplication.Companion.context
-import io.github.mumu12641.lark.entity.Load
-import io.github.mumu12641.lark.entity.LocalSongListId
-import io.github.mumu12641.lark.entity.PlaylistSongCrossRef
-import io.github.mumu12641.lark.entity.Song
+import io.github.mumu12641.lark.entity.*
 import io.github.mumu12641.lark.room.DataBaseUtils
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 
 
 class FunctionViewModel : ViewModel() {
+
+    val allSongList  = DataBaseUtils.queryAllSongList().map { list ->
+        list.filter { 
+            it.type >0
+        }
+    }
 
     val localMusicList = DataBaseUtils.querySongListWithSongsBySongListIdFlow(LocalSongListId).map {
         it.songs
@@ -34,10 +34,14 @@ class FunctionViewModel : ViewModel() {
     private val _loadState = MutableStateFlow(Load.NONE)
     val loadLocal: StateFlow<Int> = _loadState
 
-    @OptIn(ExperimentalMaterialApi::class)
-    private val _bottomSheetScaffoldState = MutableStateFlow(BottomSheetState(BottomSheetValue.Collapsed))
-    @OptIn(ExperimentalMaterialApi::class)
-    val bottomSheetScaffoldState:StateFlow<BottomSheetState> = _bottomSheetScaffoldState
+    private val _currentShowSong = MutableStateFlow(INIT_SONG)
+    val currentShowSong:StateFlow<Song?> = _currentShowSong
+
+
+    fun changeCurrentShowSong(song: Song){
+        _currentShowSong.value = song
+    }
+
 
     @SuppressLint("Range", "Recycle")
     fun reFreshLocalMusicList() {

@@ -23,4 +23,9 @@
     <string name="song_list_details_text">Playlist Details</string>
     <string name="play_all_text">Play all</string>
     <string name="shuffle_text">Shuffle</string>
+    <string name="add_to_favourite_text">Add to likes</string>
+    <string name="add_to_song_list_text">Add to songlist</string>
+    <string name="add_successful_text">Added successfully</string>
+    <string name="already_added_text">Already added</string>
+    <string name="create_song_Llst_text">Create a new songlist</string>
 </resources>

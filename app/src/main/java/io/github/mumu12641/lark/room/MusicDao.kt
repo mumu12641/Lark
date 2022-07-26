@@ -36,6 +36,8 @@ interface MusicDao {
 
     @Query("SELECT * FROM playlistsongcrossref")
     fun queryAllRef():List<PlaylistSongCrossRef>
+    @Query("SELECT EXISTS(SELECT * FROM playlistsongcrossref WHERE songListId = :songListId AND songId = :songId)")
+    suspend fun isRefExist(songListId: Long,songId: Long) : Boolean
 
     @Transaction
     @Query("SELECT * FROM SongList WHERE songListId = :songListId")
@@ -45,7 +47,6 @@ interface MusicDao {
 
     @Query("SELECT mediaFileUri FROM Song")
     suspend fun queryAllMediaFileUri():List<String>
-
 
 
     @Update

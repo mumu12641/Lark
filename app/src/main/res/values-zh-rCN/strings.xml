@@ -23,4 +23,9 @@
     <string name="song_list_details_text">歌单详情</string>
     <string name="play_all_text">播放全部</string>
     <string name="shuffle_text">随机播放</string>
+    <string name="add_to_favourite_text">添加到喜欢</string>
+    <string name="add_to_song_list_text">添加到歌单</string>
+    <string name="add_successful_text">添加成功</string>
+    <string name="already_added_text">已添加至歌单</string>
+    <string name="create_song_Llst_text">新建歌单</string>
 </resources>
