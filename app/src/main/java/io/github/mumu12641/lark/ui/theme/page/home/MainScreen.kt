@@ -12,6 +12,7 @@ import io.github.mumu12641.lark.ui.theme.page.details.SongListDetailsPage
 import io.github.mumu12641.lark.ui.theme.page.details.SongListDetailsViewModel
 import io.github.mumu12641.lark.ui.theme.page.function.FunctionPage
 import io.github.mumu12641.lark.ui.theme.page.function.FunctionViewModel
+import io.github.mumu12641.lark.ui.theme.page.play.PlayPage
 import io.github.mumu12641.lark.ui.theme.page.user.UserPage
 import io.github.mumu12641.lark.ui.theme.page.user.UserViewModel
 
@@ -99,6 +100,11 @@ fun MainScreen(
                         playMedia
                     )
                 }
+        }
+        AnimationComposable(
+            Route.ROUTE_PLAY_PAGE
+        ){
+            PlayPage(navController = navController, mainViewModel = mainViewModel)
         }
     }
 }

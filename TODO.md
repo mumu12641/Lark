@@ -1,6 +1,6 @@
-Media Session
+Media Session	done
 
-Add Song List
+Add Song List		done
 
 Coming Soon		done
 
@@ -8,7 +8,17 @@ User Page			done
 
 Animation			Wip
 
-UI Improvement
+UI Improvement   always wip
+
+
+
+Play Page
+
+渐变色
+
+自定义主题 
+
+
 
 Artist
 

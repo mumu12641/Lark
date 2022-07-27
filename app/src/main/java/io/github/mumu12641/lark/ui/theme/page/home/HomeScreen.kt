@@ -79,7 +79,9 @@ fun HomeScreen(
                     onClickNext = { mainViewModel.onSkipToNext() },
                     onClickPause = { mainViewModel.onPause() },
                     onClickPlay = { mainViewModel.onPlay() },
-                    onClickPrevious = { mainViewModel.onSkipToPrevious() })
+                    onClickPrevious = { mainViewModel.onSkipToPrevious() }){
+                    navController.navigate(Route.ROUTE_PLAY_PAGE)
+                }
             },
             floatingActionButtonPosition = FabPosition.End
         )

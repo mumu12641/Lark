@@ -11,6 +11,7 @@ object Route {
     val ROUTE_CLOUD = context.getString(R.string.cloud_text)
     val ROUTE_USER = context.getString(R.string.user_message_text)
     val ROUTE_SONG_LIST_DETAILS = context.getString(R.string.song_list_details_text)
+    val ROUTE_PLAY_PAGE = "Play Page"
 }
 
 object Load {

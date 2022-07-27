@@ -27,6 +27,7 @@ fun FloatingPlayMediaButton(
     onClickPlay: () -> Unit,
     onClickPause: () -> Unit,
     onClickNext: () -> Unit,
+    onClickToPlayPage: () -> Unit
 ) {
     var extend by remember { mutableStateOf(false) }
     Row(
@@ -47,7 +48,8 @@ fun FloatingPlayMediaButton(
                 modifier = Modifier
                     .padding(start = 10.dp)
                     .clip(RoundedCornerShape(20.dp))
-                    .background(MaterialTheme.colorScheme.secondaryContainer),
+                    .background(MaterialTheme.colorScheme.secondaryContainer)
+                    .clickable (onClick = onClickToPlayPage),
             ) {
                 Column(Modifier.padding(10.dp)) {
                     Row(
@@ -56,17 +58,10 @@ fun FloatingPlayMediaButton(
                     ) {
                         Text(
                             text = currentMetadata.getString(MediaMetadataCompat.METADATA_KEY_TITLE),
-                            modifier = Modifier.width(100.dp),
+                            modifier = Modifier.width(200.dp),
                             softWrap = false,
                             overflow = TextOverflow.Ellipsis,
                             style = MaterialTheme.typography.labelLarge
-                        )
-                        Text(
-                            text = currentMetadata.getString(MediaMetadataCompat.METADATA_KEY_ARTIST),
-                            modifier = Modifier.width(80.dp),
-                            softWrap = false,
-                            overflow = TextOverflow.Ellipsis,
-                            style = MaterialTheme.typography.labelSmall
                         )
                     }
                     Row {
