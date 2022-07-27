@@ -3,6 +3,7 @@ package io.github.mumu12641.lark.ui.theme.component
 import android.widget.Toast
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
@@ -18,6 +19,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.zIndex
 import io.github.mumu12641.lark.MainActivity.Companion.context
 import io.github.mumu12641.lark.R
 import io.github.mumu12641.lark.entity.INIT_SONG
@@ -38,8 +40,23 @@ fun SongDetailBottomSheet(
     val scope = rememberCoroutineScope()
 
     Column(
-        modifier = Modifier.padding(start = 20.dp, end = 20.dp, bottom = 20.dp, top = 40.dp)
+        modifier = Modifier.padding(start = 20.dp, end = 20.dp, bottom = 20.dp, top = 0.dp)
     ) {
+        Row(
+            modifier = Modifier
+                .padding(bottom = 25.dp, top = 8.dp)
+                .fillMaxWidth(),
+            horizontalArrangement = Arrangement.Center,
+            verticalAlignment = Alignment.CenterVertically,
+        ) {
+            Row(
+                modifier = Modifier
+                    .size(30.dp, 4.dp)
+                    .clip(CircleShape)
+                    .background(MaterialTheme.colorScheme.outline.copy(alpha = 0.2f))
+                    .zIndex(1f)
+            ) {}
+        }
         Text(text = song.songTitle, style = MaterialTheme.typography.titleLarge)
         Text(text = song.songSinger, style = MaterialTheme.typography.titleSmall)
         Row(modifier = Modifier.padding(top = 20.dp)) {
@@ -90,7 +107,8 @@ fun SongDetailBottomSheet(
             Spacer(modifier = Modifier.weight(0.25f))
             Button(
                 modifier = Modifier.weight(1f),
-                onClick =  addToSongList ) {
+                onClick = addToSongList
+            ) {
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     androidx.compose.material3.Icon(
                         Icons.Filled.Add,
@@ -106,13 +124,13 @@ fun SongDetailBottomSheet(
 @Preview(showBackground = true)
 @Composable
 fun PreviewBottomSheetContent() {
-    Box(
-        modifier = Modifier
-            .background(MaterialTheme.colorScheme.secondaryContainer)
-            .clip(
-                RoundedCornerShape(topStart = 10.dp, topEnd = 10.dp)
-            ),
-    ) {
-        SongDetailBottomSheet(song = INIT_SONG){}
-    }
+//    Box(
+//        modifier = Modifier
+//            .background(MaterialTheme.colorScheme.secondaryContainer)
+//            .clip(
+//                RoundedCornerShape(topStart = 10.dp, topEnd = 10.dp)
+//            ),
+//    ) {
+//        SongDetailBottomSheet(song = INIT_SONG) {}
+//    }
 }

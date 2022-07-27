@@ -37,7 +37,13 @@ fun MainScreen(
         AnimationComposable(
             route = Route.ROUTE_HOME
         ) {
-            HomeScreen(navController, flow = mainViewModel.allSongList) {
+            HomeScreen(
+                navController,
+                mainViewModel,
+                metadata = mainViewModel.currentPlayMetadata,
+                playState = mainViewModel.currentPlayState,
+                flow = mainViewModel.allSongList
+            ) {
                 mainViewModel.addSongList(it)
             }
         }
@@ -84,11 +90,14 @@ fun MainScreen(
         }
         AnimationComposable(
             Route.ROUTE_SONG_LIST_DETAILS + "{songListId}"
-        ) { backStackEntry -> backStackEntry.arguments?.getString("songListId")
+        ) { backStackEntry ->
+            backStackEntry.arguments?.getString("songListId")
                 ?.let {
                     songListDetailsViewModel.refreshId(it.toLong())
-                    SongListDetailsPage(navController, songListDetailsViewModel,
-                        playMedia)
+                    SongListDetailsPage(
+                        navController, songListDetailsViewModel,
+                        playMedia
+                    )
                 }
         }
     }

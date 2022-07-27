@@ -2,6 +2,7 @@ package io.github.mumu12641.lark.service
 
 import android.content.ComponentName
 import android.content.Context
+import android.media.MediaMetadata.METADATA_KEY_ARTIST
 import android.support.v4.media.MediaBrowserCompat
 import android.support.v4.media.MediaMetadataCompat
 import android.support.v4.media.session.MediaControllerCompat
@@ -114,7 +115,10 @@ class MediaServiceConnection(context: Context, componentName: ComponentName) {
         @Suppress("PropertyName")
         val NOTHING_PLAYING: MediaMetadataCompat = MediaMetadataCompat.Builder()
             .putString(MediaMetadataCompat.METADATA_KEY_MEDIA_ID, "")
+            .putString(MediaMetadataCompat.METADATA_KEY_ALBUM_ART_URI,"qqq")
+            .putString(MediaMetadataCompat.METADATA_KEY_TITLE,"暂无歌曲播放")
             .putLong(MediaMetadataCompat.METADATA_KEY_DURATION, 0)
+            .putString(METADATA_KEY_ARTIST,"未知艺术家")
             .build()
 
         @Volatile

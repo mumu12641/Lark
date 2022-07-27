@@ -49,22 +49,22 @@ fun SongItem(
 
 @Composable
 fun SongItemRow(
-    song: Song, showBottomSheet: (Song) -> Unit, onClick: () -> Unit
+    song: Song, showBottomSheet: ((Song) -> Unit)?, onClick: () -> Unit
 ) {
     Row(
         verticalAlignment = Alignment.CenterVertically,
         modifier = Modifier
             .fillMaxWidth()
             .height(80.dp)
-            .padding(start = 5.dp, end = 5.dp, top = 5.dp, bottom = 5.dp)
+            .padding( end = 5.dp, top = 5.dp, bottom = 5.dp)
             .background(Color.Transparent)
             .clip(RoundedCornerShape(5.dp))
             .clickable(onClick = onClick)
     ) {
         AsyncImage(
             modifier = Modifier
+                .padding(start = 5.dp)
                 .size(50.dp)
-                .padding(start = 0.dp)
                 .clip(RectangleShape)
                 .clip(RoundedCornerShape(10.dp)),
             imageModel = song.songAlbumFileUri,
@@ -83,8 +83,12 @@ fun SongItemRow(
             )
             Text(text = song.songSinger, style = MaterialTheme.typography.bodySmall)
         }
-        IconButton(onClick = { showBottomSheet(song) }, Modifier.weight(0.15f)) {
-            Icon(Icons.Filled.MoreVert, contentDescription = "more")
+        showBottomSheet?.let {
+            IconButton(onClick = {
+                showBottomSheet(song)
+            }, Modifier.weight(0.15f)) {
+                Icon(Icons.Filled.MoreVert, contentDescription = "more")
+            }
         }
     }
 }

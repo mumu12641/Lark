@@ -11,6 +11,7 @@ import io.github.mumu12641.lark.entity.SongList
 import io.github.mumu12641.lark.room.DataBaseUtils
 import io.github.mumu12641.lark.service.MediaPlaybackService
 import io.github.mumu12641.lark.service.MediaServiceConnection
+import io.github.mumu12641.lark.service.MediaServiceConnection.Companion.EMPTY_PLAYBACK_STATE
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
@@ -37,6 +38,30 @@ class MainViewModel : ViewModel() {
             DataBaseUtils.insertSongList(songList)
         }
     }
+
+    private fun checkPlayState():Boolean = currentPlayState.value != EMPTY_PLAYBACK_STATE
+
+    fun onPlay(){
+        if (checkPlayState()){
+            mediaServiceConnection.transportControls.play()
+        }
+    }
+    fun onPause(){
+        if (checkPlayState()){
+            mediaServiceConnection.transportControls.pause()
+        }
+    }
+    fun onSkipToNext(){
+        if (checkPlayState()){
+            mediaServiceConnection.transportControls.skipToNext()
+        }
+    }
+    fun onSkipToPrevious(){
+        if (checkPlayState()){
+            mediaServiceConnection.transportControls.skipToPrevious()
+        }
+    }
+
 
     companion object{
         private val mediaServiceConnection: MediaServiceConnection = MediaServiceConnection.getInstance(

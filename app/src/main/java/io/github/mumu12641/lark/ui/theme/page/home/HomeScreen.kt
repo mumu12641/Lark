@@ -1,11 +1,15 @@
 package io.github.mumu12641.lark.ui.theme.page.home
 
+import android.support.v4.media.MediaMetadataCompat
+import android.support.v4.media.session.PlaybackStateCompat
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Face
@@ -15,8 +19,10 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontFamily
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
@@ -25,21 +31,26 @@ import com.tencent.mmkv.MMKV
 import io.github.mumu12641.lark.R
 import io.github.mumu12641.lark.entity.Route
 import io.github.mumu12641.lark.entity.SongList
-import io.github.mumu12641.lark.ui.theme.component.CardIcon
-import io.github.mumu12641.lark.ui.theme.component.LarkTopBar
-import io.github.mumu12641.lark.ui.theme.component.SongListItemCard
-import io.github.mumu12641.lark.ui.theme.component.TextFieldDialog
+import io.github.mumu12641.lark.service.MediaServiceConnection.Companion.EMPTY_PLAYBACK_STATE
+import io.github.mumu12641.lark.service.MediaServiceConnection.Companion.NOTHING_PLAYING
+import io.github.mumu12641.lark.ui.theme.component.*
 import kotlinx.coroutines.flow.Flow
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun HomeScreen(
     navController: NavController,
+    mainViewModel: MainViewModel,
+    metadata: Flow<MediaMetadataCompat>,
+    playState: Flow<PlaybackStateCompat>,
     flow: Flow<List<SongList>>,
     addSongList: (SongList) -> Unit
 ) {
 
     val allSongList by flow.collectAsState(initial = listOf())
+    val currentMetadata by metadata.collectAsState(initial = NOTHING_PLAYING)
+    val currentPlayState by playState.collectAsState(initial = EMPTY_PLAYBACK_STATE)
+
 
     Box(
         modifier = Modifier.fillMaxSize()
@@ -50,7 +61,7 @@ fun HomeScreen(
                     title = stringResource(id = R.string.app_name),
                     Icons.Filled.Home,
                 ) {
-                    MainViewModel.playMedia(1L,1L)
+                    MainViewModel.playMedia(1L, 1L)
                 }
             },
             content = { paddingValues ->
@@ -60,7 +71,17 @@ fun HomeScreen(
                     navController,
                     addSongList
                 )
-            }
+            },
+            floatingActionButton = {
+                FloatingPlayMediaButton(
+                    currentMetadata,
+                    currentPlayState,
+                    onClickNext = { mainViewModel.onSkipToNext() },
+                    onClickPause = { mainViewModel.onPause() },
+                    onClickPlay = { mainViewModel.onPlay() },
+                    onClickPrevious = { mainViewModel.onSkipToPrevious() })
+            },
+            floatingActionButtonPosition = FabPosition.End
         )
     }
 
@@ -200,6 +221,19 @@ private fun FunctionTab(
             .padding(vertical = 10.dp),
         horizontalArrangement = Arrangement.SpaceBetween
     ) {
+//        Button(onClick = { navController.navigate(Route.ROUTE_HISTORY) }) {
+//            Row(horizontalArrangement = Arrangement.Center, verticalAlignment = Alignment.CenterVertically, modifier = Modifier.width(100.dp)) {
+//                Icon(modifier = Modifier.size(25.dp),painter = painterResource(id = R.drawable.history), contentDescription = "history")
+//                Text(text = stringResource(id = R.string.history_text), modifier = Modifier.padding(start = 10.dp, end = 10.dp))
+//            }
+//        }
+//        Button(onClick = { navController.navigate(Route.ROUTE_LOCAL) }) {
+//            Row(horizontalArrangement = Arrangement.Center, verticalAlignment = Alignment.CenterVertically,
+//            modifier = Modifier.width(100.dp)) {
+//                Icon(modifier = Modifier.size(25.dp),painter = painterResource(id = R.drawable.file_icon), contentDescription = "local")
+//                Text(text = stringResource(id = R.string.local_text),modifier = Modifier.padding(start = 10.dp, end = 10.dp))
+//            }
+//        }
         CardIcon(
             resourceId = R.drawable.history,
             contentDescription = stringResource(id = R.string.history_text)

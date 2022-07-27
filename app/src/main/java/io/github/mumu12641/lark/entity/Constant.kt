@@ -35,3 +35,12 @@ const val ACTION_PLAY = "PLAY"
 val INIT_SONG = Song(
     0L, "最伟大的作品", "周杰伦", "11", "11", 100
 )
+val INIT_SONG_LIST = SongList(
+    0L,
+    "12",
+    "12",
+    0,
+    "12",
+    "12",
+    2
+)

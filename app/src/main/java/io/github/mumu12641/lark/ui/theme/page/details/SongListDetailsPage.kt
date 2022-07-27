@@ -13,6 +13,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Menu
+import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material.icons.filled.PlayArrow
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
@@ -29,6 +30,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import io.github.mumu12641.lark.R
+import io.github.mumu12641.lark.entity.INIT_SONG_LIST
 import io.github.mumu12641.lark.entity.Song
 import io.github.mumu12641.lark.entity.SongList
 import io.github.mumu12641.lark.ui.theme.component.AsyncImage
@@ -44,15 +46,7 @@ fun SongListDetailsPage(
     playMedia:(Long,Long) -> Unit
 ) {
     val state by viewModel.songList.collectAsState(
-        initial = SongList(
-            0L,
-            "12",
-            "12",
-            0,
-            "12",
-            "12",
-            2
-        )
+        initial = INIT_SONG_LIST
     )
 
     val songs by viewModel.songs.collectAsState(initial = emptyList())
@@ -79,19 +73,12 @@ fun SongListDetailsPage(
                     },
                     actions = {
                         IconButton(onClick = { /*TODO*/ }) {
-                            Icon(Icons.Filled.Menu, contentDescription = "Menu")
+                            Icon(Icons.Filled.MoreVert, contentDescription = "Menu")
                         }
                     }
                 )
             },
             content = { paddingValues ->
-//                viewModel.songList.value?.let { it ->
-//                    SongListDetailsContent(
-//                        modifier = Modifier.padding(paddingValues), it
-//                    ){
-//                            uri -> viewModel.changeSongListImage(uri)
-//                    }
-//                }
                 SongListDetailsContent(
                     modifier = Modifier.padding(paddingValues),
                     songList = state,
@@ -132,20 +119,20 @@ fun SongListDetailsContent(
         ) {
             Box(
                 modifier = Modifier
-                    .size(300.dp)
-                    .padding(20.dp)
+                    .size(350.dp)
+                    .padding(10.dp)
                     .clip(RectangleShape)
-                    .clip(RoundedCornerShape(50.dp))
+                    .clip(RoundedCornerShape(30.dp))
                     .background(MaterialTheme.colorScheme.primaryContainer)
                     .clickable { launcherBackground.launch("image/*") },
                 contentAlignment = Alignment.Center,
 
                 ) {
                 if (songList?.type == 1) {
-                    SongListPicture(Modifier.size(300.dp), R.drawable.favorite)
+                    SongListPicture(Modifier.size(350.dp), R.drawable.favorite)
                 } else {
                     AsyncImage(
-                        modifier = Modifier.size(300.dp),
+                        modifier = Modifier.size(350.dp),
                         imageModel = songList!!.imageFileUri,
                         failure = R.drawable.album
                     )
@@ -172,7 +159,7 @@ fun SongListDetailsContent(
                 .fillMaxWidth(),
             verticalAlignment = Alignment.CenterVertically
         ) {
-            OutlinedButton(modifier = Modifier.weight(1f), onClick = { /*TODO*/ }) {
+            OutlinedButton(modifier = Modifier.weight(1f), onClick = { playMedia(songList.songListId,songs[0].songId) }) {
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     Icon(Icons.Filled.PlayArrow, contentDescription = "play")
                     Text(text = stringResource(id = R.string.play_all_text))
@@ -209,7 +196,7 @@ fun SongListDetailsContent(
             } else {
                 LazyColumn {
                     items(songs) { item ->
-                        SongItemRow(item,{}){
+                        SongItemRow(item,null){
                             playMedia(songList.songListId,item.songId)
                         }
                     }
