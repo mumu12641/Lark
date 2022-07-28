@@ -131,11 +131,3 @@ fun SongListItemRow(
         }
     }
 }
-
-@Preview
-@Composable
-fun PreviewSongListItem() {
-//    SongListItemCard(
-//        songList = SongList(0L,"i like","tody",0,"test","asd",2)
-//    )
-}

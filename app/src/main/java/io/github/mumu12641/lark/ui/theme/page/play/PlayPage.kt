@@ -7,10 +7,9 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
+import androidx.compose.material3.Slider
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.PlayArrow
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -24,6 +23,10 @@ import io.github.mumu12641.lark.service.MediaServiceConnection.Companion.NOTHING
 import io.github.mumu12641.lark.ui.theme.component.AsyncImage
 import io.github.mumu12641.lark.ui.theme.page.home.MainViewModel
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.SliderColors
+import androidx.compose.material3.SliderDefaults
+import androidx.compose.runtime.*
+import androidx.compose.ui.tooling.preview.Preview
 
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
@@ -59,7 +62,12 @@ fun PlayPage(
             PlayPageContent(
                 modifier = Modifier.padding(paddingValues),
                 currentMetadata.value,
-                currentPlayState.value
+                currentPlayState.value,
+                onClickNext = { mainViewModel.onSkipToNext() },
+                onClickPause = { mainViewModel.onPause() },
+                onClickPlay = { mainViewModel.onPlay() },
+                onClickPrevious = { mainViewModel.onSkipToPrevious() },
+                onSeekTo = { mainViewModel.onSeekTo(it) }
             )
         }
     )
@@ -69,15 +77,18 @@ fun PlayPage(
 fun PlayPageContent(
     modifier: Modifier,
     currentMetadata: MediaMetadataCompat,
-    currentPlayState: PlaybackStateCompat
+    currentPlayState: PlaybackStateCompat,
+    onClickPrevious: () -> Unit,
+    onClickPlay: () -> Unit,
+    onClickPause: () -> Unit,
+    onClickNext: () -> Unit,
+    onSeekTo: (Long) -> Unit
 ) {
     Box(modifier = modifier) {
         Column(
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(20.dp),
-//            verticalArrangement = Arrangement.Center,
-//            horizontalAlignment = Alignment.CenterHorizontally
         ) {
             Column(
                 verticalArrangement = Arrangement.Center,
@@ -107,13 +118,16 @@ fun PlayPageContent(
                     modifier = Modifier.padding(top = 20.dp)
                 )
             }
-            Row(modifier = Modifier.padding(top = 20.dp)) {
+            Row(modifier = Modifier.padding(top = 30.dp)) {
                 Box(
                     modifier = Modifier
                         .size(width = 250.dp, height = 75.dp)
                         .clip(RoundedCornerShape(20.dp))
                         .background(MaterialTheme.colorScheme.primaryContainer)
-                        .clickable { },
+                        .clickable(
+                            onClick = if (currentPlayState.state == PlaybackStateCompat.STATE_PLAYING) onClickPause
+                            else onClickPlay
+                        ),
                     contentAlignment = Alignment.Center
                 ) {
                     if (currentPlayState.state == PlaybackStateCompat.STATE_PLAYING) {
@@ -136,7 +150,7 @@ fun PlayPageContent(
                         .size(width = 100.dp, height = 75.dp)
                         .clip(RoundedCornerShape(20.dp))
                         .background(MaterialTheme.colorScheme.secondaryContainer)
-                        .clickable { },
+                        .clickable(onClick = onClickNext),
                     contentAlignment = Alignment.Center
                 ) {
                     Icon(
@@ -146,13 +160,16 @@ fun PlayPageContent(
                     )
                 }
             }
-            Row(modifier = Modifier.padding(top = 20.dp), verticalAlignment = Alignment.CenterVertically) {
+            Row(
+                modifier = Modifier.padding(top = 30.dp),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
                 Box(
                     modifier = Modifier
                         .clip(RoundedCornerShape(20.dp))
                         .size(width = 75.dp, height = 75.dp)
                         .background(MaterialTheme.colorScheme.secondaryContainer)
-                        .clickable { },
+                        .clickable(onClick = onClickPrevious),
                     contentAlignment = Alignment.Center
                 ) {
                     Icon(
@@ -161,24 +178,35 @@ fun PlayPageContent(
                         contentDescription = "previous"
                     )
                 }
-                Slider(value = 1f, onValueChange = {})
+                PlayProgressBar(
+                    modifier = Modifier.padding(start = 5.dp),
+                    progress = currentPlayState.position.toFloat(),
+                    valueRange = 0f..currentMetadata.getLong(MediaMetadataCompat.METADATA_KEY_DURATION)
+                        .toFloat(),
+                    onValueChanged = {
+                        onSeekTo(it.toLong())
+                    },
+                    colors = SliderDefaults.colors(activeTrackColor = MaterialTheme.colorScheme.primaryContainer)
+                )
             }
         }
     }
 }
 
 @Composable
-fun SeekBar(
+fun PlayProgressBar(
     modifier: Modifier = Modifier,
     progress: Float,
-    onValueChanged: (Float) -> Unit
+    valueRange: ClosedFloatingPointRange<Float>,
+    onValueChanged: (Float) -> Unit,
+    colors: SliderColors
 ) {
-    val sliderColors = SliderDefaults.colors(inactiveTrackColor = MaterialTheme.colorScheme.surface)
 
     Slider(
         modifier = modifier,
         value = progress,
+        valueRange = valueRange,
         onValueChange = onValueChanged,
-        colors = sliderColors
+        colors = colors
     )
 }

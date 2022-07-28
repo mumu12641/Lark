@@ -7,6 +7,7 @@ import android.provider.MediaStore
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import dagger.hilt.android.lifecycle.HiltViewModel
 import io.github.mumu12641.lark.BaseApplication.Companion.context
 import io.github.mumu12641.lark.entity.*
 import io.github.mumu12641.lark.room.DataBaseUtils
@@ -17,13 +18,14 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
+@HiltViewModel
+class FunctionViewModel @Inject constructor() : ViewModel() {
 
-class FunctionViewModel : ViewModel() {
-
-    val allSongList  = DataBaseUtils.queryAllSongList().map { list ->
-        list.filter { 
-            it.type >0
+    val allSongList = DataBaseUtils.queryAllSongList().map { list ->
+        list.filter {
+            it.type > 0
         }
     }
 
@@ -35,10 +37,10 @@ class FunctionViewModel : ViewModel() {
     val loadLocal: StateFlow<Int> = _loadState
 
     private val _currentShowSong = MutableStateFlow(INIT_SONG)
-    val currentShowSong:StateFlow<Song?> = _currentShowSong
+    val currentShowSong: StateFlow<Song?> = _currentShowSong
 
 
-    fun changeCurrentShowSong(song: Song){
+    fun changeCurrentShowSong(song: Song) {
         _currentShowSong.value = song
     }
 

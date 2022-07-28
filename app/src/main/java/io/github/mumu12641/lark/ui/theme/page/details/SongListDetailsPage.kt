@@ -210,31 +210,3 @@ fun SongListDetailsContent(
         }
     }
 }
-
-@Preview
-@Composable
-fun PreviewDetail() {
-    Row(
-        modifier = Modifier
-            .padding(start = 20.dp, end = 20.dp)
-            .fillMaxWidth(),
-        verticalAlignment = Alignment.CenterVertically
-    ) {
-        OutlinedButton(modifier = Modifier.weight(1f), onClick = { /*TODO*/ }) {
-            Row(verticalAlignment = Alignment.CenterVertically) {
-                Icon(Icons.Filled.PlayArrow, contentDescription = "play")
-                Text(text = "Play all")
-            }
-        }
-        Spacer(modifier = Modifier.weight(0.25f))
-        Button(modifier = Modifier.weight(1f), onClick = { /*TODO*/ }) {
-            Row(verticalAlignment = Alignment.CenterVertically) {
-                Icon(
-                    painter = painterResource(id = R.drawable.ic_baseline_shuffle_24),
-                    contentDescription = "play"
-                )
-                Text(text = "Shuffle")
-            }
-        }
-    }
-}

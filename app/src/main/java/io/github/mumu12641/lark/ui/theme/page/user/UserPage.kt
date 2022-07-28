@@ -169,28 +169,3 @@ fun UserContent(
 
     }
 }
-
-@OptIn(ExperimentalAnimationApi::class)
-@Preview
-@Composable
-fun PreviewAnimation() {
-
-    var visible by remember { mutableStateOf(true) }
-
-    Column {
-        Button(onClick = { visible = !visible }) {
-            Text("Click")
-        }
-
-        AnimatedVisibility(
-            visible,
-            enter = fadeIn() + scaleIn(),
-            exit = fadeOut() + scaleOut()
-        ) {
-            Image(
-                painter = painterResource(id = R.drawable.ornithology),
-                contentDescription = null
-            )
-        }
-    }
-}

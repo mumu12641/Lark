@@ -19,8 +19,7 @@ fun LarkTopBar(
     MediumTopAppBar(
         title = {
             Text(
-                text = title,
-                fontFamily = FontFamily.Serif
+                text = title
             )
         },
         navigationIcon = {

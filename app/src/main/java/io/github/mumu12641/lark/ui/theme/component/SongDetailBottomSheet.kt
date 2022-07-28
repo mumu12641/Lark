@@ -120,17 +120,3 @@ fun SongDetailBottomSheet(
         }
     }
 }
-
-@Preview(showBackground = true)
-@Composable
-fun PreviewBottomSheetContent() {
-//    Box(
-//        modifier = Modifier
-//            .background(MaterialTheme.colorScheme.secondaryContainer)
-//            .clip(
-//                RoundedCornerShape(topStart = 10.dp, topEnd = 10.dp)
-//            ),
-//    ) {
-//        SongDetailBottomSheet(song = INIT_SONG) {}
-//    }
-}

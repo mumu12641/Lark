@@ -2,9 +2,12 @@ package io.github.mumu12641.lark.ui.theme.page.user
 
 import androidx.lifecycle.ViewModel
 import com.tencent.mmkv.MMKV
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
+import javax.inject.Inject
 
-class UserViewModel : ViewModel() {
+@HiltViewModel
+class UserViewModel @Inject constructor() : ViewModel() {
 
     fun saveInformation() {
         MMKV.defaultMMKV().encode("userName", _userState.value.name)
@@ -39,6 +42,7 @@ class UserViewModel : ViewModel() {
         val iconImageUri: String?,
         val backgroundImageUri: String?
     )
+
 
     companion object {
         var INIT_USER = UserState(

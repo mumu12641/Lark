@@ -310,8 +310,3 @@ fun WelcomeUser(
     }
 }
 
-
-@Preview
-@Composable
-fun PreviewTest() {
-}

@@ -1,15 +1,16 @@
-import android.annotation.SuppressLint
 
 plugins {
     id ("com.android.application")
     id ("org.jetbrains.kotlin.android")
     id("kotlin-kapt")
     id("kotlin-android")
+    id("dagger.hilt.android.plugin")
 }
 
 val composeVersion = "1.2.0-beta03"
 val roomVersion = "2.4.2"
 val navVersion = "2.4.2"
+val hiltVersion ="2.42"
 
 val permissionXVersion = "1.6.4"
 val lottieVersion = "5.2.0"
@@ -82,6 +83,8 @@ dependencies {
     annotationProcessor ("androidx.room:room-compiler:$roomVersion")
     implementation ("androidx.room:room-ktx:$roomVersion")
     kapt("androidx.room:room-compiler:$roomVersion")
+    implementation ("com.google.dagger:hilt-android:$hiltVersion")
+    kapt ("com.google.dagger:hilt-android-compiler:$hiltVersion")
     implementation("androidx.navigation:navigation-compose:$navVersion")
     implementation("com.google.accompanist:accompanist-navigation-animation:0.24.13-rc")
     implementation("io.coil-kt:coil-compose:2.1.0")

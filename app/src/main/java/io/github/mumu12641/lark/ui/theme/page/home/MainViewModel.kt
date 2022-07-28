@@ -5,6 +5,7 @@ import android.os.Bundle
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import dagger.hilt.android.lifecycle.HiltViewModel
 import io.github.mumu12641.lark.MainActivity.Companion.context
 import io.github.mumu12641.lark.entity.CHANGE_PLAY_LIST
 import io.github.mumu12641.lark.entity.SongList
@@ -15,17 +16,14 @@ import io.github.mumu12641.lark.service.MediaServiceConnection.Companion.EMPTY_P
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
-class MainViewModel : ViewModel() {
+@HiltViewModel
+class MainViewModel @Inject constructor() : ViewModel() {
 
     val currentPlayMetadata by lazy { mediaServiceConnection.playMetadata }
 
     val currentPlayState by lazy { mediaServiceConnection.playState }
-
-//    private val mediaServiceConnection: MediaServiceConnection = MediaServiceConnection.getInstance(
-//        context,
-//        ComponentName(context, MediaPlaybackService::class.java)
-//    )
 
     val allSongList = DataBaseUtils.queryAllSongList().map {
         it.filter { songList ->
@@ -61,6 +59,11 @@ class MainViewModel : ViewModel() {
             mediaServiceConnection.transportControls.skipToPrevious()
         }
     }
+    fun onSeekTo(position:Long){
+        if (checkPlayState()){
+            mediaServiceConnection.transportControls.seekTo(position)
+        }
+    }
 
 
     companion object{
@@ -80,16 +83,8 @@ class MainViewModel : ViewModel() {
         }
     }
 
-//    fun playMedia(songListId:Long,songId:Long) {
-//
-//        Log.d("TAG", "playMedia: $songListId + $songId")
-//
-//        val bundle = Bundle()
-//        bundle.apply {
-//            putLong("songListId", songListId)
-//            putLong("songId", songId)
-//        }
-//
-//        mediaServiceConnection.transportControls.sendCustomAction(CHANGE_PLAY_LIST, bundle)
-//    }
+    override fun onCleared() {
+        super.onCleared()
+        mediaServiceConnection.disConnected()
+    }
 }

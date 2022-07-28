@@ -3,6 +3,7 @@ package io.github.mumu12641.lark.ui.theme.page.function
 import android.annotation.SuppressLint
 import android.os.Build
 import android.util.Log
+import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.compose.animation.*
 import androidx.compose.foundation.layout.Box
@@ -38,8 +39,10 @@ import io.github.mumu12641.lark.R
 import io.github.mumu12641.lark.entity.*
 import io.github.mumu12641.lark.room.DataBaseUtils
 import io.github.mumu12641.lark.ui.theme.component.*
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 
 @SuppressLint("UnrememberedMutableState")
@@ -56,19 +59,12 @@ fun FunctionPage(
     val allSongList by viewModel.allSongList.collectAsState(initial = emptyList())
     val loadLocal by viewModel.loadLocal.collectAsState(initial = Load.NONE)
     val currentShowSong by viewModel.currentShowSong.collectAsState(initial = INIT_SONG)
-    val bottomSheetScaffoldState = rememberBottomSheetScaffoldState(
-        bottomSheetState = BottomSheetState(BottomSheetValue.Collapsed)
-    )
+    val bottomSheetScaffoldState =
+        rememberBottomSheetScaffoldState(bottomSheetState = BottomSheetState(BottomSheetValue.Collapsed))
     val coroutineScope = rememberCoroutineScope()
-    var showDialog by remember {
-        mutableStateOf(false)
-    }
-    var showAddDialog by remember {
-        mutableStateOf(false)
-    }
-    var text by remember {
-        mutableStateOf("")
-    }
+    var showDialog by remember { mutableStateOf(false) }
+    var showAddDialog by remember { mutableStateOf(false) }
+    var text by remember { mutableStateOf("") }
 
     Box(
         modifier = Modifier.fillMaxSize()
@@ -95,54 +91,19 @@ fun FunctionPage(
                 Route.ROUTE_LOCAL -> {
                     { paddingValues ->
                         if (showDialog) {
-                            LarkAlertDialog(
-                                onDismissRequest = { showDialog = false },
-                                title = stringResource(id = R.string.add_to_song_list_text),
-                                icon = Icons.Filled.Add,
-                                text = {
-                                       LazyColumn{
-                                           items(items = allSongList, key = {
-                                               it.songListId
-                                           }){
-                                               item: SongList -> SongListItemRow(item){
-                                           }
-                                           }
-                                       }
-                                },
-                                confirmOnClick = {
-                                    showDialog = false
-                                    showAddDialog = true
-                                },
-                                confirmText = stringResource(id = R.string.create_song_Llst_text)
+                            AddToSongListDialog(
+                                allSongList,
+                                coroutineScope,
+                                viewModel,
+                                showAddDialogFunction = { showAddDialog = it },
+                                showDialogFunction = { showDialog = it }
                             )
                         } else if (showAddDialog) {
-                            TextFieldDialog(
-                                onDismissRequest = { showAddDialog = false },
-                                title = stringResource(id = R.string.add_songlist_text),
-                                icon = Icons.Filled.Add,
-                                confirmOnClick = {
-                                    coroutineScope.launch(Dispatchers.IO) {
-                                        DataBaseUtils.insertSongList(
-                                            SongList(
-                                                0L,
-                                                text,
-                                                "2022/7/22",
-                                                0,
-                                                "test",
-                                                "null",
-                                                2
-                                            )
-                                        )
-                                    }
-                                    showAddDialog = false
-                                    text = ""
-                                },
-                                dismissOnClick = { showAddDialog = false },
-                                content = text,
-                                onValueChange = {
-                                    text = it
-                                }
-                            )
+                            CreateSongListDialog(
+                                coroutineScope,
+                                text,
+                                showAddDialogFunction = { showAddDialog = it },
+                                changeText = { text = it })
                         }
 
                         LocalSetUp(
@@ -151,10 +112,6 @@ fun FunctionPage(
                             loadLocal,
                             { song ->
                                 viewModel.changeCurrentShowSong(song)
-                                Log.d(
-                                    "TAG",
-                                    "FunctionPage: " + bottomSheetScaffoldState.bottomSheetState.isCollapsed
-                                )
                                 coroutineScope.launch {
                                     if (bottomSheetScaffoldState.bottomSheetState.isCollapsed) {
                                         bottomSheetScaffoldState.bottomSheetState.expand()
@@ -165,7 +122,6 @@ fun FunctionPage(
                             },
                             playMedia,
                         )
-//
                     }
                 }
                 else -> {
@@ -183,6 +139,101 @@ fun FunctionPage(
             }
         )
     }
+}
+
+@Composable
+private fun CreateSongListDialog(
+    coroutineScope: CoroutineScope,
+    text: String,
+    showAddDialogFunction: (Boolean) -> Unit,
+    changeText: (String) -> Unit
+) {
+    TextFieldDialog(
+        onDismissRequest = { showAddDialogFunction(false) },
+        title = stringResource(id = R.string.add_songlist_text),
+        icon = Icons.Filled.Add,
+        confirmOnClick = {
+            coroutineScope.launch(Dispatchers.IO) {
+                DataBaseUtils.insertSongList(
+                    SongList(
+                        0L,
+                        text,
+                        "2022/7/22",
+                        0,
+                        "test",
+                        "null",
+                        2
+                    )
+                )
+            }
+            showAddDialogFunction(false)
+            changeText("")
+        },
+        dismissOnClick = { showAddDialogFunction(false) },
+        content = text,
+        onValueChange = {
+            changeText(it)
+        }
+    )
+}
+
+@Composable
+private fun AddToSongListDialog(
+    allSongList: List<SongList>,
+    coroutineScope: CoroutineScope,
+    viewModel: FunctionViewModel,
+    showDialogFunction: (Boolean) -> Unit,
+    showAddDialogFunction: (Boolean) -> Unit
+) {
+    LarkAlertDialog(
+        onDismissRequest = { showDialogFunction(false) },
+        title = stringResource(id = R.string.add_to_song_list_text),
+        icon = Icons.Filled.Add,
+        text = {
+            LazyColumn {
+                items(items = allSongList, key = {
+                    it.songListId
+                }) { item: SongList ->
+                    SongListItemRow(item) {
+                        coroutineScope.launch(Dispatchers.IO) {
+                            if (!DataBaseUtils.isRefExist(
+                                    item.songListId,
+                                    viewModel.currentShowSong.value!!.songId
+                                )
+                            ) {
+                                DataBaseUtils.insertRef(
+                                    PlaylistSongCrossRef(
+                                        item.songListId,
+                                        viewModel.currentShowSong.value!!.songId
+                                    )
+                                )
+                                withContext(Dispatchers.Main) {
+                                    Toast.makeText(
+                                        context,
+                                        context.getString(R.string.add_successful_text),
+                                        Toast.LENGTH_LONG
+                                    ).show()
+                                }
+                            } else {
+                                withContext(Dispatchers.Main) {
+                                    Toast.makeText(
+                                        context,
+                                        context.getString(R.string.already_added_text),
+                                        Toast.LENGTH_LONG
+                                    ).show()
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        confirmOnClick = {
+            showDialogFunction(false)
+            showAddDialogFunction(true)
+        },
+        confirmText = stringResource(id = R.string.create_song_Llst_text)
+    )
 }
 
 
@@ -306,46 +357,4 @@ fun Content(
             style = MaterialTheme.typography.titleMedium
         )
     }
-}
-
-@Preview
-@Composable
-fun PreviewDialog() {
-    AlertDialog(
-        onDismissRequest = {
-
-        },
-        title = {
-            Text(
-                text = stringResource(id = R.string.get_media_permission_text)
-            )
-        },
-        icon = { Icon(Icons.Filled.Notifications, contentDescription = null) },
-        text = {
-            Text(
-                text = "Lark will read your phone's media, please allow it!",
-            )
-        },
-        confirmButton = {
-            TextButton(
-                onClick = {
-
-                },
-            ) {
-                Text(
-                    stringResource(id = R.string.confirm_text)
-                )
-            }
-        },
-        dismissButton = {
-            TextButton(
-                onClick = {
-                }
-            ) {
-                Text(
-                    stringResource(id = R.string.cancel_text),
-                )
-            }
-        }
-    )
 }

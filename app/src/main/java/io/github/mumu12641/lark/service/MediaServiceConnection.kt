@@ -13,12 +13,14 @@ import io.github.mumu12641.lark.entity.Song
 import io.github.mumu12641.lark.room.DataBaseUtils
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
 
 class MediaServiceConnection(context: Context, componentName: ComponentName) {
 
-    private val scope = CoroutineScope(Dispatchers.IO)
+    private val job = Job()
+    private val scope = CoroutineScope(job + Dispatchers.IO)
 
     private val _isConnected = MutableStateFlow(false)
     val isConnected = _isConnected
@@ -38,6 +40,8 @@ class MediaServiceConnection(context: Context, componentName: ComponentName) {
 
     private lateinit var mediaController: MediaControllerCompat
 
+
+
     private val mediaBrowserConnectionCallback = object : MediaBrowserCompat.ConnectionCallback() {
         override fun onConnected() {
             Log.d("TAG", "onConnected")
@@ -47,6 +51,9 @@ class MediaServiceConnection(context: Context, componentName: ComponentName) {
             }
             mediaBrowser.unsubscribe(mediaBrowser.root)
             mediaBrowser.subscribe(mediaBrowser.root, mBrowserSubscriptionCallback)
+            scope.launch {
+                upProgress()
+            }
         }
 
         override fun onConnectionSuspended() {
@@ -105,6 +112,21 @@ class MediaServiceConnection(context: Context, componentName: ComponentName) {
         connect()
     }
 
+    fun disConnected(){
+        if (mediaBrowser.isConnected){
+            mediaController.unregisterCallback(controllerCallback)
+            mediaBrowser.disconnect()
+            job.cancel()
+        }
+    }
+
+    private fun upProgress(){
+        while (job.isActive){
+            if (mediaController.playbackState.state == PlaybackStateCompat.STATE_PLAYING){
+                _playState.value = mediaController.playbackState
+            }
+        }
+    }
 
     companion object {
         @Suppress("PropertyName")
