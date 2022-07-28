@@ -18,6 +18,8 @@ Play Page
 
 自定义主题 
 
+切换深色模式bug
+
 
 
 Artist

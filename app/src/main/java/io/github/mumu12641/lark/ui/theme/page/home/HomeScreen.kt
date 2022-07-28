@@ -60,9 +60,7 @@ fun HomeScreen(
                 LarkTopBar(
                     title = stringResource(id = R.string.app_name),
                     Icons.Filled.Home,
-                ) {
-                    MainViewModel.playMedia(1L, 1L)
-                }
+                ) {}
             },
             content = { paddingValues ->
                 HomeContent(

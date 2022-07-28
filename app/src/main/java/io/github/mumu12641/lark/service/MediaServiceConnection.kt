@@ -108,12 +108,19 @@ class MediaServiceConnection(context: Context, componentName: ComponentName) {
                 super.onChildrenLoaded(parentId, children)
                 Log.d("TAG", "onChildrenLoaded: $children")
                 scope.launch {
-                    _currentSongList.value = DataBaseUtils.querySongListById(
-                        MMKV.defaultMMKV().decodeLong("lastPlaySongList")
-                    )
-                    _playList.value = DataBaseUtils.querySongListWithSongsBySongListId(
-                        MMKV.defaultMMKV().decodeLong("lastPlaySongList")
-                    ).songs
+                    if (MMKV.defaultMMKV().decodeLong("lastPlaySongList") == 0L || MMKV.defaultMMKV()
+                            .decodeLong("lastPlaySong") == 0L
+                    ) {
+                        _playList.value = emptyList<Song>().toMutableList()
+                        _currentSongList.value = INIT_SONG_LIST
+                    }else {
+                        _currentSongList.value = DataBaseUtils.querySongListById(
+                            MMKV.defaultMMKV().decodeLong("lastPlaySongList")
+                        )
+                        _playList.value = DataBaseUtils.querySongListWithSongsBySongListId(
+                            MMKV.defaultMMKV().decodeLong("lastPlaySongList")
+                        ).songs
+                    }
                 }
                 if (children.size > 0) {
                     transportControls.play()

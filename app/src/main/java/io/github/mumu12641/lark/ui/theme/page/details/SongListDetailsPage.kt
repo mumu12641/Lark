@@ -43,7 +43,7 @@ import io.github.mumu12641.lark.ui.theme.component.SongListPicture
 fun SongListDetailsPage(
     navController: NavController,
     viewModel: SongListDetailsViewModel,
-    playMedia:(Long,Long) -> Unit
+    playMedia: (Long, Long) -> Unit
 ) {
     val state by viewModel.songList.collectAsState(
         initial = INIT_SONG_LIST
@@ -85,7 +85,8 @@ fun SongListDetailsPage(
                     songs = songs,
                     changeSongListImage = { uri ->
                         viewModel.changeSongListImage(uri)
-                    },playMedia = playMedia)
+                    }, playMedia = playMedia
+                )
             }
         )
     }
@@ -159,7 +160,9 @@ fun SongListDetailsContent(
                 .fillMaxWidth(),
             verticalAlignment = Alignment.CenterVertically
         ) {
-            OutlinedButton(modifier = Modifier.weight(1f), onClick = { playMedia(songList.songListId,songs[0].songId) }) {
+            OutlinedButton(
+                modifier = Modifier.weight(1f),
+                onClick = { playMedia(songList.songListId, songs[0].songId) }) {
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     Icon(Icons.Filled.PlayArrow, contentDescription = "play")
                     Text(text = stringResource(id = R.string.play_all_text))
@@ -176,7 +179,7 @@ fun SongListDetailsContent(
                 }
             }
         }
-        ShowSongs(songs, modifier,20, playMedia, songList)
+        ShowSongs(songs, modifier, 20, playMedia, songList)
     }
 }
 
@@ -184,7 +187,7 @@ fun SongListDetailsContent(
 fun ShowSongs(
     songs: List<Song>,
     modifier: Modifier,
-    top:Int,
+    top: Int,
     playMedia: (Long, Long) -> Unit,
     songList: SongList
 ) {
@@ -220,4 +223,5 @@ fun ShowSongs(
             )
         }
     }
+
 }

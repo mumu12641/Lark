@@ -127,8 +127,10 @@ class MediaPlaybackService : MediaBrowserServiceCompat() {
 
     override fun onDestroy() {
         super.onDestroy()
+        Log.d(TAG, "onDestroy: ")
         mExoPlayer.release()
         scope.cancel()
+        unregisterReceiver(mReceiver)
     }
 
     override fun onGetRoot(

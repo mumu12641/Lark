@@ -6,6 +6,8 @@ import android.util.Log
 import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.compose.animation.*
+import androidx.compose.foundation.background
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
@@ -27,11 +29,14 @@ import androidx.compose.material3.TextButton
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.modifier.modifierLocalOf
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.airbnb.lottie.compose.*
+import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import com.hjq.permissions.Permission
 import com.hjq.permissions.XXPermissions
 import io.github.mumu12641.lark.MainActivity.Companion.context
@@ -65,11 +70,11 @@ fun FunctionPage(
     var showDialog by remember { mutableStateOf(false) }
     var showAddDialog by remember { mutableStateOf(false) }
     var text by remember { mutableStateOf("") }
-
     Box(
         modifier = Modifier.fillMaxSize()
     ) {
         BottomSheetScaffold(
+            modifier = Modifier.background(MaterialTheme.colorScheme.background),
             scaffoldState = bottomSheetScaffoldState,
             sheetContent = {
                 SongDetailBottomSheet(song = currentShowSong!!) {
@@ -295,6 +300,11 @@ fun LocalSetUp(
     if (XXPermissions.isGranted(context, Permission.READ_EXTERNAL_STORAGE) && !showDialog) {
         LocalContent(modifier = modifier, localMusicList, loadLocal, showBottomSheet, playMedia)
     }
+    Box(
+        modifier = modifier.fillMaxSize(), contentAlignment = Alignment.Center
+    ) {
+
+    }
 }
 
 @OptIn(ExperimentalAnimationApi::class)
@@ -308,6 +318,7 @@ fun LocalContent(
     playMedia: (Long, Long) -> Unit
 ) {
     AnimatedContent(
+        modifier = Modifier.fillMaxSize().background(MaterialTheme.colorScheme.background),
         targetState = loadLocal,
         transitionSpec = {
             slideInVertically { height -> height } + fadeIn() with
@@ -350,7 +361,7 @@ fun Content(
     modifier: Modifier
 ) {
     Box(
-        modifier = modifier.fillMaxSize(), contentAlignment = Alignment.Center
+        modifier = modifier.fillMaxSize().background(MaterialTheme.colorScheme.background), contentAlignment = Alignment.Center
     ) {
         Text(
             text = stringResource(id = R.string.coming_soon_text),

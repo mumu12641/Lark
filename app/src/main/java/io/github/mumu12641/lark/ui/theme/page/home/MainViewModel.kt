@@ -6,7 +6,7 @@ import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
-import io.github.mumu12641.lark.MainActivity.Companion.context
+import io.github.mumu12641.lark.BaseApplication.Companion.context
 import io.github.mumu12641.lark.entity.CHANGE_PLAY_LIST
 import io.github.mumu12641.lark.entity.SongList
 import io.github.mumu12641.lark.room.DataBaseUtils
@@ -89,6 +89,7 @@ class MainViewModel @Inject constructor() : ViewModel() {
 
     override fun onCleared() {
         super.onCleared()
+        Log.d("TAG", "onCleared: ")
         mediaServiceConnection.disConnected()
     }
 }

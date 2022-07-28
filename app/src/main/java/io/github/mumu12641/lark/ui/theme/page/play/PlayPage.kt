@@ -5,12 +5,17 @@ import android.support.v4.media.session.PlaybackStateCompat
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
-import androidx.compose.material3.Slider
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.PlayArrow
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Slider
+import androidx.compose.material3.SliderColors
+import androidx.compose.material3.SliderDefaults
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -19,18 +24,12 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import io.github.mumu12641.lark.R
+import io.github.mumu12641.lark.entity.INIT_SONG_LIST
 import io.github.mumu12641.lark.service.MediaServiceConnection.Companion.EMPTY_PLAYBACK_STATE
 import io.github.mumu12641.lark.service.MediaServiceConnection.Companion.NOTHING_PLAYING
 import io.github.mumu12641.lark.ui.theme.component.AsyncImage
-import io.github.mumu12641.lark.ui.theme.page.home.MainViewModel
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.SliderColors
-import androidx.compose.material3.SliderDefaults
-import androidx.compose.runtime.*
-import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.zIndex
-import io.github.mumu12641.lark.entity.INIT_SONG_LIST
 import io.github.mumu12641.lark.ui.theme.page.details.ShowSongs
+import io.github.mumu12641.lark.ui.theme.page.home.MainViewModel
 
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
@@ -48,22 +47,24 @@ fun PlayPage(
     val bottomSheetScaffoldState = rememberBottomSheetScaffoldState(
         bottomSheetState = BottomSheetState(BottomSheetValue.Collapsed)
     )
-
     BottomSheetScaffold(
-        modifier = Modifier.padding(
-            WindowInsets
-                .statusBars
-                .only(
-                    WindowInsetsSides.Horizontal
-                            + WindowInsetsSides.Top
-                ).asPaddingValues()
-        ),
+        modifier = Modifier
+            .background(MaterialTheme.colorScheme.background)
+            .padding(
+                WindowInsets
+                    .statusBars
+                    .only(
+                        WindowInsetsSides.Horizontal
+                                + WindowInsetsSides.Top
+                    )
+                    .asPaddingValues()
+            ),
         scaffoldState = bottomSheetScaffoldState,
         sheetContent = {
             ShowSongs(
                 songs = currentPlaySongs,
                 modifier = Modifier,
-                 top = 0,
+                top = 0,
                 playMedia = { songListId: Long, songId: Long ->
                     MainViewModel.playMedia(songListId, songId)
                 },
@@ -74,7 +75,10 @@ fun PlayPage(
         sheetShape = RoundedCornerShape(topStart = 20.dp, topEnd = 20.dp),
         content = { paddingValues ->
             PlayPageContent(
-                modifier = Modifier.padding(paddingValues),
+                modifier = Modifier
+                    .padding(paddingValues)
+                    .fillMaxSize()
+                    .background(MaterialTheme.colorScheme.background),
                 currentMetadata.value,
                 currentPlayState.value,
                 onClickNext = { mainViewModel.onSkipToNext() },
@@ -121,7 +125,8 @@ fun PlayPageContent(
                     maxLines = 2,
                     softWrap = false,
                     overflow = TextOverflow.Ellipsis,
-                    modifier = Modifier.padding(top = 30.dp)
+                    modifier = Modifier.padding(top = 30.dp),
+                    color = MaterialTheme.colorScheme.onBackground
                 )
                 Text(
                     text = currentMetadata.getString(MediaMetadataCompat.METADATA_KEY_TITLE),
@@ -129,7 +134,8 @@ fun PlayPageContent(
                     softWrap = false,
                     overflow = TextOverflow.Ellipsis,
                     style = MaterialTheme.typography.titleSmall,
-                    modifier = Modifier.padding(top = 20.dp)
+                    modifier = Modifier.padding(top = 20.dp),
+                    color = MaterialTheme.colorScheme.onBackground
                 )
             }
             Row(modifier = Modifier.padding(top = 30.dp)) {

@@ -1,3 +1,4 @@
+import android.annotation.SuppressLint
 
 plugins {
     id ("com.android.application")
@@ -104,5 +105,7 @@ dependencies {
     implementation ("com.google.accompanist:accompanist-insets:0.24.13-rc")
     implementation ("com.google.accompanist:accompanist-insets-ui:0.24.13-rc")
     implementation ("com.google.accompanist:accompanist-systemuicontroller:0.24.13-rc")
+
+    implementation ("com.android.support:palette-v7:32.0.0")
 
 }
