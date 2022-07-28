@@ -25,6 +25,10 @@ class MainViewModel @Inject constructor() : ViewModel() {
 
     val currentPlayState by lazy { mediaServiceConnection.playState }
 
+    val currentPlaySongs by lazy { mediaServiceConnection.playList }
+
+    val currentSongList by lazy { mediaServiceConnection.currentSongList }
+
     val allSongList = DataBaseUtils.queryAllSongList().map {
         it.filter { songList ->
             songList.type > 0

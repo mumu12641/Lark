@@ -87,11 +87,17 @@ class MediaPlaybackService : MediaBrowserServiceCompat() {
 
         mExoPlayer = ExoPlayer.Builder(this).build()
         mExoPlayer.addListener(object : Player.Listener {
-            override fun onPlaybackStateChanged(playbackState: Int) {
-                super.onPlaybackStateChanged(playbackState)
-                if (playbackState == ExoPlayer.STATE_ENDED) {
-                    Log.d(TAG, "end")
-                }
+            @RequiresApi(Build.VERSION_CODES.M)
+
+            override fun onMediaItemTransition(mediaItem: MediaItem?, reason: Int) {
+                super.onMediaItemTransition(mediaItem, reason)
+                Log.d(TAG, "onMediaItemTransition: ")
+                updatePlayBackState(PlaybackStateCompat.STATE_PLAYING)
+                updateMetadata(createMetadataFromSong(currentPlayList[mExoPlayer.currentMediaItemIndex]))
+                createNotification(
+                    PlaybackStateCompat.STATE_PLAYING,
+                    currentPlayList[mExoPlayer.currentMediaItemIndex]
+                )
             }
         })
 

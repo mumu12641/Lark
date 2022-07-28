@@ -9,6 +9,8 @@ import android.support.v4.media.session.MediaControllerCompat
 import android.support.v4.media.session.MediaSessionCompat
 import android.support.v4.media.session.PlaybackStateCompat
 import android.util.Log
+import com.tencent.mmkv.MMKV
+import io.github.mumu12641.lark.entity.INIT_SONG_LIST
 import io.github.mumu12641.lark.entity.Song
 import io.github.mumu12641.lark.room.DataBaseUtils
 import kotlinx.coroutines.CoroutineScope
@@ -35,11 +37,13 @@ class MediaServiceConnection(context: Context, componentName: ComponentName) {
     private val _playList = MutableStateFlow(emptyList<Song>())
     val playList = _playList
 
+    private val _currentSongList = MutableStateFlow(INIT_SONG_LIST)
+    val currentSongList = _currentSongList
+
     val transportControls: MediaControllerCompat.TransportControls
         get() = mediaController.transportControls
 
     private lateinit var mediaController: MediaControllerCompat
-
 
 
     private val mediaBrowserConnectionCallback = object : MediaBrowserCompat.ConnectionCallback() {
@@ -87,6 +91,9 @@ class MediaServiceConnection(context: Context, componentName: ComponentName) {
                     DataBaseUtils.querySongById(it.queueId)
                 } ?: emptyList()
                 Log.d(TAG, "onQueueChanged: " + _playList.value.toString())
+                _currentSongList.value = DataBaseUtils.querySongListById(
+                    MMKV.defaultMMKV().decodeLong("lastPlaySongList")
+                )
                 transportControls.play()
             }
         }
@@ -100,6 +107,17 @@ class MediaServiceConnection(context: Context, componentName: ComponentName) {
             ) {
                 super.onChildrenLoaded(parentId, children)
                 Log.d("TAG", "onChildrenLoaded: $children")
+                scope.launch {
+                    _currentSongList.value = DataBaseUtils.querySongListById(
+                        MMKV.defaultMMKV().decodeLong("lastPlaySongList")
+                    )
+                    _playList.value = DataBaseUtils.querySongListWithSongsBySongListId(
+                        MMKV.defaultMMKV().decodeLong("lastPlaySongList")
+                    ).songs
+                }
+                if (children.size > 0) {
+                    transportControls.play()
+                }
             }
         }
 
@@ -112,17 +130,17 @@ class MediaServiceConnection(context: Context, componentName: ComponentName) {
         connect()
     }
 
-    fun disConnected(){
-        if (mediaBrowser.isConnected){
+    fun disConnected() {
+        if (mediaBrowser.isConnected) {
             mediaController.unregisterCallback(controllerCallback)
             mediaBrowser.disconnect()
             job.cancel()
         }
     }
 
-    private fun upProgress(){
-        while (job.isActive){
-            if (mediaController.playbackState.state == PlaybackStateCompat.STATE_PLAYING){
+    private fun upProgress() {
+        while (job.isActive) {
+            if (mediaController.playbackState.state == PlaybackStateCompat.STATE_PLAYING) {
                 _playState.value = mediaController.playbackState
             }
         }
@@ -137,10 +155,10 @@ class MediaServiceConnection(context: Context, componentName: ComponentName) {
         @Suppress("PropertyName")
         val NOTHING_PLAYING: MediaMetadataCompat = MediaMetadataCompat.Builder()
             .putString(MediaMetadataCompat.METADATA_KEY_MEDIA_ID, "")
-            .putString(MediaMetadataCompat.METADATA_KEY_ALBUM_ART_URI,"qqq")
-            .putString(MediaMetadataCompat.METADATA_KEY_TITLE,"暂无歌曲播放")
+            .putString(MediaMetadataCompat.METADATA_KEY_ALBUM_ART_URI, "qqq")
+            .putString(MediaMetadataCompat.METADATA_KEY_TITLE, "暂无歌曲播放")
             .putLong(MediaMetadataCompat.METADATA_KEY_DURATION, 0)
-            .putString(METADATA_KEY_ARTIST,"未知艺术家")
+            .putString(METADATA_KEY_ARTIST, "未知艺术家")
             .build()
 
         @Volatile

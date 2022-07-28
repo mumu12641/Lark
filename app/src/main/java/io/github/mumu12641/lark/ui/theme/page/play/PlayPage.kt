@@ -5,6 +5,7 @@ import android.support.v4.media.session.PlaybackStateCompat
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
 import androidx.compose.material3.Slider
@@ -27,6 +28,9 @@ import androidx.compose.material3.SliderColors
 import androidx.compose.material3.SliderDefaults
 import androidx.compose.runtime.*
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.zIndex
+import io.github.mumu12641.lark.entity.INIT_SONG_LIST
+import io.github.mumu12641.lark.ui.theme.page.details.ShowSongs
 
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
@@ -34,6 +38,8 @@ fun PlayPage(
     navController: NavController,
     mainViewModel: MainViewModel
 ) {
+    val currentPlaySongs by mainViewModel.currentPlaySongs.collectAsState(initial = emptyList())
+    val currentSongList by mainViewModel.currentSongList.collectAsState(initial = INIT_SONG_LIST)
     val currentMetadata =
         mainViewModel.currentPlayMetadata.collectAsState(initial = NOTHING_PLAYING)
     val currentPlayState =
@@ -54,9 +60,17 @@ fun PlayPage(
         ),
         scaffoldState = bottomSheetScaffoldState,
         sheetContent = {
-
+            ShowSongs(
+                songs = currentPlaySongs,
+                modifier = Modifier,
+                 top = 0,
+                playMedia = { songListId: Long, songId: Long ->
+                    MainViewModel.playMedia(songListId, songId)
+                },
+                songList = currentSongList
+            )
         },
-        sheetPeekHeight = 20.dp,
+        sheetPeekHeight = 150.dp,
         sheetShape = RoundedCornerShape(topStart = 20.dp, topEnd = 20.dp),
         content = { paddingValues ->
             PlayPageContent(
@@ -121,7 +135,7 @@ fun PlayPageContent(
             Row(modifier = Modifier.padding(top = 30.dp)) {
                 Box(
                     modifier = Modifier
-                        .size(width = 250.dp, height = 75.dp)
+                        .size(width = 200.dp, height = 75.dp)
                         .clip(RoundedCornerShape(20.dp))
                         .background(MaterialTheme.colorScheme.primaryContainer)
                         .clickable(
@@ -161,7 +175,7 @@ fun PlayPageContent(
                 }
             }
             Row(
-                modifier = Modifier.padding(top = 30.dp),
+                modifier = Modifier.padding(top = 20.dp),
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Box(

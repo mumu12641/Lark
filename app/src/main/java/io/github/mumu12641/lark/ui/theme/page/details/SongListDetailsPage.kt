@@ -176,37 +176,48 @@ fun SongListDetailsContent(
                 }
             }
         }
-        Column(
-            modifier = Modifier
-                .fillMaxWidth()
-                .fillMaxHeight()
-                .padding(top = 20.dp)
-                .clip(RoundedCornerShape(topStart = 20.dp, topEnd = 20.dp))
-                .background(MaterialTheme.colorScheme.primaryContainer),
-            horizontalAlignment = Alignment.CenterHorizontally
-        ) {
-            if (songs.isEmpty()) {
-                Box(modifier = modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                    Text(
-                        text = "暂无歌曲~",
-                        color = MaterialTheme.colorScheme.onSecondary,
-                        style = MaterialTheme.typography.titleLarge
-                    )
-                }
-            } else {
-                LazyColumn {
-                    items(songs) { item ->
-                        SongItemRow(item,null){
-                            playMedia(songList.songListId,item.songId)
-                        }
-                    }
-                }
+        ShowSongs(songs, modifier,20, playMedia, songList)
+    }
+}
+
+@Composable
+fun ShowSongs(
+    songs: List<Song>,
+    modifier: Modifier,
+    top:Int,
+    playMedia: (Long, Long) -> Unit,
+    songList: SongList
+) {
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+            .fillMaxHeight()
+            .padding(top = top.dp)
+            .clip(RoundedCornerShape(topStart = 20.dp, topEnd = 20.dp))
+            .background(MaterialTheme.colorScheme.primaryContainer),
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        if (songs.isEmpty()) {
+            Box(modifier = modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
                 Text(
-                    text = "加载到底啦~",
+                    text = "暂无歌曲~",
                     color = MaterialTheme.colorScheme.onSecondary,
-                    style = MaterialTheme.typography.bodySmall
+                    style = MaterialTheme.typography.titleLarge
                 )
             }
+        } else {
+            LazyColumn {
+                items(songs) { item ->
+                    SongItemRow(item, null) {
+                        playMedia(songList.songListId, item.songId)
+                    }
+                }
+            }
+            Text(
+                text = "加载到底啦~",
+                color = MaterialTheme.colorScheme.onSecondary,
+                style = MaterialTheme.typography.bodySmall
+            )
         }
     }
 }
