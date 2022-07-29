@@ -19,11 +19,7 @@ import android.util.Log
 import androidx.annotation.RequiresApi
 import androidx.core.app.NotificationCompat
 import androidx.media.MediaBrowserServiceCompat
-import coil.transform.RoundedCornersTransformation
 import com.bumptech.glide.Glide
-import com.bumptech.glide.load.MultiTransformation
-import com.bumptech.glide.load.resource.bitmap.CenterCrop
-import com.bumptech.glide.request.RequestOptions
 import com.google.android.exoplayer2.ExoPlayer
 import com.google.android.exoplayer2.MediaItem
 import com.google.android.exoplayer2.Player
@@ -235,7 +231,7 @@ class MediaPlaybackService : MediaBrowserServiceCompat() {
             setContentText(description.subtitle)
             setSubText(description.description)
             setContentIntent(clickPendingIntent)
-            setSmallIcon(R.drawable.ornithology)
+            setSmallIcon(R.drawable.icon)
             setVisibility(NotificationCompat.VISIBILITY_PUBLIC)
             setSound(null)
             setVibrate(LongArray(1){0})

@@ -23,6 +23,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
+import io.github.mumu12641.lark.BaseApplication
 import io.github.mumu12641.lark.R
 import io.github.mumu12641.lark.entity.INIT_SONG_LIST
 import io.github.mumu12641.lark.service.MediaServiceConnection.Companion.EMPTY_PLAYBACK_STATE
@@ -47,48 +48,55 @@ fun PlayPage(
     val bottomSheetScaffoldState = rememberBottomSheetScaffoldState(
         bottomSheetState = BottomSheetState(BottomSheetValue.Collapsed)
     )
-    BottomSheetScaffold(
-        modifier = Modifier
-            .background(MaterialTheme.colorScheme.background)
-            .padding(
-                WindowInsets
-                    .statusBars
-                    .only(
-                        WindowInsetsSides.Horizontal
-                                + WindowInsetsSides.Top
-                    )
-                    .asPaddingValues()
-            ),
-        scaffoldState = bottomSheetScaffoldState,
-        sheetContent = {
-            ShowSongs(
-                songs = currentPlaySongs,
-                modifier = Modifier,
-                top = 0,
-                playMedia = { songListId: Long, songId: Long ->
-                    MainViewModel.playMedia(songListId, songId)
-                },
-                songList = currentSongList
-            )
-        },
-        sheetPeekHeight = 150.dp,
-        sheetShape = RoundedCornerShape(topStart = 20.dp, topEnd = 20.dp),
-        content = { paddingValues ->
-            PlayPageContent(
-                modifier = Modifier
-                    .padding(paddingValues)
-                    .fillMaxSize()
-                    .background(MaterialTheme.colorScheme.background),
-                currentMetadata.value,
-                currentPlayState.value,
-                onClickNext = { mainViewModel.onSkipToNext() },
-                onClickPause = { mainViewModel.onPause() },
-                onClickPlay = { mainViewModel.onPlay() },
-                onClickPrevious = { mainViewModel.onSkipToPrevious() },
-                onSeekTo = { mainViewModel.onSeekTo(it) }
-            )
-        }
-    )
+    Box(modifier = Modifier
+        .fillMaxSize()
+        .background(MaterialTheme.colorScheme.background)
+    ) {
+        BottomSheetScaffold(
+            modifier = Modifier
+                .background(MaterialTheme.colorScheme.background)
+                .padding(
+                    WindowInsets
+                        .statusBars
+                        .only(
+                            WindowInsetsSides.Horizontal
+                                    + WindowInsetsSides.Top
+                        )
+                        .asPaddingValues()
+                ),
+            scaffoldState = bottomSheetScaffoldState,
+            sheetContent = {
+                ShowSongs(
+                    songs = currentPlaySongs,
+                    modifier = Modifier,
+                    top = 0,
+                    playMedia = { songListId: Long, songId: Long ->
+                        MainViewModel.playMedia(songListId, songId)
+                    },
+                    songList = currentSongList
+                )
+            },
+            sheetPeekHeight = (BaseApplication.deviceScreen[1]-615).dp,
+            sheetBackgroundColor = MaterialTheme.colorScheme.secondaryContainer,
+
+            sheetShape = RoundedCornerShape(topStart = 20.dp, topEnd = 20.dp),
+            content = { paddingValues ->
+                PlayPageContent(
+                    modifier = Modifier
+                        .padding(paddingValues)
+                        .fillMaxSize()
+                        .background(MaterialTheme.colorScheme.background),
+                    currentMetadata.value,
+                    currentPlayState.value,
+                    onClickNext = { mainViewModel.onSkipToNext() },
+                    onClickPause = { mainViewModel.onPause() },
+                    onClickPlay = { mainViewModel.onPlay() },
+                    onClickPrevious = { mainViewModel.onSkipToPrevious() },
+                    onSeekTo = { mainViewModel.onSeekTo(it) }
+                )
+            }
+        )
+    }
 }
 
 @Composable
@@ -125,7 +133,7 @@ fun PlayPageContent(
                     maxLines = 2,
                     softWrap = false,
                     overflow = TextOverflow.Ellipsis,
-                    modifier = Modifier.padding(top = 30.dp),
+                    modifier = Modifier.padding(top = 20.dp),
                     color = MaterialTheme.colorScheme.onBackground
                 )
                 Text(
@@ -134,11 +142,11 @@ fun PlayPageContent(
                     softWrap = false,
                     overflow = TextOverflow.Ellipsis,
                     style = MaterialTheme.typography.titleSmall,
-                    modifier = Modifier.padding(top = 20.dp),
+                    modifier = Modifier.padding(top = 15.dp),
                     color = MaterialTheme.colorScheme.onBackground
                 )
             }
-            Row(modifier = Modifier.padding(top = 30.dp)) {
+            Row(modifier = Modifier.padding(top = 20.dp)) {
                 Box(
                     modifier = Modifier
                         .size(width = 200.dp, height = 75.dp)
@@ -181,7 +189,7 @@ fun PlayPageContent(
                 }
             }
             Row(
-                modifier = Modifier.padding(top = 20.dp),
+                modifier = Modifier.padding(top = 15.dp),
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Box(

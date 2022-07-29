@@ -10,15 +10,15 @@ Animation			Wip
 
 UI Improvement   always wip
 
+BottomSheet done
 
-
-Play Page
+Play Page	
 
 渐变色
 
 自定义主题 
 
-切换深色模式bug
+切换深色模式bug		done  但是界面还有点问题
 
 
 

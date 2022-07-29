@@ -1,9 +1,6 @@
 package io.github.mumu12641.lark.room
 
-import io.github.mumu12641.lark.entity.PlaylistSongCrossRef
-import io.github.mumu12641.lark.entity.Song
-import io.github.mumu12641.lark.entity.SongList
-import io.github.mumu12641.lark.entity.SongListWithSongs
+import io.github.mumu12641.lark.entity.*
 import kotlinx.coroutines.flow.Flow
 
 class DataBaseUtils {
@@ -49,12 +46,26 @@ class DataBaseUtils {
             return musicDao.queryAllRef()
         }
 
-        suspend fun isRefExist(songListId: Long,songId: Long) : Boolean{
-            return musicDao.isRefExist(songListId,songId)
+        suspend fun isRefExist(songListId: Long, songId: Long): Boolean {
+            return musicDao.isRefExist(songListId, songId)
         }
 
         suspend fun insertRef(playlistSongCrossRef: PlaylistSongCrossRef) {
             musicDao.insertRef(playlistSongCrossRef)
+            if (playlistSongCrossRef.songListId == LikeSongListId) {
+                updateSongList(
+                    querySongListById(LikeSongListId).copy(
+                        imageFileUri = querySongById(playlistSongCrossRef.songId).songAlbumFileUri
+                    )
+                )
+            }
+            updateSongList(
+                querySongListById(playlistSongCrossRef.songListId).copy(
+                    songNumber = querySongListWithSongsBySongListId(
+                        playlistSongCrossRef.songListId
+                    ).songs.size
+                )
+            )
         }
 
         fun querySongListWithSongsBySongListIdFlow(songListId: Long): Flow<SongListWithSongs> {

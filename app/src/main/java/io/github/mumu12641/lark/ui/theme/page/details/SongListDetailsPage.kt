@@ -2,6 +2,7 @@ package io.github.mumu12641.lark.ui.theme.page.details
 
 import android.annotation.SuppressLint
 import android.net.Uri
+import android.util.Log
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.background
@@ -10,12 +11,18 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
-import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material.icons.filled.PlayArrow
-import androidx.compose.material3.*
+import androidx.compose.material3.Button
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedButton
+import androidx.compose.material3.SmallTopAppBar
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -26,9 +33,9 @@ import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontFamily
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
+import io.github.mumu12641.lark.BaseApplication
 import io.github.mumu12641.lark.R
 import io.github.mumu12641.lark.entity.INIT_SONG_LIST
 import io.github.mumu12641.lark.entity.Song
@@ -36,8 +43,9 @@ import io.github.mumu12641.lark.entity.SongList
 import io.github.mumu12641.lark.ui.theme.component.AsyncImage
 import io.github.mumu12641.lark.ui.theme.component.SongItemRow
 import io.github.mumu12641.lark.ui.theme.component.SongListPicture
+import io.github.mumu12641.lark.ui.theme.page.home.MainViewModel
 
-@OptIn(ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalMaterialApi::class)
 @SuppressLint("StateFlowValueCalledInComposition")
 @Composable
 fun SongListDetailsPage(
@@ -50,11 +58,30 @@ fun SongListDetailsPage(
     )
 
     val songs by viewModel.songs.collectAsState(initial = emptyList())
+    val bottomSheetScaffoldState = rememberBottomSheetScaffoldState(
+        bottomSheetState = BottomSheetState(BottomSheetValue.Collapsed)
+    )
 
     Box(
         modifier = Modifier.fillMaxSize()
     ) {
-        Scaffold(
+        BottomSheetScaffold(
+            scaffoldState = bottomSheetScaffoldState,
+            sheetContent = {
+                ShowSongs(
+                    songs = songs,
+                    modifier = Modifier,
+                    top = 0,
+                    playMedia = { songListId: Long, songId: Long ->
+                        MainViewModel.playMedia(songListId, songId)
+                    },
+                    songList = state
+                )
+            },
+            sheetPeekHeight = (BaseApplication.deviceScreen[1]-570).dp,
+            sheetBackgroundColor = MaterialTheme.colorScheme.secondaryContainer,
+
+            sheetShape = RoundedCornerShape(topStart = 20.dp, topEnd = 20.dp),
             topBar = {
                 SmallTopAppBar(
                     modifier = Modifier.padding(
@@ -125,12 +152,29 @@ fun SongListDetailsContent(
                     .clip(RectangleShape)
                     .clip(RoundedCornerShape(30.dp))
                     .background(MaterialTheme.colorScheme.primaryContainer)
-                    .clickable { launcherBackground.launch("image/*") },
+                    .clickable(
+                        onClick = {
+                            if (songList?.type != 1) {
+                                launcherBackground.launch("image/*")
+                            } else {
+                                Log.d("TAG", "SongListDetailsContent")
+                            }
+                        }
+                    ),
                 contentAlignment = Alignment.Center,
 
                 ) {
                 if (songList?.type == 1) {
-                    SongListPicture(Modifier.size(350.dp), R.drawable.favorite)
+                    Box(modifier = Modifier.size(350.dp)) {
+                        if (songs.isNotEmpty()) {
+                            AsyncImage(
+                                modifier = Modifier.size(350.dp),
+                                imageModel = songList.imageFileUri,
+                                failure = R.drawable.favorite
+                            )
+                        }
+                        SongListPicture (Modifier.size(350.dp), R.drawable.favorite)
+                    }
                 } else {
                     AsyncImage(
                         modifier = Modifier.size(350.dp),
@@ -179,7 +223,7 @@ fun SongListDetailsContent(
                 }
             }
         }
-        ShowSongs(songs, modifier, 20, playMedia, songList)
+//        ShowSongs(songs, modifier, 20, playMedia, songList)
     }
 }
 

@@ -6,10 +6,6 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.MoreVert
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -21,7 +17,6 @@ import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import io.github.mumu12641.lark.R
 import io.github.mumu12641.lark.entity.SongList
@@ -46,6 +41,7 @@ fun SongListItemCard(
                 style = MaterialTheme.typography.bodyLarge,
             )
             Text(
+                modifier = Modifier.padding(start = 3.dp),
                 text = songList.songNumber.toString() + stringResource(id = R.string.songs_text),
                 style = MaterialTheme.typography.bodySmall
             )
@@ -69,7 +65,14 @@ fun SongListAlbumCard(
         contentAlignment = Alignment.Center
     ) {
         if (songList.type == 1) {
-            SongListPicture(modifier, R.drawable.favorite)
+            Box(modifier = modifier) {
+                AsyncImage(
+                    modifier = modifier,
+                    imageModel = songList.imageFileUri,
+                    failure = R.drawable.favorite
+                )
+                SongListPicture (modifier, R.drawable.favorite)
+            }
         } else {
             AsyncImage(
                 modifier = modifier,
