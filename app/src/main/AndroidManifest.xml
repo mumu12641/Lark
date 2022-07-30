@@ -21,7 +21,7 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.Lark"
         android:requestLegacyExternalStorage="true"
-        tools:targetApi="m">
+        tools:targetApi="s">
         <activity
             android:name=".MainActivity"
             android:exported="true"
@@ -43,12 +43,17 @@
             </intent-filter>
         </service>
 
-<!--        <receiver android:name="androidx.media.session.MediaButtonReceiver"-->
-<!--            android:exported="true">-->
-<!--            <intent-filter>-->
-<!--                <action android:name="android.intent.action.MEDIA_BUTTON" />-->
-<!--            </intent-filter>-->
-<!--        </receiver>-->
+
+
+        <receiver android:name=".widget.LarkWidgetProvider"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+            </intent-filter>
+            <meta-data android:name="android.appwidget.provider"
+                android:resource="@xml/lark_appwidget_info" />
+        </receiver>
+
 
     </application>
 

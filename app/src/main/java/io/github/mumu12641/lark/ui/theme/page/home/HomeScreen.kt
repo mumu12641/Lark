@@ -23,6 +23,7 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.skydoves.landscapist.glide.GlideImage
 import com.tencent.mmkv.MMKV
+import io.github.mumu12641.lark.BaseApplication.Companion.context
 import io.github.mumu12641.lark.R
 import io.github.mumu12641.lark.entity.Route
 import io.github.mumu12641.lark.entity.SongList
@@ -155,7 +156,7 @@ private fun SongListRow(
             title = stringResource(id = R.string.add_songlist_text),
             icon = Icons.Filled.Add,
             confirmOnClick = {
-                addSongList(SongList(0L, text, "2022/7/22", 0, "test", "null", 2))
+                addSongList(SongList(0L, text, "2022/7/22", 0, context.getString(R.string.no_description_text), "null", 2))
                 showDialog = false
                 text = ""
             },

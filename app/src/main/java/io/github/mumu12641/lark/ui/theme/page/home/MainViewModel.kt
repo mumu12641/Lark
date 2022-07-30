@@ -71,7 +71,7 @@ class MainViewModel @Inject constructor() : ViewModel() {
 
 
     companion object{
-        private val mediaServiceConnection: MediaServiceConnection = MediaServiceConnection.getInstance(
+        val mediaServiceConnection: MediaServiceConnection = MediaServiceConnection.getInstance(
             context,
             ComponentName(context, MediaPlaybackService::class.java)
         )

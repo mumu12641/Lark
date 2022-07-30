@@ -28,4 +28,5 @@
     <string name="add_successful_text">Added successfully</string>
     <string name="already_added_text">Already added</string>
     <string name="create_song_Llst_text">Create a new songlist</string>
+    <string name="no_description_text">No description yet</string>
 </resources>

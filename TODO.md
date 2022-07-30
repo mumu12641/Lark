@@ -14,13 +14,15 @@ BottomSheet done
 
 Play Page	
 
+
+
+随机播放
+
 渐变色
 
 自定义主题 
 
 切换深色模式bug		done  但是界面还有点问题
-
-
 
 Artist
 

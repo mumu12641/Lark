@@ -401,22 +401,29 @@ class MediaPlaybackService : MediaBrowserServiceCompat() {
                 when (action) {
                     CHANGE_PLAY_LIST -> {
                         scope.launch {
+                            val songId = extras?.get("songId") as Long
                             MMKV.defaultMMKV().apply {
-                                encode("lastPlaySongList", extras?.get("songListId") as Long)
-                                encode("lastPlaySong", extras.get("songId") as Long)
+                                encode("lastPlaySongList", extras.get("songListId") as Long)
+                                if ( songId != CHANGE_PLAT_LIST_SHUFFLE) {
+                                    encode("lastPlaySong", songId)
+                                }
                             }
-                            extras?.apply {
+                            extras.apply {
                                 currentPlayList = DataBaseUtils.querySongListWithSongsBySongListId(
                                     get("songListId") as Long
                                 ).songs.toMutableList()
-                                currentPlaySong = DataBaseUtils.querySongById(get("songId") as Long)
+                                currentPlaySong = if (songId!= CHANGE_PLAT_LIST_SHUFFLE) {
+                                    DataBaseUtils.querySongById(get("songId") as Long)
+                                } else {
+                                    currentPlayList.shuffle()
+                                    currentPlayList[0]
+                                }
                                 currentSongList =
                                     DataBaseUtils.querySongListById(get("songListId") as Long)
                                 withContext(Dispatchers.Main) {
                                     updateQueue(currentPlayList)
                                 }
                             }
-
                         }
                     }
                 }

@@ -27,6 +27,7 @@ const val HistorySongListId = 3L
 
 
 const val CHANGE_PLAY_LIST = "CHANGE_PLAY_LIST"
+const val CHANGE_PLAT_LIST_SHUFFLE = -1L
 
 const val ACTION_PAUSE = "PAUSE"
 const val ACTION_NEXT = "NEXT"

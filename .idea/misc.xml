@@ -4,6 +4,7 @@
     <option name="filePathToZoomLevelMap">
       <map>
         <entry key="..\:/code/Lark/app/src/main/res/drawable/album.xml" value="0.166" />
+        <entry key="..\:/code/Lark/app/src/main/res/drawable/appwidget_bg_clickable.xml" value="0.253" />
         <entry key="..\:/code/Lark/app/src/main/res/drawable/cloud_upload.xml" value="0.1565" />
         <entry key="..\:/code/Lark/app/src/main/res/drawable/download_icon.xml" value="0.1565" />
         <entry key="..\:/code/Lark/app/src/main/res/drawable/favorite.xml" value="0.1565" />
@@ -18,6 +19,8 @@
         <entry key="..\:/code/Lark/app/src/main/res/drawable/ic_launcher_background.xml" value="0.1" />
         <entry key="..\:/code/Lark/app/src/main/res/drawable/music_note-48px.xml" value="0.163" />
         <entry key="..\:/code/Lark/app/src/main/res/drawable/music_note.xml" value="0.166" />
+        <entry key="..\:/code/Lark/app/src/main/res/drawable/widget_background.xml" value="0.173" />
+        <entry key="..\:/code/Lark/app/src/main/res/layout/lark_widget.xml" value="0.234375" />
       </map>
     </option>
   </component>

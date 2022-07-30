@@ -37,6 +37,7 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import io.github.mumu12641.lark.BaseApplication
 import io.github.mumu12641.lark.R
+import io.github.mumu12641.lark.entity.CHANGE_PLAT_LIST_SHUFFLE
 import io.github.mumu12641.lark.entity.INIT_SONG_LIST
 import io.github.mumu12641.lark.entity.Song
 import io.github.mumu12641.lark.entity.SongList
@@ -78,7 +79,7 @@ fun SongListDetailsPage(
                     songList = state
                 )
             },
-            sheetPeekHeight = (BaseApplication.deviceScreen[1]-570).dp,
+            sheetPeekHeight = (BaseApplication.deviceScreen[1] - 570).dp,
             sheetBackgroundColor = MaterialTheme.colorScheme.secondaryContainer,
 
             sheetShape = RoundedCornerShape(topStart = 20.dp, topEnd = 20.dp),
@@ -173,7 +174,7 @@ fun SongListDetailsContent(
                                 failure = R.drawable.favorite
                             )
                         }
-                        SongListPicture (Modifier.size(350.dp), R.drawable.favorite)
+                        SongListPicture(Modifier.size(350.dp), R.drawable.favorite)
                     }
                 } else {
                     AsyncImage(
@@ -213,7 +214,12 @@ fun SongListDetailsContent(
                 }
             }
             Spacer(modifier = Modifier.weight(0.25f))
-            Button(modifier = Modifier.weight(1f), onClick = { /*TODO*/ }) {
+            Button(modifier = Modifier.weight(1f), onClick = {
+                playMedia(
+                    songList.songListId,
+                    CHANGE_PLAT_LIST_SHUFFLE
+                )
+            }) {
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     Icon(
                         painter = painterResource(id = R.drawable.ic_baseline_shuffle_24),
