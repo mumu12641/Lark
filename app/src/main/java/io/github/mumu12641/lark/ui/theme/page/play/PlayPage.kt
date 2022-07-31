@@ -2,6 +2,9 @@ package io.github.mumu12641.lark.ui.theme.page.play
 
 import android.support.v4.media.MediaMetadataCompat
 import android.support.v4.media.session.PlaybackStateCompat
+import androidx.compose.animation.*
+import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.animation.core.animateIntAsState
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
@@ -13,9 +16,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Slider
 import androidx.compose.material3.SliderColors
 import androidx.compose.material3.SliderDefaults
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -44,17 +45,18 @@ fun PlayPage(
         mainViewModel.currentPlayMetadata.collectAsState(initial = NOTHING_PLAYING)
     val currentPlayState =
         mainViewModel.currentPlayState.collectAsState(initial = EMPTY_PLAYBACK_STATE)
-
     val bottomSheetScaffoldState = rememberBottomSheetScaffoldState(
         bottomSheetState = BottomSheetState(BottomSheetValue.Collapsed)
     )
-    Box(modifier = Modifier
-        .fillMaxSize()
-        .background(MaterialTheme.colorScheme.background)
+
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(MaterialTheme.colorScheme.background)
     ) {
         BottomSheetScaffold(
+            backgroundColor = MaterialTheme.colorScheme.background,
             modifier = Modifier
-                .background(MaterialTheme.colorScheme.background)
                 .padding(
                     WindowInsets
                         .statusBars
@@ -76,7 +78,7 @@ fun PlayPage(
                     songList = currentSongList
                 )
             },
-            sheetPeekHeight = (BaseApplication.deviceScreen[1]-615).dp,
+            sheetPeekHeight = (BaseApplication.deviceScreen[1] - 615).dp,
             sheetBackgroundColor = MaterialTheme.colorScheme.secondaryContainer,
 
             sheetShape = RoundedCornerShape(topStart = 20.dp, topEnd = 20.dp),
@@ -99,6 +101,7 @@ fun PlayPage(
     }
 }
 
+@OptIn(ExperimentalAnimationApi::class)
 @Composable
 fun PlayPageContent(
     modifier: Modifier,
@@ -110,6 +113,9 @@ fun PlayPageContent(
     onClickNext: () -> Unit,
     onSeekTo: (Long) -> Unit
 ) {
+    val cornerAlbum: Int by animateIntAsState(if (currentPlayState.state == PlaybackStateCompat.STATE_PLAYING) 150 else 50)
+    val cornerButton: Int by animateIntAsState(if (currentPlayState.state == PlaybackStateCompat.STATE_PLAYING) 80 else 20)
+
     Box(modifier = modifier) {
         Column(
             modifier = Modifier
@@ -122,7 +128,7 @@ fun PlayPageContent(
             ) {
                 AsyncImage(
                     modifier = Modifier
-                        .clip(RoundedCornerShape(50.dp))
+                        .clip(RoundedCornerShape(cornerAlbum.dp))
                         .size(width = 350.dp, height = 300.dp),
                     imageModel = currentMetadata.getString(MediaMetadataCompat.METADATA_KEY_ALBUM_ART_URI),
                     failure = R.drawable.ic_baseline_music_note_24
@@ -150,7 +156,7 @@ fun PlayPageContent(
                 Box(
                     modifier = Modifier
                         .size(width = 200.dp, height = 75.dp)
-                        .clip(RoundedCornerShape(20.dp))
+                        .clip(RoundedCornerShape(cornerButton.dp))
                         .background(MaterialTheme.colorScheme.primaryContainer)
                         .clickable(
                             onClick = if (currentPlayState.state == PlaybackStateCompat.STATE_PLAYING) onClickPause
@@ -158,6 +164,32 @@ fun PlayPageContent(
                         ),
                     contentAlignment = Alignment.Center
                 ) {
+//                    Row {
+//                        AnimatedVisibility(
+//                            visible = currentPlayState.state == PlaybackStateCompat.STATE_PLAYING,
+//                            enter =   fadeIn() + scaleIn(),
+//                            exit =   fadeOut() + scaleOut()
+//                        ) {
+//                            Icon(
+//                                painter = painterResource(id = R.drawable.ic_baseline_pause_24),
+//                                modifier = Modifier.size(30.dp),
+//                                contentDescription = "pause"
+//                            )
+//                        }
+//                        AnimatedVisibility(
+//                            visible = currentPlayState.state != PlaybackStateCompat.STATE_PLAYING,
+//                            enter =   fadeIn() + scaleIn(),
+//                            exit =   fadeOut() + scaleOut()
+//                        ) {
+//                            Icon(
+//                                Icons.Filled.PlayArrow,
+//                                modifier = Modifier.size(30.dp),
+//                                contentDescription = "play"
+//                            )
+//                        }
+//                    }
+
+
                     if (currentPlayState.state == PlaybackStateCompat.STATE_PLAYING) {
                         Icon(
                             painter = painterResource(id = R.drawable.ic_baseline_pause_24),

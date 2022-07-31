@@ -8,7 +8,7 @@ class DataBaseUtils {
         private val DataBase: MusicDataBase = MusicDataBase.getInstance()
         private val musicDao: MusicDao = DataBase.musicDao
 
-        fun queryAllSong(): Flow<List<Song>> {
+        suspend fun queryAllSong(): List<Song> {
             return musicDao.queryAllSong()
         }
 
@@ -40,6 +40,12 @@ class DataBaseUtils {
 
         suspend fun insertSongList(songList: SongList) {
             musicDao.insertSongList(songList)
+        }
+        suspend fun isSongListExist(title:String,type:Int):Boolean{
+            return musicDao.isSongListExist(title ,type)
+        }
+        suspend fun querySongListId(title:String,type:Int):Long{
+            return musicDao.querySongListId(title,type)
         }
 
         fun queryAllRef(): List<PlaylistSongCrossRef> {

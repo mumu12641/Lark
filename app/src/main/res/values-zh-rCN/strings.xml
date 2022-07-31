@@ -29,4 +29,5 @@
     <string name="already_added_text">已添加至歌单</string>
     <string name="create_song_Llst_text">新建歌单</string>
     <string name="no_description_text">暂无描述</string>
+    <string name="add_description_text">添加描述</string>
 </resources>

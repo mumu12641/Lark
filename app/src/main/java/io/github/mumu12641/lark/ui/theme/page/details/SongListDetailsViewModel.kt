@@ -8,6 +8,7 @@ import io.github.mumu12641.lark.entity.SongList
 import io.github.mumu12641.lark.room.DataBaseUtils
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -29,6 +30,14 @@ class SongListDetailsViewModel @Inject constructor() : ViewModel() {
         songList = DataBaseUtils.querySongListFlowById(id)
         songs = DataBaseUtils.querySongListWithSongsBySongListIdFlow(id).map {
             it.songs
+        }
+    }
+
+    fun updateSongListDescription(description: String) {
+        viewModelScope.launch(Dispatchers.IO) {
+            DataBaseUtils.updateSongList(
+                DataBaseUtils.querySongListById(currentSongListId).copy(description = description)
+            )
         }
     }
 

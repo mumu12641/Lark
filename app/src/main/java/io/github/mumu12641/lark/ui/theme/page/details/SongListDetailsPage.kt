@@ -14,6 +14,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material.icons.filled.PlayArrow
 import androidx.compose.material3.Button
@@ -23,12 +24,11 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.SmallTopAppBar
 import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -44,6 +44,7 @@ import io.github.mumu12641.lark.entity.SongList
 import io.github.mumu12641.lark.ui.theme.component.AsyncImage
 import io.github.mumu12641.lark.ui.theme.component.SongItemRow
 import io.github.mumu12641.lark.ui.theme.component.SongListPicture
+import io.github.mumu12641.lark.ui.theme.component.TextFieldDialog
 import io.github.mumu12641.lark.ui.theme.page.home.MainViewModel
 
 @OptIn(ExperimentalMaterialApi::class)
@@ -67,6 +68,7 @@ fun SongListDetailsPage(
         modifier = Modifier.fillMaxSize()
     ) {
         BottomSheetScaffold(
+            backgroundColor = MaterialTheme.colorScheme.background,
             scaffoldState = bottomSheetScaffoldState,
             sheetContent = {
                 ShowSongs(
@@ -113,7 +115,9 @@ fun SongListDetailsPage(
                     songs = songs,
                     changeSongListImage = { uri ->
                         viewModel.changeSongListImage(uri)
-                    }, playMedia = playMedia
+                    },
+                    { description -> viewModel.updateSongListDescription(description) },
+                    playMedia = playMedia
                 )
             }
         )
@@ -127,6 +131,7 @@ fun SongListDetailsContent(
     songList: SongList?,
     songs: List<Song>,
     changeSongListImage: (String) -> Unit,
+    updateDescription: (String) -> Unit,
     playMedia: (Long, Long) -> Unit
 ) {
 
@@ -137,6 +142,12 @@ fun SongListDetailsContent(
         uri?.let {
             changeSongListImage(uri.toString())
         }
+    }
+    var showDialog by remember {
+        mutableStateOf(false)
+    }
+    var textDescription by remember {
+        mutableStateOf("")
     }
 
     Column(
@@ -197,7 +208,9 @@ fun SongListDetailsContent(
             style = MaterialTheme.typography.titleLarge,
             color = MaterialTheme.colorScheme.primary,
             fontFamily = FontFamily.Serif,
-            modifier = Modifier.padding(start = 20.dp)
+            modifier = Modifier
+                .padding(start = 20.dp)
+                .clickable { showDialog = true }
         )
         Row(
             modifier = Modifier
@@ -229,7 +242,22 @@ fun SongListDetailsContent(
                 }
             }
         }
-//        ShowSongs(songs, modifier, 20, playMedia, songList)
+        if (showDialog) {
+            TextFieldDialog(
+                onDismissRequest = { showDialog = false },
+                title = stringResource(id = R.string.add_description_text),
+                icon = Icons.Filled.Edit,
+                confirmOnClick = {
+                    if (textDescription != "") {
+                        updateDescription(textDescription)
+                    }
+                    showDialog = false
+                },
+                dismissOnClick = { showDialog = false },
+                content = textDescription,
+                onValueChange = { textDescription = it }
+            )
+        }
     }
 }
 
@@ -247,7 +275,16 @@ fun ShowSongs(
             .fillMaxHeight()
             .padding(top = top.dp)
             .clip(RoundedCornerShape(topStart = 20.dp, topEnd = 20.dp))
-            .background(MaterialTheme.colorScheme.primaryContainer),
+            .background(
+                brush = Brush.verticalGradient(
+                    listOf(
+                        MaterialTheme.colorScheme.primaryContainer,
+                        MaterialTheme.colorScheme.secondaryContainer,
+                        MaterialTheme.colorScheme.tertiaryContainer,
+                        MaterialTheme.colorScheme.background
+                    )
+                )
+            ),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         if (songs.isEmpty()) {

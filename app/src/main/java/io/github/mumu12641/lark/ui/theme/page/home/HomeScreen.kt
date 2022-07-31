@@ -25,6 +25,7 @@ import com.skydoves.landscapist.glide.GlideImage
 import com.tencent.mmkv.MMKV
 import io.github.mumu12641.lark.BaseApplication.Companion.context
 import io.github.mumu12641.lark.R
+import io.github.mumu12641.lark.entity.CREATE_SONGLIST_TYPE
 import io.github.mumu12641.lark.entity.Route
 import io.github.mumu12641.lark.entity.SongList
 import io.github.mumu12641.lark.service.MediaServiceConnection.Companion.EMPTY_PLAYBACK_STATE
@@ -46,6 +47,7 @@ fun HomeScreen(
     val allSongList by flow.collectAsState(initial = listOf())
     val currentMetadata by metadata.collectAsState(initial = NOTHING_PLAYING)
     val currentPlayState by playState.collectAsState(initial = EMPTY_PLAYBACK_STATE)
+    val artistSongList by mainViewModel.artistSongList.collectAsState(initial = listOf())
 
 
     Box(
@@ -62,6 +64,7 @@ fun HomeScreen(
                 HomeContent(
                     modifier = Modifier.padding(paddingValues),
                     allSongList,
+                    artistSongList,
                     navController,
                     addSongList
                 )
@@ -88,6 +91,7 @@ fun HomeScreen(
 fun HomeContent(
     modifier: Modifier,
     list: List<SongList>,
+    artistSongList:List<SongList>,
     navController: NavController,
     addSongList: (SongList) -> Unit
 ) {
@@ -99,7 +103,7 @@ fun HomeContent(
         SongListRow(list, addSongList) {
             navController.navigate(Route.ROUTE_SONG_LIST_DETAILS + it.toString())
         }
-        ArtistRow(list)
+        ArtistRow(artistSongList)
     }
 }
 
@@ -117,7 +121,9 @@ private fun ArtistRow(list: List<SongList>) {
         LazyRow(
             contentPadding = PaddingValues(5.dp)
         ) {
-            items(list) {
+            items(list, key = {
+                it.songListId
+            }) { it ->
                 Card(
                     modifier = Modifier
                         .size(150.dp)
@@ -128,6 +134,7 @@ private fun ArtistRow(list: List<SongList>) {
                         Icons.Filled.Face, contentDescription = "test",
                         modifier = Modifier.size(150.dp)
                     )
+                    Text(text = it.songListTitle)
                 }
             }
         }
@@ -156,7 +163,7 @@ private fun SongListRow(
             title = stringResource(id = R.string.add_songlist_text),
             icon = Icons.Filled.Add,
             confirmOnClick = {
-                addSongList(SongList(0L, text, "2022/7/22", 0, context.getString(R.string.no_description_text), "null", 2))
+                addSongList(SongList(0L, text, "2022/7/22", 0, context.getString(R.string.no_description_text), "null", CREATE_SONGLIST_TYPE))
                 showDialog = false
                 text = ""
             },

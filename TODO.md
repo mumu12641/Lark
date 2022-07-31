@@ -6,25 +6,27 @@ Coming Soon		done
 
 User Page			done
 
+BottomSheet done
+
+Play Page	done
+
+切换深色模式bug		done  但是界面还有点问题 fixed
+
+
+
 Animation			Wip
 
 UI Improvement   always wip
 
-BottomSheet done
+随机播放	wip
 
-Play Page	
-
-
-
-随机播放
+Artist wip 选取较多歌曲的显示在首页
 
 渐变色
 
 自定义主题 
 
-切换深色模式bug		done  但是界面还有点问题
 
-Artist
 
 ![Detailed view of MusicService](https://github.com/android/uamp/raw/main/docs/images/4-MusicService.png)![Diagram showing how MediaController and MediaSession communicate](https://github.com/android/uamp/raw/main/docs/images/5-MediaController.png)
 

@@ -44,7 +44,6 @@ fun FloatingPlayMediaButton(
             imageModel = currentMetadata.getString(MediaMetadataCompat.METADATA_KEY_ALBUM_ART_URI),
             failure = R.drawable.ic_baseline_music_note_24
         )
-
         AnimatedVisibility(
             visible = extend,
             enter = expandVertically(

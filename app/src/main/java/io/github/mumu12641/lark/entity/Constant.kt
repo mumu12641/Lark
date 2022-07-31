@@ -11,7 +11,7 @@ object Route {
     val ROUTE_CLOUD = context.getString(R.string.cloud_text)
     val ROUTE_USER = context.getString(R.string.user_message_text)
     val ROUTE_SONG_LIST_DETAILS = context.getString(R.string.song_list_details_text)
-    val ROUTE_PLAY_PAGE = "Play Page"
+    const val ROUTE_PLAY_PAGE = "Play Page"
 }
 
 object Load {
@@ -33,6 +33,10 @@ const val ACTION_PAUSE = "PAUSE"
 const val ACTION_NEXT = "NEXT"
 const val ACTION_PREVIOUS = "PREVIOUS"
 const val ACTION_PLAY = "PLAY"
+
+const val PREFILL_SONGLIST_TYPE = 1
+const val CREATE_SONGLIST_TYPE = 2
+const val ARTIST_SONGLIST_TYPE = 3
 
 val INIT_SONG = Song(
     0L, "最伟大的作品", "周杰伦", "11", "11", 100

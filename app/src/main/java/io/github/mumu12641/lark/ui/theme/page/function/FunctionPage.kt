@@ -67,7 +67,7 @@ fun FunctionPage(
         modifier = Modifier.fillMaxSize()
     ) {
         BottomSheetScaffold(
-            modifier = Modifier.background(MaterialTheme.colorScheme.background),
+            backgroundColor = MaterialTheme.colorScheme.background,
             scaffoldState = bottomSheetScaffoldState,
             sheetContent = {
                 SongDetailBottomSheet(song = currentShowSong!!) {

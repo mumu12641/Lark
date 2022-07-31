@@ -20,7 +20,7 @@ interface MusicDao {
     suspend fun insertRef(playlistSongCrossRef: PlaylistSongCrossRef)
 
     @Query("SELECT * FROM Song")
-    fun queryAllSong():Flow<List<Song>>
+    suspend fun queryAllSong():List<Song>
     @Query("SELECT * FROM Song WHERE songId = :songId")
     suspend fun querySongById(songId:Long):Song
     @Query("SELECT songId FROM Song WHERE mediaFileUri = :mediaFileUri")
@@ -33,6 +33,11 @@ interface MusicDao {
     fun querySongListFlowById(songListId: Long):Flow<SongList>
     @Query("SELECT * FROM SongList WHERE songListId = :songListId")
     suspend fun querySongListById(songListId: Long):SongList
+    @Query("SELECT EXISTS(SELECT * FROM songlist WHERE songListTitle = :title AND type = :type)")
+    suspend fun isSongListExist(title:String,type:Int):Boolean
+    @Query("SELECT songListId FROM songlist WHERE songListTitle = :title AND type = :type")
+    suspend fun querySongListId(title:String,type:Int):Long
+
 
     @Query("SELECT * FROM playlistsongcrossref")
     fun queryAllRef():List<PlaylistSongCrossRef>
