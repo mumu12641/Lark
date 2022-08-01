@@ -16,13 +16,12 @@ import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.ArrowBack
-import androidx.compose.material.icons.filled.Notifications
 import androidx.compose.material.icons.filled.Refresh
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -30,8 +29,6 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.airbnb.lottie.compose.*
-import com.hjq.permissions.Permission
-import com.hjq.permissions.XXPermissions
 import io.github.mumu12641.lark.MainActivity.Companion.context
 import io.github.mumu12641.lark.R
 import io.github.mumu12641.lark.entity.*
@@ -43,9 +40,9 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
 
-@SuppressLint("UnrememberedMutableState")
+@SuppressLint("UnrememberedMutableState", "RememberReturnType")
 @RequiresApi(Build.VERSION_CODES.Q)
-@OptIn(ExperimentalMaterialApi::class)
+@OptIn(ExperimentalMaterialApi::class, ExperimentalMaterial3Api::class)
 @Composable
 fun FunctionPage(
     navController: NavController,
@@ -63,6 +60,7 @@ fun FunctionPage(
     var showDialog by remember { mutableStateOf(false) }
     var showAddDialog by remember { mutableStateOf(false) }
     var text by remember { mutableStateOf("") }
+
     Box(
         modifier = Modifier.fillMaxSize()
     ) {
@@ -80,7 +78,7 @@ fun FunctionPage(
             topBar = {
                 LarkTopBar(
                     title = route,
-                    navIcon = Icons.Filled.ArrowBack
+                    navIcon = Icons.Filled.ArrowBack,
                 ) {
                     navController.popBackStack()
                 }
@@ -104,8 +102,10 @@ fun FunctionPage(
                                 changeText = { text = it })
                         }
 
-                        LocalSetUp(
+                        LocalContent(
                             modifier = Modifier.padding(paddingValues),
+                            showDialog,
+                            showAddDialog,
                             localMusicList,
                             loadLocal,
                             { song ->
@@ -235,83 +235,22 @@ private fun AddToSongListDialog(
 }
 
 
-@RequiresApi(Build.VERSION_CODES.Q)
-@SuppressLint("CoroutineCreationDuringComposition", "UnrememberedMutableState")
-@Composable
-fun LocalSetUp(
-    modifier: Modifier,
-    localMusicList: List<Song>,
-    loadLocal: Int,
-    showBottomSheet: (Song) -> Unit,
-    playMedia: (Long, Long) -> Unit
-) {
-    var showDialog by remember {
-        mutableStateOf(
-            value = !XXPermissions.isGranted(context, Permission.ACCESS_MEDIA_LOCATION)
-        )
-    }
-    var request by remember {
-        mutableStateOf(false)
-    }
-    if (showDialog) {
-        LarkAlertDialog(
-            {},
-            stringResource(id = R.string.get_media_permission_text),
-            Icons.Filled.Notifications,
-            {
-                Text(
-                    text = stringResource(id = R.string.request_permission_message_text),
-                )
-            },
-            {
-                showDialog = false
-                request = true
-            },
-            stringResource(id = R.string.confirm_text),
-            {
-                TextButton(
-                    onClick = {
-                        showDialog = false
-                    }
-                ) {
-                    Text(stringResource(id = R.string.cancel_text))
-                }
-            },
-        )
-    }
-    if (request) {
-        XXPermissions.with(context)
-            .permission(
-                listOf(
-                    Permission.ACCESS_MEDIA_LOCATION,
-                    Permission.READ_EXTERNAL_STORAGE,
-                    Permission.WRITE_EXTERNAL_STORAGE
-                )
-            )
-            .request { _, _ -> }
-    }
-    if (XXPermissions.isGranted(context, Permission.READ_EXTERNAL_STORAGE) && !showDialog) {
-        LocalContent(modifier = modifier, localMusicList, loadLocal, showBottomSheet, playMedia)
-    }
-    Box(
-        modifier = modifier.fillMaxSize(), contentAlignment = Alignment.Center
-    ) {
-
-    }
-}
-
 @OptIn(ExperimentalAnimationApi::class)
 @SuppressLint("UnrememberedMutableState", "CoroutineCreationDuringComposition")
 @Composable
 fun LocalContent(
     modifier: Modifier,
+    showDialog: Boolean,
+    showAddDialog: Boolean,
     localMusic: List<Song>,
     loadLocal: Int,
     showBottomSheet: (Song) -> Unit,
     playMedia: (Long, Long) -> Unit
 ) {
     AnimatedContent(
-        modifier = Modifier.fillMaxSize().background(MaterialTheme.colorScheme.background),
+        modifier = Modifier
+            .fillMaxSize()
+            .background(MaterialTheme.colorScheme.background),
         targetState = loadLocal,
         transitionSpec = {
             slideInVertically { height -> height } + fadeIn() with
@@ -354,7 +293,10 @@ fun Content(
     modifier: Modifier
 ) {
     Box(
-        modifier = modifier.fillMaxSize().background(MaterialTheme.colorScheme.background), contentAlignment = Alignment.Center
+        modifier = modifier
+            .fillMaxSize()
+            .background(MaterialTheme.colorScheme.background),
+        contentAlignment = Alignment.Center
     ) {
         Text(
             text = stringResource(id = R.string.coming_soon_text),
@@ -362,3 +304,69 @@ fun Content(
         )
     }
 }
+
+
+//@RequiresApi(Build.VERSION_CODES.Q)
+//@SuppressLint("CoroutineCreationDuringComposition", "UnrememberedMutableState")
+//@Composable
+//fun LocalSetUp(
+//    modifier: Modifier,
+//    localMusicList: List<Song>,
+//    loadLocal: Int,
+//    showBottomSheet: (Song) -> Unit,
+//    playMedia: (Long, Long) -> Unit
+//) {
+//    var showDialog by remember {
+//        mutableStateOf(
+//            value = !XXPermissions.isGranted(context, Permission.ACCESS_MEDIA_LOCATION)
+//        )
+//    }
+//    var request by remember {
+//        mutableStateOf(false)
+//    }
+//    if (showDialog) {
+//        LarkAlertDialog(
+//            {},
+//            stringResource(id = R.string.get_media_permission_text),
+//            Icons.Filled.Notifications,
+//            {
+//                Text(
+//                    text = stringResource(id = R.string.request_permission_message_text),
+//                )
+//            },
+//            {
+//                showDialog = false
+//                request = true
+//            },
+//            stringResource(id = R.string.confirm_text),
+//            {
+//                TextButton(
+//                    onClick = {
+//                        showDialog = false
+//                    }
+//                ) {
+//                    Text(stringResource(id = R.string.cancel_text))
+//                }
+//            },
+//        )
+//    }
+//    if (request) {
+//        XXPermissions.with(context)
+//            .permission(
+//                listOf(
+//                    Permission.ACCESS_MEDIA_LOCATION,
+//                    Permission.READ_EXTERNAL_STORAGE,
+//                    Permission.WRITE_EXTERNAL_STORAGE
+//                )
+//            )
+//            .request { _, _ -> }
+//    }
+//    if (XXPermissions.isGranted(context, Permission.READ_EXTERNAL_STORAGE) && !showDialog) {
+//        LocalContent(modifier = modifier, localMusicList, loadLocal, showBottomSheet, playMedia)
+//    }
+//    Box(
+//        modifier = modifier.fillMaxSize(), contentAlignment = Alignment.Center
+//    ) {
+//
+//    }
+//}

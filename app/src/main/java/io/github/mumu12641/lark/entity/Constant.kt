@@ -12,6 +12,7 @@ object Route {
     val ROUTE_USER = context.getString(R.string.user_message_text)
     val ROUTE_SONG_LIST_DETAILS = context.getString(R.string.song_list_details_text)
     const val ROUTE_PLAY_PAGE = "Play Page"
+    val ROUTE_ARTIST_PAGE = context.getString(R.string.singer_text)
 }
 
 object Load {

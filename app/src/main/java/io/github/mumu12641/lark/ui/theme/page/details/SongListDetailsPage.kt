@@ -13,16 +13,12 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Edit
-import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material.icons.filled.PlayArrow
 import androidx.compose.material3.Button
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
-import androidx.compose.material3.SmallTopAppBar
 import androidx.compose.material3.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -41,11 +37,7 @@ import io.github.mumu12641.lark.entity.CHANGE_PLAT_LIST_SHUFFLE
 import io.github.mumu12641.lark.entity.INIT_SONG_LIST
 import io.github.mumu12641.lark.entity.Song
 import io.github.mumu12641.lark.entity.SongList
-import io.github.mumu12641.lark.ui.theme.component.AsyncImage
-import io.github.mumu12641.lark.ui.theme.component.SongItemRow
-import io.github.mumu12641.lark.ui.theme.component.SongListPicture
-import io.github.mumu12641.lark.ui.theme.component.TextFieldDialog
-import io.github.mumu12641.lark.ui.theme.page.home.MainViewModel
+import io.github.mumu12641.lark.ui.theme.component.*
 
 @OptIn(ExperimentalMaterialApi::class)
 @SuppressLint("StateFlowValueCalledInComposition")
@@ -68,6 +60,16 @@ fun SongListDetailsPage(
         modifier = Modifier.fillMaxSize()
     ) {
         BottomSheetScaffold(
+            modifier = Modifier
+                .padding(
+                    WindowInsets
+                        .statusBars
+                        .only(
+                            WindowInsetsSides.Horizontal
+                                    + WindowInsetsSides.Top
+                        )
+                        .asPaddingValues()
+                ),
             backgroundColor = MaterialTheme.colorScheme.background,
             scaffoldState = bottomSheetScaffoldState,
             sheetContent = {
@@ -76,7 +78,7 @@ fun SongListDetailsPage(
                     modifier = Modifier,
                     top = 0,
                     playMedia = { songListId: Long, songId: Long ->
-                        MainViewModel.playMedia(songListId, songId)
+                        playMedia(songListId, songId)
                     },
                     songList = state
                 )
@@ -86,27 +88,7 @@ fun SongListDetailsPage(
 
             sheetShape = RoundedCornerShape(topStart = 20.dp, topEnd = 20.dp),
             topBar = {
-                SmallTopAppBar(
-                    modifier = Modifier.padding(
-                        WindowInsets
-                            .statusBars
-                            .only(
-                                WindowInsetsSides.Horizontal
-                                        + WindowInsetsSides.Top
-                            ).asPaddingValues()
-                    ),
-                    title = {},
-                    navigationIcon = {
-                        IconButton(onClick = { navController.popBackStack() }) {
-                            Icon(Icons.Filled.ArrowBack, contentDescription = "back")
-                        }
-                    },
-                    actions = {
-                        IconButton(onClick = { /*TODO*/ }) {
-                            Icon(Icons.Filled.MoreVert, contentDescription = "Menu")
-                        }
-                    }
-                )
+                LarkSmallTopBar(title = "", navIconClick = { navController.popBackStack() }) {}
             },
             content = { paddingValues ->
                 SongListDetailsContent(
@@ -280,7 +262,6 @@ fun ShowSongs(
                     listOf(
                         MaterialTheme.colorScheme.primaryContainer,
                         MaterialTheme.colorScheme.secondaryContainer,
-                        MaterialTheme.colorScheme.tertiaryContainer,
                         MaterialTheme.colorScheme.background
                     )
                 )

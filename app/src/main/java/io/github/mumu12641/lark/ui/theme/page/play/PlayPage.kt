@@ -2,8 +2,7 @@ package io.github.mumu12641.lark.ui.theme.page.play
 
 import android.support.v4.media.MediaMetadataCompat
 import android.support.v4.media.session.PlaybackStateCompat
-import androidx.compose.animation.*
-import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.animation.core.animateIntAsState
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -16,7 +15,9 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Slider
 import androidx.compose.material3.SliderColors
 import androidx.compose.material3.SliderDefaults
-import androidx.compose.runtime.*
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -73,7 +74,7 @@ fun PlayPage(
                     modifier = Modifier,
                     top = 0,
                     playMedia = { songListId: Long, songId: Long ->
-                        MainViewModel.playMedia(songListId, songId)
+                        mainViewModel.playMedia(songListId, songId)
                     },
                     songList = currentSongList
                 )
@@ -113,8 +114,8 @@ fun PlayPageContent(
     onClickNext: () -> Unit,
     onSeekTo: (Long) -> Unit
 ) {
-    val cornerAlbum: Int by animateIntAsState(if (currentPlayState.state == PlaybackStateCompat.STATE_PLAYING) 150 else 50)
-    val cornerButton: Int by animateIntAsState(if (currentPlayState.state == PlaybackStateCompat.STATE_PLAYING) 80 else 20)
+    val cornerAlbum: Int by animateIntAsState(if (currentPlayState.state == PlaybackStateCompat.STATE_PLAYING) 100 else 50)
+    val cornerButton: Int by animateIntAsState(if (currentPlayState.state == PlaybackStateCompat.STATE_PLAYING) 80 else 28)
 
     Box(modifier = modifier) {
         Column(
@@ -208,7 +209,7 @@ fun PlayPageContent(
                 Box(
                     modifier = Modifier
                         .size(width = 100.dp, height = 75.dp)
-                        .clip(RoundedCornerShape(20.dp))
+                        .clip(RoundedCornerShape(28.dp))
                         .background(MaterialTheme.colorScheme.secondaryContainer)
                         .clickable(onClick = onClickNext),
                     contentAlignment = Alignment.Center
@@ -226,7 +227,7 @@ fun PlayPageContent(
             ) {
                 Box(
                     modifier = Modifier
-                        .clip(RoundedCornerShape(20.dp))
+                        .clip(RoundedCornerShape(28.dp))
                         .size(width = 75.dp, height = 75.dp)
                         .background(MaterialTheme.colorScheme.secondaryContainer)
                         .clickable(onClick = onClickPrevious),

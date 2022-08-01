@@ -8,6 +8,8 @@ import com.google.accompanist.navigation.animation.AnimatedNavHost
 import com.google.accompanist.navigation.animation.rememberAnimatedNavController
 import io.github.mumu12641.lark.entity.Route
 import io.github.mumu12641.lark.ui.theme.component.AnimationComposable
+import io.github.mumu12641.lark.ui.theme.page.artist.ArtistPage
+import io.github.mumu12641.lark.ui.theme.page.artist.ArtistViewModel
 import io.github.mumu12641.lark.ui.theme.page.details.SongListDetailsPage
 import io.github.mumu12641.lark.ui.theme.page.details.SongListDetailsViewModel
 import io.github.mumu12641.lark.ui.theme.page.function.FunctionPage
@@ -23,12 +25,13 @@ fun MainScreen(
     mainViewModel: MainViewModel,
     functionViewModel: FunctionViewModel,
     userViewModel: UserViewModel,
-    songListDetailsViewModel: SongListDetailsViewModel
+    songListDetailsViewModel: SongListDetailsViewModel,
+    artistViewModel: ArtistViewModel
 ) {
     val navController = rememberAnimatedNavController()
 
     val playMedia = { songListId: Long, songId: Long ->
-        MainViewModel.playMedia(songListId, songId)
+        mainViewModel.playMedia(songListId, songId)
     }
 
     AnimatedNavHost(
@@ -105,6 +108,13 @@ fun MainScreen(
             Route.ROUTE_PLAY_PAGE
         ){
             PlayPage(navController = navController, mainViewModel = mainViewModel)
+        }
+        AnimationComposable(
+            Route.ROUTE_ARTIST_PAGE
+        ){
+            ArtistPage(navController = navController, artistViewModel = artistViewModel, refreshArtist = {mainViewModel.refreshArtist()}){
+                navController.navigate(Route.ROUTE_SONG_LIST_DETAILS + it.toString())
+            }
         }
     }
 }

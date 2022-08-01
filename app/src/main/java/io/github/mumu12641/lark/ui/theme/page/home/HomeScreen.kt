@@ -1,8 +1,9 @@
 package io.github.mumu12641.lark.ui.theme.page.home
 
+import android.os.Build
 import android.support.v4.media.MediaMetadataCompat
 import android.support.v4.media.session.PlaybackStateCompat
-import androidx.compose.foundation.Image
+import androidx.annotation.RequiresApi
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyRow
@@ -12,6 +13,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Face
 import androidx.compose.material.icons.filled.Home
+import androidx.compose.material.icons.filled.Notifications
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -21,9 +23,14 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
+import com.google.accompanist.permissions.ExperimentalPermissionsApi
+import com.google.accompanist.permissions.rememberPermissionState
+import com.hjq.permissions.Permission
+import com.hjq.permissions.XXPermissions
 import com.skydoves.landscapist.glide.GlideImage
 import com.tencent.mmkv.MMKV
 import io.github.mumu12641.lark.BaseApplication.Companion.context
+import io.github.mumu12641.lark.MainActivity
 import io.github.mumu12641.lark.R
 import io.github.mumu12641.lark.entity.CREATE_SONGLIST_TYPE
 import io.github.mumu12641.lark.entity.Route
@@ -33,6 +40,7 @@ import io.github.mumu12641.lark.service.MediaServiceConnection.Companion.NOTHING
 import io.github.mumu12641.lark.ui.theme.component.*
 import kotlinx.coroutines.flow.Flow
 
+@RequiresApi(Build.VERSION_CODES.Q)
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun HomeScreen(
@@ -61,7 +69,7 @@ fun HomeScreen(
                 ) {}
             },
             content = { paddingValues ->
-                HomeContent(
+                HomeSetup(
                     modifier = Modifier.padding(paddingValues),
                     allSongList,
                     artistSongList,
@@ -76,7 +84,7 @@ fun HomeScreen(
                     onClickNext = { mainViewModel.onSkipToNext() },
                     onClickPause = { mainViewModel.onPause() },
                     onClickPlay = { mainViewModel.onPlay() },
-                    onClickPrevious = { mainViewModel.onSkipToPrevious() }){
+                    onClickPrevious = { mainViewModel.onSkipToPrevious() }) {
                     navController.navigate(Route.ROUTE_PLAY_PAGE)
                 }
             },
@@ -86,12 +94,68 @@ fun HomeScreen(
 
 }
 
+@RequiresApi(Build.VERSION_CODES.Q)
+@OptIn(ExperimentalPermissionsApi::class)
+@Composable
+fun HomeSetup(
+    modifier: Modifier,
+    list: List<SongList>,
+    artistSongList: List<SongList>,
+    navController: NavController,
+    addSongList: (SongList) -> Unit
+) {
+    var showDialog by remember {
+        mutableStateOf(true)
+    }
+    var request by remember {
+        mutableStateOf(false)
+    }
+    val permissionState =
+        rememberPermissionState(permission = android.Manifest.permission.ACCESS_MEDIA_LOCATION)
+    if (permissionState.hasPermission) {
+        showDialog = false
+        HomeContent(modifier, list, artistSongList, navController, addSongList)
+    } else {
+        if (showDialog) {
+            LarkAlertDialog(
+                {},
+                stringResource(id = R.string.get_media_permission_text),
+                Icons.Filled.Notifications,
+                { Text(text = stringResource(id = R.string.request_permission_message_text)) },
+                {
+                    showDialog = false
+                    request = true
+                },
+                stringResource(id = R.string.confirm_text),
+                {
+                    TextButton(onClick = {
+                        showDialog = false
+                        request = true
+                    }) { Text(stringResource(id = R.string.cancel_text)) }
+                },
+            )
+        }
+        if (request) {
+            XXPermissions.with(MainActivity.context)
+                .permission(
+                    listOf(
+                        Permission.ACCESS_MEDIA_LOCATION,
+                        Permission.READ_EXTERNAL_STORAGE,
+                        Permission.WRITE_EXTERNAL_STORAGE
+                    )
+                )
+                .request { _, _ -> }
+        }
+    }
+
+
+}
 
 @Composable
 fun HomeContent(
     modifier: Modifier,
     list: List<SongList>,
-    artistSongList:List<SongList>,
+    artistSongList: List<SongList>,
     navController: NavController,
     addSongList: (SongList) -> Unit
 ) {
@@ -103,13 +167,13 @@ fun HomeContent(
         SongListRow(list, addSongList) {
             navController.navigate(Route.ROUTE_SONG_LIST_DETAILS + it.toString())
         }
-        ArtistRow(artistSongList)
+        ArtistRow(navController, artistSongList)
     }
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-private fun ArtistRow(list: List<SongList>) {
+private fun ArtistRow(navController: NavController, list: List<SongList>) {
     Column(
         modifier = Modifier.fillMaxWidth()
     ) {
@@ -123,18 +187,9 @@ private fun ArtistRow(list: List<SongList>) {
         ) {
             items(list, key = {
                 it.songListId
-            }) { it ->
-                Card(
-                    modifier = Modifier
-                        .size(150.dp)
-                        .padding(5.dp),
-                    shape = CircleShape
-                ) {
-                    Image(
-                        Icons.Filled.Face, contentDescription = "test",
-                        modifier = Modifier.size(150.dp)
-                    )
-                    Text(text = it.songListTitle)
+            }) {
+                ArtistIcon(modifier = Modifier.size(150.dp), padding = 5, artist = it) {
+                    navController.navigate(Route.ROUTE_ARTIST_PAGE)
                 }
             }
         }
@@ -163,7 +218,17 @@ private fun SongListRow(
             title = stringResource(id = R.string.add_songlist_text),
             icon = Icons.Filled.Add,
             confirmOnClick = {
-                addSongList(SongList(0L, text, "2022/7/22", 0, context.getString(R.string.no_description_text), "null", CREATE_SONGLIST_TYPE))
+                addSongList(
+                    SongList(
+                        0L,
+                        text,
+                        "2022/7/22",
+                        0,
+                        context.getString(R.string.no_description_text),
+                        "null",
+                        CREATE_SONGLIST_TYPE
+                    )
+                )
                 showDialog = false
                 text = ""
             },

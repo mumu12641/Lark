@@ -91,9 +91,11 @@ dependencies {
     implementation("io.coil-kt:coil-compose:2.1.0")
     implementation("com.github.skydoves:landscapist-glide:1.5.3")
     implementation("me.onebone:toolbar-compose:2.3.4")
+
     implementation("com.guolindev.permissionx:permissionx:$permissionXVersion")
     implementation("com.github.getActivity:XXPermissions:15.0")
     implementation("com.google.accompanist:accompanist-permissions:0.24.0-alpha")
+
     implementation("com.tencent:mmkv:1.2.13")
     implementation("com.airbnb.android:lottie-compose:$lottieVersion")
 

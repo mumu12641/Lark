@@ -26,6 +26,10 @@ import javax.inject.Inject
 @HiltViewModel
 class MainViewModel @Inject constructor() : ViewModel() {
 
+    private val TAG = "MainViewModel"
+
+    lateinit var mediaServiceConnection: MediaServiceConnection
+
     val currentPlayMetadata by lazy { mediaServiceConnection.playMetadata }
 
     val currentPlayState by lazy { mediaServiceConnection.playState }
@@ -39,9 +43,16 @@ class MainViewModel @Inject constructor() : ViewModel() {
             songList.type in 1 until ARTIST_SONGLIST_TYPE
         }
     }
-    val artistSongList = DataBaseUtils.queryAllSongList().map {
-        it.filter {  songList ->
+    val artistSongList = DataBaseUtils.queryAllSongList().map { it ->
+        val filterList = it.filter { songList ->
             songList.type == ARTIST_SONGLIST_TYPE
+        }
+        if (filterList.size <= 5) {
+            return@map filterList
+        } else {
+            return@map filterList.sortedByDescending { songList ->
+                songList.songNumber
+            }.subList(0,5)
         }
     }
 
@@ -82,19 +93,26 @@ class MainViewModel @Inject constructor() : ViewModel() {
             mediaServiceConnection.transportControls.seekTo(position)
         }
     }
+
     init {
+        Log.d(TAG, "MainViewModel init")
+        mediaServiceConnection = MediaServiceConnection(
+            context,
+            ComponentName(context, MediaPlaybackService::class.java)
+        )
         refreshArtist()
     }
+
     fun refreshArtist() {
         viewModelScope.launch(Dispatchers.IO) {
             val songs = DataBaseUtils.queryAllSong()
             for (i in songs) {
-                if (DataBaseUtils.isSongListExist(i.songSinger, ARTIST_SONGLIST_TYPE) ) {
+                if (DataBaseUtils.isSongListExist(i.songSinger, ARTIST_SONGLIST_TYPE)) {
                     val songListId = DataBaseUtils.querySongListId(
                         i.songSinger,
                         ARTIST_SONGLIST_TYPE
                     )
-                    if (!DataBaseUtils.isRefExist(songListId,i.songId)) {
+                    if (!DataBaseUtils.isRefExist(songListId, i.songId)) {
                         DataBaseUtils.insertRef(
                             PlaylistSongCrossRef(
                                 songListId, i.songId
@@ -115,27 +133,21 @@ class MainViewModel @Inject constructor() : ViewModel() {
     }
 
 
-    companion object {
-        val mediaServiceConnection: MediaServiceConnection = MediaServiceConnection.getInstance(
-            context,
-            ComponentName(context, MediaPlaybackService::class.java)
-        )
-
-        fun playMedia(songListId: Long, songId: Long) {
-            Log.d("TAG", "playMedia: $songListId + $songId")
-            val bundle = Bundle()
-            bundle.apply {
-                putLong("songListId", songListId)
-                putLong("songId", songId)
-            }
-            mediaServiceConnection.transportControls.sendCustomAction(CHANGE_PLAY_LIST, bundle)
+    fun playMedia(songListId: Long, songId: Long) {
+        Log.d("TAG", "playMedia: $songListId + $songId")
+        val bundle = Bundle()
+        bundle.apply {
+            putLong("songListId", songListId)
+            putLong("songId", songId)
         }
+        mediaServiceConnection.transportControls.sendCustomAction(CHANGE_PLAY_LIST, bundle)
     }
+
 
     @RequiresApi(Build.VERSION_CODES.M)
     override fun onCleared() {
         super.onCleared()
-        Log.d("TAG", "onCleared: ")
+        Log.d(TAG, "onCleared: ")
         mediaServiceConnection.disConnected()
     }
 }

@@ -18,7 +18,6 @@ import android.widget.RemoteViews
 import androidx.annotation.RequiresApi
 import com.bumptech.glide.Glide
 import com.tencent.mmkv.MMKV
-import io.github.mumu12641.lark.BaseApplication
 import io.github.mumu12641.lark.BaseApplication.Companion.context
 import io.github.mumu12641.lark.MainActivity
 import io.github.mumu12641.lark.R
@@ -286,16 +285,15 @@ class MediaServiceConnection(context: Context, componentName: ComponentName) {
             .putString(METADATA_KEY_ARTIST, "未知艺术家")
             .build()
 
-        @Volatile
-        private var instance: MediaServiceConnection? = null
-
-        fun getInstance(context: Context, serviceComponent: ComponentName) =
-            instance ?: synchronized(this) {
-                instance ?: MediaServiceConnection(context, serviceComponent)
-                    .also { instance = it }
-            }
-
-
+//        @Volatile
+//        private var instance: MediaServiceConnection? = null
+//
+//
+//        fun getInstance(context: Context, serviceComponent: ComponentName) =
+//            instance ?: synchronized(this) {
+//                instance ?: MediaServiceConnection(context, serviceComponent)
+//                    .also { instance = it }
+//            }
     }
 
     private val TAG: String = "MediaServiceConnection"

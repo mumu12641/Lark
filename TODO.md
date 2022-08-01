@@ -10,7 +10,13 @@ BottomSheet done
 
 Play Page	done
 
-切换深色模式bug		done  但是界面还有点问题 fixed
+渐变色	done
+
+切换深色模式bug		done  但是界面还有点问题	 fixed
+
+
+
+折叠标题栏 		废弃
 
 
 
@@ -20,9 +26,9 @@ UI Improvement   always wip
 
 随机播放	wip
 
-Artist wip 选取较多歌曲的显示在首页
+Artist	 wip 	选取较多歌曲的显示在首页
 
-渐变色
+
 
 自定义主题 
 
