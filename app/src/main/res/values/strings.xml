@@ -30,4 +30,5 @@
     <string name="create_song_Llst_text">Create a new songlist</string>
     <string name="no_description_text">No description yet</string>
     <string name="add_description_text">Add description</string>
+    <string name="song_text">Songs</string>
 </resources>

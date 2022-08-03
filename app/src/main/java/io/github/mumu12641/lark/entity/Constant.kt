@@ -13,6 +13,7 @@ object Route {
     val ROUTE_SONG_LIST_DETAILS = context.getString(R.string.song_list_details_text)
     const val ROUTE_PLAY_PAGE = "Play Page"
     val ROUTE_ARTIST_PAGE = context.getString(R.string.singer_text)
+    const val ROUTE_ARTIST_DETAIL_PAGE = "Artist detail"
 }
 
 object Load {
@@ -20,6 +21,12 @@ object Load {
     const val SUCCESS = 1
     const val ERROR = 2
     const val NONE = 3
+}
+
+sealed class LoadState(val msg: String) {
+    class Loading(msg: String = "") : LoadState(msg)
+    class Success(msg: String = "") : LoadState(msg)
+    class Fail(msg: String) : LoadState(msg)
 }
 
 const val LocalSongListId = 1L

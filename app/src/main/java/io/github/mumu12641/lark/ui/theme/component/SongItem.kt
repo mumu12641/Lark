@@ -38,14 +38,16 @@ fun SongItem(
 
 @Composable
 fun SongItemRow(
-    song: Song, showBottomSheet: ((Song) -> Unit)?, onClick: () -> Unit
+    song: Song,
+    showBottomSheet: ((Song) -> Unit)?,
+    onClick: () -> Unit
 ) {
     Row(
         verticalAlignment = Alignment.CenterVertically,
         modifier = Modifier
             .fillMaxWidth()
             .height(80.dp)
-            .padding( end = 5.dp, top = 5.dp, bottom = 5.dp)
+            .padding(end = 5.dp, top = 5.dp, bottom = 5.dp)
             .background(Color.Transparent)
             .clip(RoundedCornerShape(5.dp))
             .clickable(onClick = onClick)

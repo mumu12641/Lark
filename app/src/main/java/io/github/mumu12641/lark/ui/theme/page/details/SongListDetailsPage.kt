@@ -10,6 +10,7 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
@@ -26,17 +27,17 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.RectangleShape
+import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontFamily
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.zIndex
 import androidx.navigation.NavController
 import io.github.mumu12641.lark.BaseApplication
 import io.github.mumu12641.lark.R
-import io.github.mumu12641.lark.entity.CHANGE_PLAT_LIST_SHUFFLE
-import io.github.mumu12641.lark.entity.INIT_SONG_LIST
-import io.github.mumu12641.lark.entity.Song
-import io.github.mumu12641.lark.entity.SongList
+import io.github.mumu12641.lark.entity.*
 import io.github.mumu12641.lark.ui.theme.component.*
 
 @OptIn(ExperimentalMaterialApi::class)
@@ -148,7 +149,7 @@ fun SongListDetailsContent(
                     .background(MaterialTheme.colorScheme.primaryContainer)
                     .clickable(
                         onClick = {
-                            if (songList?.type != 1) {
+                            if (songList?.type == CREATE_SONGLIST_TYPE) {
                                 launcherBackground.launch("image/*")
                             } else {
                                 Log.d("TAG", "SongListDetailsContent")
@@ -156,9 +157,8 @@ fun SongListDetailsContent(
                         }
                     ),
                 contentAlignment = Alignment.Center,
-
-                ) {
-                if (songList?.type == 1) {
+            ) {
+                if (songList?.type == PREFILL_SONGLIST_TYPE) {
                     Box(modifier = Modifier.size(350.dp)) {
                         if (songs.isNotEmpty()) {
                             AsyncImage(
@@ -182,48 +182,17 @@ fun SongListDetailsContent(
             text = songList!!.songListTitle,
             style = MaterialTheme.typography.displaySmall,
             color = MaterialTheme.colorScheme.primary,
-            fontFamily = FontFamily.Serif,
             modifier = Modifier.padding(start = 20.dp)
         )
         Text(
             text = songList.description,
             style = MaterialTheme.typography.titleLarge,
             color = MaterialTheme.colorScheme.primary,
-            fontFamily = FontFamily.Serif,
             modifier = Modifier
                 .padding(start = 20.dp)
                 .clickable { showDialog = true }
         )
-        Row(
-            modifier = Modifier
-                .padding(start = 20.dp, end = 20.dp)
-                .fillMaxWidth(),
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            OutlinedButton(
-                modifier = Modifier.weight(1f),
-                onClick = { playMedia(songList.songListId, songs[0].songId) }) {
-                Row(verticalAlignment = Alignment.CenterVertically) {
-                    Icon(Icons.Filled.PlayArrow, contentDescription = "play")
-                    Text(text = stringResource(id = R.string.play_all_text))
-                }
-            }
-            Spacer(modifier = Modifier.weight(0.25f))
-            Button(modifier = Modifier.weight(1f), onClick = {
-                playMedia(
-                    songList.songListId,
-                    CHANGE_PLAT_LIST_SHUFFLE
-                )
-            }) {
-                Row(verticalAlignment = Alignment.CenterVertically) {
-                    Icon(
-                        painter = painterResource(id = R.drawable.ic_baseline_shuffle_24),
-                        contentDescription = "play"
-                    )
-                    Text(text = stringResource(id = R.string.shuffle_text))
-                }
-            }
-        }
+        PlayButton(playMedia, songList, songs)
         if (showDialog) {
             TextFieldDialog(
                 onDismissRequest = { showDialog = false },
@@ -239,6 +208,44 @@ fun SongListDetailsContent(
                 content = textDescription,
                 onValueChange = { textDescription = it }
             )
+        }
+    }
+}
+
+@Composable
+fun PlayButton(
+    playMedia: (Long, Long) -> Unit,
+    songList: SongList,
+    songs: List<Song>
+) {
+    Row(
+        modifier = Modifier
+            .padding(start = 20.dp, end = 20.dp)
+            .fillMaxWidth(),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        OutlinedButton(
+            modifier = Modifier.weight(1f),
+            onClick = { playMedia(songList.songListId, songs[0].songId) }) {
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Icon(Icons.Filled.PlayArrow, contentDescription = "play")
+                Text(text = stringResource(id = R.string.play_all_text))
+            }
+        }
+        Spacer(modifier = Modifier.weight(0.25f))
+        Button(modifier = Modifier.weight(1f), onClick = {
+            playMedia(
+                songList.songListId,
+                CHANGE_PLAT_LIST_SHUFFLE
+            )
+        }) {
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Icon(
+                    painter = painterResource(id = R.drawable.ic_baseline_shuffle_24),
+                    contentDescription = "play"
+                )
+                Text(text = stringResource(id = R.string.shuffle_text))
+            }
         }
     }
 }
@@ -289,6 +296,67 @@ fun ShowSongs(
                 color = MaterialTheme.colorScheme.onSecondary,
                 style = MaterialTheme.typography.bodySmall
             )
+        }
+    }
+}
+
+@Composable
+fun ShowArtistSongs(
+    songs: List<Song>,
+    modifier: Modifier,
+    playMedia: (Long, Long) -> Unit,
+    songList: SongList
+) {
+//    LazyColumn(modifier = modifier) {
+//        items(songs) { item: Song ->
+//            Row(
+//                modifier = Modifier
+//                    .fillMaxWidth()
+//                    .padding(5.dp),
+//                verticalAlignment = Alignment.CenterVertically
+//            ) {
+//                Row(
+//                    modifier = Modifier
+//                        .size(10.dp, 2.dp)
+//                        .clip(CircleShape)
+//                        .background(MaterialTheme.colorScheme.outline.copy(alpha = 0.2f))
+//                        .zIndex(1f)
+//                ) {}
+//                Text(
+//                    modifier = Modifier.padding(start = 50.dp),
+//                    text = item.songTitle,
+//                    maxLines = 1,
+//                    softWrap = false,
+//                    overflow = TextOverflow.Ellipsis
+//                )
+//            }
+//
+//        }
+//    }
+    Column(modifier = modifier) {
+        repeat(songs.size){
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(5.dp)
+                    .clickable {  },
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Row(
+                    modifier = Modifier
+                        .size(10.dp, 2.dp)
+                        .clip(CircleShape)
+                        .background(MaterialTheme.colorScheme.outline.copy(alpha = 0.2f))
+                        .zIndex(1f)
+                ) {}
+                Text(
+                    modifier = Modifier.padding(start = 50.dp),
+                    text = songs[it].songTitle,
+                    maxLines = 1,
+                    softWrap = false,
+                    overflow = TextOverflow.Ellipsis
+                )
+            }
         }
     }
 

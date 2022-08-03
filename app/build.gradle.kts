@@ -1,8 +1,7 @@
-import android.annotation.SuppressLint
 
 plugins {
-    id ("com.android.application")
-    id ("org.jetbrains.kotlin.android")
+    id("com.android.application")
+    id("org.jetbrains.kotlin.android")
     id("kotlin-kapt")
     id("kotlin-android")
     id("dagger.hilt.android.plugin")
@@ -100,14 +99,18 @@ dependencies {
     implementation("com.airbnb.android:lottie-compose:$lottieVersion")
 
     implementation ("androidx.media:media:1.6.0")
-    implementation ("com.google.android.exoplayer:exoplayer-core:2.17.1")
-    implementation ("com.google.android.exoplayer:exoplayer-dash:2.17.1")
-    implementation ("com.google.android.exoplayer:exoplayer-ui:2.17.1")
+    implementation ("com.google.android.exoplayer:exoplayer-core:2.18.1")
+    implementation ("com.google.android.exoplayer:exoplayer-dash:2.18.1")
+    implementation ("com.google.android.exoplayer:exoplayer-ui:2.18.1")
 
     implementation ("com.google.accompanist:accompanist-insets:0.24.13-rc")
     implementation ("com.google.accompanist:accompanist-insets-ui:0.24.13-rc")
     implementation ("com.google.accompanist:accompanist-systemuicontroller:0.24.13-rc")
 
     implementation ("com.android.support:palette-v7:32.0.0")
+
+
+    implementation ("com.squareup.retrofit2:retrofit:2.9.0")
+    implementation ("com.squareup.retrofit2:converter-gson:2.9.0")
 
 }

@@ -8,6 +8,7 @@ import com.google.accompanist.navigation.animation.AnimatedNavHost
 import com.google.accompanist.navigation.animation.rememberAnimatedNavController
 import io.github.mumu12641.lark.entity.Route
 import io.github.mumu12641.lark.ui.theme.component.AnimationComposable
+import io.github.mumu12641.lark.ui.theme.page.artist.ArtistDetailPage
 import io.github.mumu12641.lark.ui.theme.page.artist.ArtistPage
 import io.github.mumu12641.lark.ui.theme.page.artist.ArtistViewModel
 import io.github.mumu12641.lark.ui.theme.page.details.SongListDetailsPage
@@ -106,15 +107,27 @@ fun MainScreen(
         }
         AnimationComposable(
             Route.ROUTE_PLAY_PAGE
-        ){
+        ) {
             PlayPage(navController = navController, mainViewModel = mainViewModel)
         }
         AnimationComposable(
             Route.ROUTE_ARTIST_PAGE
-        ){
-            ArtistPage(navController = navController, artistViewModel = artistViewModel, refreshArtist = {mainViewModel.refreshArtist()}){
-                navController.navigate(Route.ROUTE_SONG_LIST_DETAILS + it.toString())
+        ) {
+            ArtistPage(
+                navController = navController,
+                artistViewModel = artistViewModel,
+                refreshArtist = { mainViewModel.refreshArtist() }) {
+                navController.navigate(Route.ROUTE_ARTIST_DETAIL_PAGE + it.toString())
             }
+        }
+        AnimationComposable(
+            Route.ROUTE_ARTIST_DETAIL_PAGE + "{songListId}"
+        ) { backStackEntry ->
+            backStackEntry.arguments?.getString("songListId")?.let {
+                artistViewModel.refreshId(it.toLong())
+                ArtistDetailPage(navController, artistViewModel)
+            }
+
         }
     }
 }

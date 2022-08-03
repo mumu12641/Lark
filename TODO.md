@@ -26,7 +26,11 @@ UI Improvement   always wip
 
 随机播放	wip
 
-Artist	 wip 	选取较多歌曲的显示在首页
+Artist	  	选取较多歌曲的显示在首页 	done
+
+
+
+获取艺术家的图片以及描述
 
 
 
