@@ -16,6 +16,7 @@ import io.github.mumu12641.lark.R
 fun TextFieldDialog(
     onDismissRequest: () -> Unit,
     title: String,
+    placeholder: String? = null,
     icon: ImageVector,
     confirmOnClick: () -> Unit,
     dismissOnClick: () -> Unit,
@@ -36,6 +37,11 @@ fun TextFieldDialog(
                 modifier = Modifier.background(Color.Transparent),
                 value = content,
                 onValueChange = onValueChange,
+                placeholder = {
+                    placeholder?.let {
+                        Text(text = placeholder)
+                    }
+                },
                 trailingIcon = {
                     IconButton(onClick = { onValueChange("") }) {
                         Icon(Icons.Filled.Close, contentDescription = "close")

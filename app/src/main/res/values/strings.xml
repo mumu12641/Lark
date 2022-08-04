@@ -31,4 +31,7 @@
     <string name="no_description_text">No description yet</string>
     <string name="add_description_text">Add description</string>
     <string name="song_text">Songs</string>
+    <string name="reset_artist_text">Reset artist info</string>
+    <string name="not_empty_text">This place cannot be empty</string>
+    <string name="fill_search_text">Please fill in the search keywords</string>
 </resources>

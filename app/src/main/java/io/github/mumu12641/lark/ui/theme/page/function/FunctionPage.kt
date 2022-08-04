@@ -259,17 +259,7 @@ fun LocalContent(
     ) { targetState ->
         when (targetState) {
             Load.LOADING -> {
-                val composition by rememberLottieComposition(LottieCompositionSpec.RawRes(R.raw.loading))
-                val progress by animateLottieCompositionAsState(
-                    composition,
-                    iterations = LottieConstants.IterateForever
-                )
-                Box(
-                    modifier = modifier.fillMaxSize(),
-                    contentAlignment = Alignment.Center
-                ) {
-                    LottieAnimation(composition, progress)
-                }
+                LoadAnimation(modifier)
             }
             else -> {
                 Box(modifier = modifier) {
@@ -285,6 +275,21 @@ fun LocalContent(
                 }
             }
         }
+    }
+}
+
+@Composable
+fun LoadAnimation(modifier: Modifier) {
+    val composition by rememberLottieComposition(LottieCompositionSpec.RawRes(R.raw.loading))
+    val progress by animateLottieCompositionAsState(
+        composition,
+        iterations = LottieConstants.IterateForever
+    )
+    Box(
+        modifier = modifier.fillMaxSize(),
+        contentAlignment = Alignment.Center
+    ) {
+        LottieAnimation(composition, progress)
     }
 }
 

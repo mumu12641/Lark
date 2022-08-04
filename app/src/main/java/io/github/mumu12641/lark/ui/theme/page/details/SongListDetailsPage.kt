@@ -27,10 +27,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.RectangleShape
-import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.zIndex
@@ -61,16 +59,6 @@ fun SongListDetailsPage(
         modifier = Modifier.fillMaxSize()
     ) {
         BottomSheetScaffold(
-            modifier = Modifier
-                .padding(
-                    WindowInsets
-                        .statusBars
-                        .only(
-                            WindowInsetsSides.Horizontal
-                                    + WindowInsetsSides.Top
-                        )
-                        .asPaddingValues()
-                ),
             backgroundColor = MaterialTheme.colorScheme.background,
             scaffoldState = bottomSheetScaffoldState,
             sheetContent = {
@@ -89,7 +77,7 @@ fun SongListDetailsPage(
 
             sheetShape = RoundedCornerShape(topStart = 20.dp, topEnd = 20.dp),
             topBar = {
-                LarkSmallTopBar(title = "", navIconClick = { navController.popBackStack() }) {}
+                LarkSmallTopBar(title = "", navIconClick = { navController.popBackStack() })
             },
             content = { paddingValues ->
                 SongListDetailsContent(
@@ -307,39 +295,16 @@ fun ShowArtistSongs(
     playMedia: (Long, Long) -> Unit,
     songList: SongList
 ) {
-//    LazyColumn(modifier = modifier) {
-//        items(songs) { item: Song ->
-//            Row(
-//                modifier = Modifier
-//                    .fillMaxWidth()
-//                    .padding(5.dp),
-//                verticalAlignment = Alignment.CenterVertically
-//            ) {
-//                Row(
-//                    modifier = Modifier
-//                        .size(10.dp, 2.dp)
-//                        .clip(CircleShape)
-//                        .background(MaterialTheme.colorScheme.outline.copy(alpha = 0.2f))
-//                        .zIndex(1f)
-//                ) {}
-//                Text(
-//                    modifier = Modifier.padding(start = 50.dp),
-//                    text = item.songTitle,
-//                    maxLines = 1,
-//                    softWrap = false,
-//                    overflow = TextOverflow.Ellipsis
-//                )
-//            }
-//
-//        }
-//    }
     Column(modifier = modifier) {
         repeat(songs.size){
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(5.dp)
-                    .clickable {  },
+                    .clip(RoundedCornerShape(5.dp))
+                    .clickable {
+                        playMedia(songList.songListId,songs[it].songId)
+                    }
+                    .padding(10.dp),
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Row(
@@ -350,8 +315,9 @@ fun ShowArtistSongs(
                         .zIndex(1f)
                 ) {}
                 Text(
-                    modifier = Modifier.padding(start = 50.dp),
+                    modifier = Modifier.padding(start = 30.dp),
                     text = songs[it].songTitle,
+                    style = MaterialTheme.typography.titleMedium,
                     maxLines = 1,
                     softWrap = false,
                     overflow = TextOverflow.Ellipsis
@@ -359,5 +325,4 @@ fun ShowArtistSongs(
             }
         }
     }
-
 }

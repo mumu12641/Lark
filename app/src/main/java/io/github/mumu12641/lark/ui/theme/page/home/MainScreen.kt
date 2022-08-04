@@ -125,7 +125,7 @@ fun MainScreen(
         ) { backStackEntry ->
             backStackEntry.arguments?.getString("songListId")?.let {
                 artistViewModel.refreshId(it.toLong())
-                ArtistDetailPage(navController, artistViewModel)
+                ArtistDetailPage(navController, artistViewModel, playMedia)
             }
 
         }
