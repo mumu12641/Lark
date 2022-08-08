@@ -34,4 +34,5 @@
     <string name="reset_artist_text">Reset artist info</string>
     <string name="not_empty_text">This place cannot be empty</string>
     <string name="fill_search_text">Please fill in the search keywords</string>
+    <string name="get_artist_msg_text">Start getting artist information</string>
 </resources>

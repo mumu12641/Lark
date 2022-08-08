@@ -18,14 +18,24 @@ fun LarkTopBar(
     title: String,
     navIcon: ImageVector,
     scrollBehavior: TopAppBarScrollBehavior? = null,
-    colors: TopAppBarColors = TopAppBarDefaults.largeTopAppBarColors(),
+    colors: TopAppBarColors = TopAppBarDefaults.mediumTopAppBarColors(),
     navIconClick: () -> Unit
 ) {
     val backgroundColor = colors.containerColor(
         scrollFraction = scrollBehavior?.scrollFraction ?: 0f
     ).value
     Box(
-        modifier = Modifier.drawBehind { drawRect(backgroundColor) },
+        modifier = Modifier
+            .drawBehind { drawRect(backgroundColor) }
+            .padding(
+                WindowInsets
+                    .statusBars
+                    .only(
+                        WindowInsetsSides.Horizontal
+                                + WindowInsetsSides.Top
+                    )
+                    .asPaddingValues()
+            ),
     ) {
         MediumTopAppBar(
             title = {
@@ -38,14 +48,6 @@ fun LarkTopBar(
                     Icon(navIcon, contentDescription = title)
                 }
             },
-            modifier = Modifier.padding(
-                WindowInsets
-                    .statusBars
-                    .only(
-                        WindowInsetsSides.Horizontal
-                                + WindowInsetsSides.Top
-                    ).asPaddingValues()
-            ),
             scrollBehavior = scrollBehavior,
             colors = TopAppBarDefaults.largeTopAppBarColors(
                 containerColor = Color.Transparent,

@@ -23,10 +23,11 @@ fun CardIcon(
         modifier = Modifier
             .padding(10.dp)
             .size(width = 60.dp, height = 70.dp)
-            .clickable(onClick = onClick)
     ) {
         Column(
-            modifier = Modifier.fillMaxWidth(),
+            modifier = Modifier
+                .fillMaxWidth()
+                .clickable(onClick = onClick),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             Icon(

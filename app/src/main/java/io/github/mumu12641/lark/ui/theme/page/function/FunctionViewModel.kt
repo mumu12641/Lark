@@ -9,6 +9,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import io.github.mumu12641.lark.BaseApplication.Companion.context
+import io.github.mumu12641.lark.R
 import io.github.mumu12641.lark.entity.*
 import io.github.mumu12641.lark.room.DataBaseUtils
 import kotlinx.coroutines.Dispatchers
@@ -100,7 +101,7 @@ class FunctionViewModel @Inject constructor() : ViewModel() {
                     ).songs.size
                 )
             )
-
+            refreshArtist()
             delay(2000)
             _loadState.value = Load.SUCCESS
         }
@@ -108,6 +109,34 @@ class FunctionViewModel @Inject constructor() : ViewModel() {
 
     companion object {
         private const val TAG = "FunctionViewModel"
+    }
+    private fun refreshArtist() {
+        viewModelScope.launch(Dispatchers.IO) {
+            val songs = DataBaseUtils.queryAllSong()
+            for (i in songs) {
+                if (DataBaseUtils.isSongListExist(i.songSinger, ARTIST_SONGLIST_TYPE)) {
+                    val songListId = DataBaseUtils.querySongListId(
+                        i.songSinger,
+                        ARTIST_SONGLIST_TYPE
+                    )
+                    if (!DataBaseUtils.isRefExist(songListId, i.songId)) {
+                        DataBaseUtils.insertRef(
+                            PlaylistSongCrossRef(
+                                songListId, i.songId
+                            )
+                        )
+                    }
+                } else {
+                    DataBaseUtils.insertSongList(
+                        SongList(
+                            0L, i.songSinger, "xxx", 0, context.getString(
+                                R.string.no_description_text
+                            ), "111", ARTIST_SONGLIST_TYPE
+                        )
+                    )
+                }
+            }
+        }
     }
 
 
@@ -117,3 +146,4 @@ fun getAlbumImageUri(id: Long): Uri {
     val sArtworkUri = Uri.parse("content://media/external/audio/albumart")
     return Uri.withAppendedPath(sArtworkUri, id.toString())
 }
+

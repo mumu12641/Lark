@@ -1,11 +1,14 @@
 package io.github.mumu12641.lark.ui.theme.page.home
 
 import android.os.Build
+import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.runtime.Composable
 import com.google.accompanist.navigation.animation.AnimatedNavHost
 import com.google.accompanist.navigation.animation.rememberAnimatedNavController
+import io.github.mumu12641.lark.BaseApplication.Companion.context
+import io.github.mumu12641.lark.R
 import io.github.mumu12641.lark.entity.Route
 import io.github.mumu12641.lark.ui.theme.component.AnimationComposable
 import io.github.mumu12641.lark.ui.theme.page.artist.ArtistDetailPage
@@ -116,7 +119,10 @@ fun MainScreen(
             ArtistPage(
                 navController = navController,
                 artistViewModel = artistViewModel,
-                refreshArtist = { mainViewModel.refreshArtist() }) {
+                refreshArtist = {
+                    Toast.makeText(context, context.getString(R.string.get_artist_msg_text),Toast.LENGTH_LONG).show()
+                    mainViewModel.refreshArtist()
+                }) {
                 navController.navigate(Route.ROUTE_ARTIST_DETAIL_PAGE + it.toString())
             }
         }

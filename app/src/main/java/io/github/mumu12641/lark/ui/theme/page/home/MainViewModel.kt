@@ -14,6 +14,7 @@ import io.github.mumu12641.lark.entity.ARTIST_SONGLIST_TYPE
 import io.github.mumu12641.lark.entity.CHANGE_PLAY_LIST
 import io.github.mumu12641.lark.entity.PlaylistSongCrossRef
 import io.github.mumu12641.lark.entity.SongList
+import io.github.mumu12641.lark.network.NetworkCreator
 import io.github.mumu12641.lark.room.DataBaseUtils
 import io.github.mumu12641.lark.service.MediaPlaybackService
 import io.github.mumu12641.lark.service.MediaServiceConnection
@@ -52,7 +53,7 @@ class MainViewModel @Inject constructor() : ViewModel() {
         } else {
             return@map filterList.sortedByDescending { songList ->
                 songList.songNumber
-            }.subList(0,5)
+            }.subList(0, 5)
         }
     }
 
@@ -100,35 +101,32 @@ class MainViewModel @Inject constructor() : ViewModel() {
             context,
             ComponentName(context, MediaPlaybackService::class.java)
         )
-        refreshArtist()
     }
 
     fun refreshArtist() {
         viewModelScope.launch(Dispatchers.IO) {
-            val songs = DataBaseUtils.queryAllSong()
-            for (i in songs) {
-                if (DataBaseUtils.isSongListExist(i.songSinger, ARTIST_SONGLIST_TYPE)) {
-                    val songListId = DataBaseUtils.querySongListId(
-                        i.songSinger,
-                        ARTIST_SONGLIST_TYPE
-                    )
-                    if (!DataBaseUtils.isRefExist(songListId, i.songId)) {
-                        DataBaseUtils.insertRef(
-                            PlaylistSongCrossRef(
-                                songListId, i.songId
+            val songLists = DataBaseUtils.querySongListsByType(ARTIST_SONGLIST_TYPE)
+            for (i in songLists) {
+                if (i.description == context.getString(R.string.no_description_text)) {
+                    try {
+                        val artistId =
+                            NetworkCreator.networkService.getSearchArtistResponse(i.songListTitle).result.artists[0].artistId
+                        artistId?.let {
+                            val artistDetails =
+                                NetworkCreator.networkService.getArtistDetail(artistId).data.artist
+                            DataBaseUtils.updateSongList(
+                                i.copy(
+                                    imageFileUri = artistDetails.cover,
+                                    description = artistDetails.briefDesc
+                                )
                             )
-                        )
+                        }
+                    }catch (e:Exception){
+                        Log.d(TAG, "refreshArtist: error" + e.message)
                     }
-                } else {
-                    DataBaseUtils.insertSongList(
-                        SongList(
-                            0L, i.songSinger, "xxx", 0, context.getString(
-                                R.string.no_description_text
-                            ), "111", ARTIST_SONGLIST_TYPE
-                        )
-                    )
                 }
             }
+
         }
     }
 

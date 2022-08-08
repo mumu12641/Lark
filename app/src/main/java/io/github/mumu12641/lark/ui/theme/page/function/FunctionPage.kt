@@ -17,7 +17,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Refresh
-import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.*
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -25,6 +25,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
@@ -61,6 +62,16 @@ fun FunctionPage(
     var showAddDialog by remember { mutableStateOf(false) }
     var text by remember { mutableStateOf("") }
 
+//    val scrollBehavior = TopAppBarDefaults.pinnedScrollBehavior(rememberTopAppBarScrollState())
+
+    val decayAnimationSpec = rememberSplineBasedDecay<Float>()
+    val scrollBehavior = TopAppBarDefaults.exitUntilCollapsedScrollBehavior(
+        decayAnimationSpec,
+        rememberTopAppBarScrollState(),
+        canScroll = { true }
+    )
+
+
     Box(
         modifier = Modifier.fillMaxSize()
     ) {
@@ -75,10 +86,15 @@ fun FunctionPage(
             sheetPeekHeight = 0.dp,
             sheetBackgroundColor = MaterialTheme.colorScheme.secondaryContainer,
             sheetShape = RoundedCornerShape(topStart = 30.dp, topEnd = 30.dp),
+
+            modifier = Modifier
+                .nestedScroll(scrollBehavior.nestedScrollConnection),
+
             topBar = {
                 LarkTopBar(
                     title = route,
                     navIcon = Icons.Filled.ArrowBack,
+                    scrollBehavior = scrollBehavior,
                 ) {
                     navController.popBackStack()
                 }

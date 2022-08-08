@@ -1,5 +1,6 @@
 package io.github.mumu12641.lark.ui.theme.page.artist
 
+import android.util.Log
 import android.widget.Toast
 import androidx.compose.animation.*
 import androidx.compose.foundation.background
@@ -26,10 +27,7 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import io.github.mumu12641.lark.BaseApplication.Companion.context
 import io.github.mumu12641.lark.R
-import io.github.mumu12641.lark.entity.INIT_SONG_LIST
-import io.github.mumu12641.lark.entity.LoadState
-import io.github.mumu12641.lark.entity.Song
-import io.github.mumu12641.lark.entity.SongList
+import io.github.mumu12641.lark.entity.*
 import io.github.mumu12641.lark.ui.theme.component.AsyncImage
 import io.github.mumu12641.lark.ui.theme.component.LarkSmallTopBar
 import io.github.mumu12641.lark.ui.theme.component.TextFieldDialog
@@ -71,6 +69,7 @@ fun ArtistDetailPage(
                 showResetArtistDialog,
                 songs,
                 songList,
+                { artistViewModel.setStateToNone() },
                 playMedia,
                 { showResetArtistDialog = it },
             ) {
@@ -89,6 +88,7 @@ fun ArtistDetailContent(
     showResetArtistDialog: Boolean,
     songs: List<Song>,
     songList: SongList,
+    setLoadStateToNone: () -> Unit,
     playMedia: (Long, Long) -> Unit,
     setShowResetArtistDialog: (Boolean) -> Unit,
     updateArtistDetail: (String) -> Unit,
@@ -111,14 +111,16 @@ fun ArtistDetailContent(
                     slideOutVertically { height -> -height } + fadeOut()
         }
     ) { targetState ->
-        when(targetState) {
+        when (targetState) {
             is LoadState.Loading -> {
                 LoadAnimation(modifier = modifier)
             }
-            is LoadState.Fail -> {
-                Toast.makeText(context,"加载失败",Toast.LENGTH_LONG).show()
-            }
             else -> {
+                if (targetState is LoadState.Fail) {
+                    Toast.makeText(context, targetState.msg, Toast.LENGTH_LONG).show()
+                    Log.d("TAG", "ArtistDetailContent: " + targetState.msg)
+                    setLoadStateToNone()
+                }
                 LazyColumn(modifier = modifier) {
                     item {
                         Row(

@@ -34,4 +34,5 @@
     <string name="reset_artist_text">重置艺术家信息</string>
     <string name="not_empty_text">该处不能为空</string>
     <string name="fill_search_text">请填写搜索关键词</string>
+    <string name="get_artist_msg_text">开始获取艺术家信息</string>
 </resources>

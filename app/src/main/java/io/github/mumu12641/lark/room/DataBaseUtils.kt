@@ -47,6 +47,9 @@ class DataBaseUtils {
         suspend fun querySongListId(title:String,type:Int):Long{
             return musicDao.querySongListId(title,type)
         }
+        suspend fun querySongListsByType(type: Int):List<SongList>{
+            return musicDao.querySongListsByType(type)
+        }
 
         fun queryAllRef(): List<PlaylistSongCrossRef> {
             return musicDao.queryAllRef()

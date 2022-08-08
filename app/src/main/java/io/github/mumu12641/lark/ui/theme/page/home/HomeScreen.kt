@@ -4,23 +4,23 @@ import android.os.Build
 import android.support.v4.media.MediaMetadataCompat
 import android.support.v4.media.session.PlaybackStateCompat
 import androidx.annotation.RequiresApi
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Add
-import androidx.compose.material.icons.filled.Face
-import androidx.compose.material.icons.filled.Home
-import androidx.compose.material.icons.filled.Notifications
+import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontFamily
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
@@ -179,8 +179,7 @@ private fun ArtistRow(navController: NavController, list: List<SongList>) {
     ) {
         Text(
             text = stringResource(id = R.string.singer_text),
-            style = MaterialTheme.typography.titleLarge,
-            fontFamily = FontFamily.Serif
+            style = MaterialTheme.typography.titleLarge
         )
         LazyRow(
             contentPadding = PaddingValues(5.dp)
@@ -189,7 +188,34 @@ private fun ArtistRow(navController: NavController, list: List<SongList>) {
                 it.songListId
             }) {
                 ArtistIcon(modifier = Modifier.size(150.dp), padding = 5, artist = it) {
-                    navController.navigate(Route.ROUTE_ARTIST_PAGE)
+                    navController.navigate(Route.ROUTE_ARTIST_DETAIL_PAGE + it.songListId)
+                }
+            }
+//            if (list.size == 5 ) {
+                item {
+                    Column(
+                        verticalArrangement = Arrangement.Center,
+                        horizontalAlignment = Alignment.CenterHorizontally
+                    ) {
+                        Card(
+                            shape = CircleShape,
+                            modifier = Modifier
+                                .size(150.dp)
+                                .padding(5.dp)
+
+                        ) {
+                            Icon(
+                                Icons.Filled.MoreVert,
+                                contentDescription = "more",
+                                modifier = Modifier
+                                    .size(150.dp)
+                                    .clickable(onClick = {
+                                        navController.navigate(Route.ROUTE_ARTIST_PAGE)
+                                    })
+                                    .padding(25.dp),
+                            )
+                        }
+//                    }
                 }
             }
         }
@@ -250,7 +276,6 @@ private fun SongListRow(
             Text(
                 text = stringResource(id = R.string.songList_text),
                 style = MaterialTheme.typography.titleLarge,
-                fontFamily = FontFamily.Serif,
                 modifier = Modifier.weight(1f)
             )
             Icon(

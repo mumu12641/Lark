@@ -37,6 +37,8 @@ interface MusicDao {
     suspend fun isSongListExist(title:String,type:Int):Boolean
     @Query("SELECT songListId FROM songlist WHERE songListTitle = :title AND type = :type")
     suspend fun querySongListId(title:String,type:Int):Long
+    @Query("SELECT * FROM songlist WHERE type = :type")
+    suspend fun querySongListsByType(type: Int):List<SongList>
 
 
     @Query("SELECT * FROM playlistsongcrossref")

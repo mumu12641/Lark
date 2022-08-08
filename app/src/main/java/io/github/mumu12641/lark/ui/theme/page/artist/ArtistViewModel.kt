@@ -3,6 +3,7 @@ package io.github.mumu12641.lark.ui.theme.page.artist
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.tencent.mmkv.MMKV
 import dagger.hilt.android.lifecycle.HiltViewModel
 import io.github.mumu12641.lark.entity.ARTIST_SONGLIST_TYPE
 import io.github.mumu12641.lark.entity.LoadState
@@ -47,30 +48,38 @@ class ArtistViewModel @Inject constructor() : ViewModel() {
     private val _loadState = MutableStateFlow<LoadState>(LoadState.None())
     val loadState = _loadState
 
+    fun setStateToNone(){
+        _loadState.value = LoadState.None()
+    }
+
     fun updateArtistDetail(keywords: String) {
         viewModelScope.launch(Dispatchers.IO + CoroutineExceptionHandler { _, e ->
-            _loadState.value = LoadState.Fail(e.message ?: "加载失败")
+            _loadState.value = LoadState.Fail(e.message ?: "Load Fail")
             Log.d(TAG, "updateArtistDetail: " + e.message)
         }) {
             _loadState.value = LoadState.Loading()
             Log.d(TAG, "updateArtistDetail: loading")
             val artistId =
                 NetworkCreator.networkService.getSearchArtistResponse(keywords).result.artists[0].artistId
-            val artistDetails =
-                NetworkCreator.networkService.getArtistDetail(artistId!!).data.artist
-            Log.d(TAG, "updateArtistDetail: success")
-            _loadState.value = LoadState.Success()
-            songList.collect {
-                DataBaseUtils.updateSongList(
-                    it.copy(
-                        imageFileUri = artistDetails.cover,
-                        description = artistDetails.briefDesc
+            artistId?.let {
+                val artistDetails =
+                    NetworkCreator.networkService.getArtistDetail(artistId).data.artist
+                Log.d(TAG, "updateArtistDetail: success")
+                _loadState.value = LoadState.Success()
+                songList.collect {
+                    DataBaseUtils.updateSongList(
+                        it.copy(
+                            imageFileUri = artistDetails.cover,
+                            description = artistDetails.briefDesc
+                        )
                     )
-                )
-
+                }
             }
-
+            if (artistId == null){
+                _loadState.value = LoadState.Fail("artistId == null")
+            }
         }
     }
+
 
 }
