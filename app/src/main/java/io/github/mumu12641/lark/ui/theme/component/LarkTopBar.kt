@@ -17,6 +17,7 @@ import io.github.mumu12641.lark.R
 fun LarkTopBar(
     title: String,
     navIcon: ImageVector,
+    actions: @Composable RowScope.() -> Unit = {},
     scrollBehavior: TopAppBarScrollBehavior? = null,
     colors: TopAppBarColors = TopAppBarDefaults.mediumTopAppBarColors(),
     navIconClick: () -> Unit
@@ -48,6 +49,7 @@ fun LarkTopBar(
                     Icon(navIcon, contentDescription = title)
                 }
             },
+            actions = actions,
             scrollBehavior = scrollBehavior,
             colors = TopAppBarDefaults.largeTopAppBarColors(
                 containerColor = Color.Transparent,

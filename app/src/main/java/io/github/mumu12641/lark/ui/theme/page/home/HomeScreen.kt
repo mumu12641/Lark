@@ -66,6 +66,11 @@ fun HomeScreen(
                 LarkTopBar(
                     title = stringResource(id = R.string.app_name),
                     Icons.Filled.Home,
+                    actions = {
+                        IconButton(onClick = { navController.navigate(Route.ROUTE_SETTING) }) {
+                            Icon(Icons.Filled.Settings, contentDescription = "Setting")
+                        }
+                    }
                 ) {}
             },
             content = { paddingValues ->

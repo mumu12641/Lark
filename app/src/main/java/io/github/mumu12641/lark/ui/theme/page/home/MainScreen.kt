@@ -19,6 +19,9 @@ import io.github.mumu12641.lark.ui.theme.page.details.SongListDetailsViewModel
 import io.github.mumu12641.lark.ui.theme.page.function.FunctionPage
 import io.github.mumu12641.lark.ui.theme.page.function.FunctionViewModel
 import io.github.mumu12641.lark.ui.theme.page.play.PlayPage
+import io.github.mumu12641.lark.ui.theme.page.settings.SettingPage
+import io.github.mumu12641.lark.ui.theme.page.settings.about.AboutPage
+import io.github.mumu12641.lark.ui.theme.page.settings.diaplay.DisplayPage
 import io.github.mumu12641.lark.ui.theme.page.user.UserPage
 import io.github.mumu12641.lark.ui.theme.page.user.UserViewModel
 
@@ -120,7 +123,11 @@ fun MainScreen(
                 navController = navController,
                 artistViewModel = artistViewModel,
                 refreshArtist = {
-                    Toast.makeText(context, context.getString(R.string.get_artist_msg_text),Toast.LENGTH_LONG).show()
+                    Toast.makeText(
+                        context,
+                        context.getString(R.string.get_artist_msg_text),
+                        Toast.LENGTH_LONG
+                    ).show()
                     mainViewModel.refreshArtist()
                 }) {
                 navController.navigate(Route.ROUTE_ARTIST_DETAIL_PAGE + it.toString())
@@ -134,6 +141,15 @@ fun MainScreen(
                 ArtistDetailPage(navController, artistViewModel, playMedia)
             }
 
+        }
+        AnimationComposable(Route.ROUTE_SETTING){
+            SettingPage(navController = navController)
+        }
+        AnimationComposable(Route.ROUTE_DISPLAY){
+            DisplayPage(navController = navController)
+        }
+        AnimationComposable(Route.ROUTE_ABOUT){
+            AboutPage(navController = navController)
         }
     }
 }

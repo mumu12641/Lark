@@ -14,9 +14,7 @@ Play Page	done
 
 切换深色模式bug		done  但是界面还有点问题	 fixed
 
-
-
-折叠标题栏 		废弃
+折叠标题栏 		done
 
 
 
@@ -31,6 +29,20 @@ Artist	  	选取较多歌曲的显示在首页 	done
 
 
 获取艺术家的图片以及描述 some bugs
+
+
+
+bug: minifyReleaseWithR8  https://github.com/square/retrofit/issues/3005		以后再解决吧
+
+
+
+
+
+compose version development
+
+
+
+
 
 
 

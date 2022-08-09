@@ -14,6 +14,9 @@ object Route {
     const val ROUTE_PLAY_PAGE = "Play Page"
     val ROUTE_ARTIST_PAGE = context.getString(R.string.singer_text)
     const val ROUTE_ARTIST_DETAIL_PAGE = "Artist detail"
+    val ROUTE_SETTING = context.getString(R.string.setting_text)
+    val ROUTE_DISPLAY = context.getString(R.string.display_text)
+    val ROUTE_ABOUT = context.getString(R.string.about_text)
 }
 
 object Load {

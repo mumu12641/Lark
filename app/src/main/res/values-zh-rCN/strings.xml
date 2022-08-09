@@ -37,4 +37,9 @@
     <string name="get_artist_msg_text">开始获取艺术家信息</string>
     <string name="show_more_text">展开</string>
     <string name="fold_text">收起</string>
+    <string name="setting_text">设置</string>
+    <string name="display_text">显示</string>
+    <string name="display_des_text">深色主题、动态色彩、语言</string>
+    <string name="about_text">关于</string>
+    <string name="about_des_text">版本、更新</string>
 </resources>

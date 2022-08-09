@@ -37,4 +37,9 @@
     <string name="get_artist_msg_text">Start getting artist information</string>
     <string name="show_more_text">Show more</string>
     <string name="fold_text">Fold</string>
+    <string name="setting_text">Settings</string>
+    <string name="display_text">Display</string>
+    <string name="display_des_text">Dark mode,dynamic color,language</string>
+    <string name="about_text">About</string>
+    <string name="about_des_text">Version,update</string>
 </resources>
