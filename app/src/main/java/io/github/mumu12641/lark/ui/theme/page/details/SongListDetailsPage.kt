@@ -315,7 +315,7 @@ fun ShowArtistSongs(
                         .zIndex(1f)
                 ) {}
                 Text(
-                    modifier = Modifier.padding(start = 30.dp),
+                    modifier = Modifier.padding(start = 15.dp),
                     text = songs[it].songTitle,
                     style = MaterialTheme.typography.titleMedium,
                     maxLines = 1,

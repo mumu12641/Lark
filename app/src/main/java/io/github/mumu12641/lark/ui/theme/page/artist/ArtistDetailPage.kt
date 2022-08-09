@@ -163,19 +163,34 @@ fun ArtistDetailContent(
                         )
                     }
                     item {
-                        Text(
-                            text = songList.description,
-                            style = MaterialTheme.typography.bodyMedium,
-                            maxLines = maxLines,
-                            overflow = TextOverflow.Ellipsis,
-                            color = MaterialTheme.colorScheme.onBackground,
-                            modifier = Modifier
-                                .padding(start = 20.dp, top = 5.dp, end = 20.dp)
-                                .clickable {
-                                    maxLines = if (maxLines == 4) Int.MAX_VALUE
-                                    else 4
-                                }
-                        )
+                        Column(
+                            modifier = Modifier.padding(
+                                start = 20.dp,
+                                top = 5.dp,
+                                end = 20.dp
+                            )
+                        ) {
+                            Text(
+                                text = songList.description,
+                                style = MaterialTheme.typography.bodyMedium,
+                                maxLines = maxLines,
+                                overflow = TextOverflow.Ellipsis,
+                                color = MaterialTheme.colorScheme.onBackground,
+                            )
+                            Text(
+                                text = if (maxLines == 4) stringResource(id = R.string.show_more_text)
+                                else stringResource(id = R.string.fold_text),
+                                style = MaterialTheme.typography.bodyMedium,
+                                color = MaterialTheme.colorScheme.secondary,
+                                modifier = Modifier
+
+                                    .clickable {
+                                        maxLines = if (maxLines == 4) Int.MAX_VALUE
+                                        else 4
+                                    }
+                            )
+                        }
+
                     }
                     item {
                         Text(

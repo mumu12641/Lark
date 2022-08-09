@@ -61,10 +61,10 @@ class MediaPlaybackService : MediaBrowserServiceCompat() {
     override fun onCreate() {
         super.onCreate()
         mediaSession = MediaSessionCompat(baseContext, TAG).apply {
-            setFlags(
-                MediaSessionCompat.FLAG_HANDLES_MEDIA_BUTTONS
-                        or MediaSessionCompat.FLAG_HANDLES_TRANSPORT_CONTROLS
-            )
+//            setFlags(
+//                MediaSessionCompat.FLAG_HANDLES_MEDIA_BUTTONS
+//                        or MediaSessionCompat.FLAG_HANDLES_TRANSPORT_CONTROLS
+//            )
             stateBuilder = PlaybackStateCompat.Builder().setActions(
                 PlaybackStateCompat.ACTION_PAUSE or
                         PlaybackStateCompat.ACTION_PLAY_PAUSE or

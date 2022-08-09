@@ -38,7 +38,7 @@ abstract class MusicDataBase : RoomDatabase() {
                 if (MMKV.defaultMMKV().decodeInt("first") <= 1) {
                     MMKV.defaultMMKV().encode("first", 2)
                     execSQL("INSERT INTO SongList (songListId,songListTitle,createDate,songNumber,description,imageFileUri,type) VALUES(1,'Local','2022/7/14',0,'Local Music','Local Image',0);")
-                    execSQL("INSERT INTO SongList (songListId,songListTitle,createDate,songNumber,description,imageFileUri,type) VALUES(2,'I like','2022/7/14',0,'Like Music','Like Image',1);")
+                    execSQL("INSERT INTO SongList (songListId,songListTitle,createDate,songNumber,description,imageFileUri,type) VALUES(2,'Favorite Songs','2022/7/14',0,'Favorite','Like Image',1);")
                     execSQL("INSERT INTO SongList (songListId,songListTitle,createDate,songNumber,description,imageFileUri,type) VALUES(3,'History','2022/7/14',0,'History Music','History Image',0);")
                     setTransactionSuccessful()
                 }

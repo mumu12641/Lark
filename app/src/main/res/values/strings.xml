@@ -35,4 +35,6 @@
     <string name="not_empty_text">This place cannot be empty</string>
     <string name="fill_search_text">Please fill in the search keywords</string>
     <string name="get_artist_msg_text">Start getting artist information</string>
+    <string name="show_more_text">Show more</string>
+    <string name="fold_text">Fold</string>
 </resources>

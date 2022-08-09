@@ -175,7 +175,7 @@ class MediaServiceConnection(context: Context, componentName: ComponentName) {
 
     @RequiresApi(Build.VERSION_CODES.M)
     fun updateWidgetMetadata(metadata: MediaMetadataCompat?) {
-        val remoteViews = RemoteViews(context.packageName, R.layout.lark_widget).apply {
+        RemoteViews(context.packageName, R.layout.lark_widget).apply {
             this.setTextViewText(
                 R.id.title,
                 metadata?.getString(MediaMetadataCompat.METADATA_KEY_TITLE)
@@ -229,10 +229,9 @@ class MediaServiceConnection(context: Context, componentName: ComponentName) {
 
     @RequiresApi(Build.VERSION_CODES.M)
     fun updateWidgetPlayState(state: PlaybackStateCompat?) {
-        val remoteView =
-            RemoteViews(context.packageName, R.layout.lark_widget).apply {
+        RemoteViews(context.packageName, R.layout.lark_widget).apply {
                 scope.launch(Dispatchers.IO) {
-                    var res = 0
+                    val res: Int
                     if (state?.state == PlaybackStateCompat.STATE_PLAYING) {
                         res = R.drawable.ic_baseline_pause_24
                         setOnClickPendingIntent(
