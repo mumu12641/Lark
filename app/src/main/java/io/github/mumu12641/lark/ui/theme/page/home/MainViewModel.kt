@@ -19,7 +19,9 @@ import io.github.mumu12641.lark.room.DataBaseUtils
 import io.github.mumu12641.lark.service.MediaPlaybackService
 import io.github.mumu12641.lark.service.MediaServiceConnection
 import io.github.mumu12641.lark.service.MediaServiceConnection.Companion.EMPTY_PLAYBACK_STATE
+import io.github.mumu12641.lark.ui.theme.util.PreferenceUtil
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -28,6 +30,24 @@ import javax.inject.Inject
 class MainViewModel @Inject constructor() : ViewModel() {
 
     private val TAG = "MainViewModel"
+
+    private val _darkModeSwitch = MutableStateFlow(PreferenceUtil.DARK_MODE_FOLLOW_SYSTEM)
+    val darkModeSwitch = _darkModeSwitch
+    fun switchDarkMode(mode:String){
+        _darkModeSwitch.value = mode
+    }
+
+
+
+
+
+
+
+
+
+
+
+
 
     lateinit var mediaServiceConnection: MediaServiceConnection
 

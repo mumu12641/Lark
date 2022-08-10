@@ -146,7 +146,9 @@ fun MainScreen(
             SettingPage(navController = navController)
         }
         AnimationComposable(Route.ROUTE_DISPLAY){
-            DisplayPage(navController = navController)
+            DisplayPage(navController = navController){
+                mainViewModel.switchDarkMode(it)
+            }
         }
         AnimationComposable(Route.ROUTE_ABOUT){
             AboutPage(navController = navController)

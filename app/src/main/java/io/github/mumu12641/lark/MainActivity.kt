@@ -8,8 +8,11 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
 import androidx.annotation.RequiresApi
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.core.view.WindowCompat
 import dagger.hilt.android.AndroidEntryPoint
 import io.github.mumu12641.lark.ui.theme.LarkTheme
@@ -19,6 +22,7 @@ import io.github.mumu12641.lark.ui.theme.page.function.FunctionViewModel
 import io.github.mumu12641.lark.ui.theme.page.home.MainScreen
 import io.github.mumu12641.lark.ui.theme.page.home.MainViewModel
 import io.github.mumu12641.lark.ui.theme.page.user.UserViewModel
+import io.github.mumu12641.lark.ui.theme.util.PreferenceUtil
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
@@ -41,7 +45,11 @@ class MainActivity : ComponentActivity() {
         context = this@MainActivity
         WindowCompat.setDecorFitsSystemWindows(window, false)
         setContent {
-            LarkTheme {
+            val darkMode by mainViewModel.darkModeSwitch.collectAsState(initial = PreferenceUtil.DARK_MODE_FOLLOW_SYSTEM)
+            LarkTheme(
+                darkTheme = if (darkMode == PreferenceUtil.DARK_MODE_FOLLOW_SYSTEM) isSystemInDarkTheme()
+                else darkMode == PreferenceUtil.DARK_MODE_OPEN
+            ) {
                 Surface(color = MaterialTheme.colorScheme.background) {
                     MainScreen(
                         mainViewModel,
