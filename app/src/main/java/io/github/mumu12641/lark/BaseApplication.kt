@@ -8,6 +8,8 @@ import android.util.DisplayMetrics
 import android.view.WindowManager
 import com.tencent.mmkv.MMKV
 import dagger.hilt.android.HiltAndroidApp
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.SupervisorJob
 
 
 @HiltAndroidApp
@@ -15,6 +17,7 @@ class BaseApplication : Application() {
     override fun onCreate() {
         super.onCreate()
         context = applicationContext
+        applicationScope  = CoroutineScope(SupervisorJob())
         MMKV.initialize(this)
         if (MMKV.defaultMMKV().decodeInt("first") == 0) {
             MMKV.defaultMMKV().encode("first", 1)
@@ -28,6 +31,7 @@ class BaseApplication : Application() {
         @SuppressLint("StaticFieldLeak")
         lateinit var context: Context
         lateinit var deviceScreen:List<Int>
+        lateinit var applicationScope: CoroutineScope
 
     }
 

@@ -9,6 +9,10 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalView
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
+import io.github.mumu12641.lark.ui.theme.color.scheme.ColorScheme
+import io.github.mumu12641.lark.ui.theme.util.PreferenceUtil.FOLLOW_SYSTEM
+import io.github.mumu12641.lark.ui.theme.util.PreferenceUtil.OFF
+import io.github.mumu12641.lark.ui.theme.util.PreferenceUtil.ON
 
 private val LightColorScheme = lightColorScheme(
     primary = md_theme_light_primary,
@@ -74,26 +78,29 @@ private val DarkColorScheme = darkColorScheme(
 )
 
 
-
 @Composable
 fun LarkTheme(
-    darkTheme: Boolean = isSystemInDarkTheme(),
-    // Dynamic color is available on Android 12+
+    darkTheme: Int,
     dynamicColor: Boolean = true,
+    seedColor: Int,
     content: @Composable () -> Unit
 ) {
     val colorScheme = when {
         dynamicColor && Build.VERSION.SDK_INT >= Build.VERSION_CODES.S -> {
             val context = LocalContext.current
-            if (darkTheme) dynamicDarkColorScheme(context) else dynamicLightColorScheme(context)
+            if (darkTheme == ON || (darkTheme == FOLLOW_SYSTEM && isSystemInDarkTheme()))
+                dynamicDarkColorScheme(context)
+            else {
+                dynamicLightColorScheme(context)
+            }
         }
-        darkTheme -> DarkColorScheme
-        else -> LightColorScheme
+        darkTheme == ON || (darkTheme == FOLLOW_SYSTEM && isSystemInDarkTheme()) -> ColorScheme.getDarkColorScheme(seedColor)
+        else -> ColorScheme.getLightColorScheme(seedColor)
     }
     val view = LocalView.current
     if (!view.isInEditMode) {
         val systemUiController = rememberSystemUiController()
-        val useDarkIcons = !isSystemInDarkTheme()
+        val useDarkIcons = !(darkTheme == ON || (darkTheme == FOLLOW_SYSTEM && isSystemInDarkTheme()))
         SideEffect {
             systemUiController.setStatusBarColor(Color.Transparent, darkIcons = useDarkIcons)
             systemUiController.setSystemBarsColor(Color.Transparent, darkIcons = useDarkIcons)

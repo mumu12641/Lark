@@ -31,24 +31,6 @@ class MainViewModel @Inject constructor() : ViewModel() {
 
     private val TAG = "MainViewModel"
 
-    private val _darkModeSwitch = MutableStateFlow(PreferenceUtil.DARK_MODE_FOLLOW_SYSTEM)
-    val darkModeSwitch = _darkModeSwitch
-    fun switchDarkMode(mode:String){
-        _darkModeSwitch.value = mode
-    }
-
-
-
-
-
-
-
-
-
-
-
-
-
     lateinit var mediaServiceConnection: MediaServiceConnection
 
     val currentPlayMetadata by lazy { mediaServiceConnection.playMetadata }

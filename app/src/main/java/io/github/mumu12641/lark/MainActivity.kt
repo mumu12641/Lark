@@ -45,19 +45,17 @@ class MainActivity : ComponentActivity() {
         context = this@MainActivity
         WindowCompat.setDecorFitsSystemWindows(window, false)
         setContent {
-            val darkMode by mainViewModel.darkModeSwitch.collectAsState(initial = PreferenceUtil.DARK_MODE_FOLLOW_SYSTEM)
-            LarkTheme(
-                darkTheme = if (darkMode == PreferenceUtil.DARK_MODE_FOLLOW_SYSTEM) isSystemInDarkTheme()
-                else darkMode == PreferenceUtil.DARK_MODE_OPEN
-            ) {
-                Surface(color = MaterialTheme.colorScheme.background) {
-                    MainScreen(
-                        mainViewModel,
-                        functionViewModel,
-                        userViewModel,
-                        songListDetailsViewModel,
-                        artistViewModel
-                    )
+            PreferenceProvider {
+                LarkTheme(seedColor = LocalSeedColor.current, darkTheme = LocalDarkTheme.current) {
+                    Surface(color = MaterialTheme.colorScheme.background) {
+                        MainScreen(
+                            mainViewModel,
+                            functionViewModel,
+                            userViewModel,
+                            songListDetailsViewModel,
+                            artistViewModel
+                        )
+                    }
                 }
             }
         }

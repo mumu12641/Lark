@@ -43,4 +43,7 @@
     <string name="about_text">关于</string>
     <string name="about_des_text">版本、更新</string>
     <string name="dark_mode_text">深色模式</string>
+    <string name="on_text">开启</string>
+    <string name="off_text">关闭</string>
+    <string name="follow_system_text">跟随系统</string>
 </resources>

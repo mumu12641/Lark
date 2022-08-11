@@ -43,4 +43,7 @@
     <string name="about_text">About</string>
     <string name="about_des_text">Version,update</string>
     <string name="dark_mode_text">Dark mode</string>
+    <string name="on_text">On</string>
+    <string name="off_text">Off</string>
+    <string name="follow_system_text">Follow system</string>
 </resources>
