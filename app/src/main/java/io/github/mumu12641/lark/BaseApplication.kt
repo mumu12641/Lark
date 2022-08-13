@@ -24,15 +24,14 @@ class BaseApplication : Application() {
             MMKV.defaultMMKV().encode("userName", context.getString(R.string.user))
         }
         deviceScreen = getAndroidScreenProperty()
+        version = packageManager.getPackageInfo(packageName,0).versionName
     }
-
-
     companion object {
         @SuppressLint("StaticFieldLeak")
         lateinit var context: Context
         lateinit var deviceScreen:List<Int>
         lateinit var applicationScope: CoroutineScope
-
+        lateinit var version:String
     }
 
     fun getAndroidScreenProperty():List<Int> {

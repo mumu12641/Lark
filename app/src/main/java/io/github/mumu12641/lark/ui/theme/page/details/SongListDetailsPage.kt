@@ -256,7 +256,6 @@ fun ShowSongs(
                 brush = Brush.verticalGradient(
                     listOf(
                         MaterialTheme.colorScheme.secondaryContainer,
-                        MaterialTheme.colorScheme.tertiaryContainer,
                         MaterialTheme.colorScheme.background
                     )
                 )

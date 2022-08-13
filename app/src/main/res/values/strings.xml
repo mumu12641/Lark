@@ -49,4 +49,9 @@
     <string name="select_color_text">Select color</string>
     <string name="dynamic_text">Dynamic color</string>
     <string name="dynamic_color_des_text">Requires Android 12 and above</string>
+    <string name="github_text">Github</string>
+    <string name="github_des_text">View the project in the GitHub repository</string>
+    <string name="thanks_text">Thanks</string>
+    <string name="thanks_des_text">Thanks</string>
+    <string name="version_text">Current version</string>
 </resources>

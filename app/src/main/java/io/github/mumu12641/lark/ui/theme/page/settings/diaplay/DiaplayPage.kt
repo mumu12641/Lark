@@ -152,7 +152,7 @@ fun DisplayPageContent(modifier: Modifier) {
             }
         }
         item {
-            Row(modifier = Modifier.padding(horizontal = 20.dp, vertical = 12.dp)) {
+            Row(modifier = Modifier.padding(20.dp).fillMaxWidth()) {
                 LazyRow {
                     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
                         item { ColorCard(color = dynamicDarkColorScheme(LocalContext.current).primary) }
@@ -226,10 +226,9 @@ fun DisplayPageContent(modifier: Modifier) {
                                 .fillMaxWidth()
                                 .height(56.dp)
                                 .selectable(
-                                    selected = (text == selectedOption),
+                                    selected = (text == radioOptions[LocalDarkTheme.current]),
                                     onClick = {
                                         onOptionSelected(text)
-
                                     },
                                     role = Role.RadioButton
                                 )

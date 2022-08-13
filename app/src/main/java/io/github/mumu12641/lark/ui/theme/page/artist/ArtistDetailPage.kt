@@ -132,7 +132,7 @@ fun ArtistDetailContent(
                                     .size(350.dp)
                                     .padding(10.dp)
                                     .clip(CircleShape)
-                                    .background(MaterialTheme.colorScheme.primaryContainer),
+                                    .background(MaterialTheme.colorScheme.secondaryContainer),
                                 contentAlignment = Alignment.Center
                             ) {
                                 AsyncImage(
