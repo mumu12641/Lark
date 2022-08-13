@@ -60,7 +60,7 @@ fun SongListAlbumCard(
             .padding(top = 20.dp)
             .height(150.dp)
             .clip(RoundedCornerShape(20.dp))
-            .background(MaterialTheme.colorScheme.primaryContainer)
+            .background(MaterialTheme.colorScheme.secondaryContainer)
             .clickable { onClick(songList.songListId) },
         contentAlignment = Alignment.Center
     ) {

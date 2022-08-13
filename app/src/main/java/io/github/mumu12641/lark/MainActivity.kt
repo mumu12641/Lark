@@ -46,7 +46,12 @@ class MainActivity : ComponentActivity() {
         WindowCompat.setDecorFitsSystemWindows(window, false)
         setContent {
             PreferenceProvider {
-                LarkTheme(seedColor = LocalSeedColor.current, darkTheme = LocalDarkTheme.current) {
+                LarkTheme(
+                    seedColor = LocalSeedColor.current,
+                    darkTheme = LocalDarkTheme.current,
+                    dynamicColorEnable = DynamicColorSwitch.current.enable,
+                    dynamicColor = DynamicColorSwitch.current.dynamicColorSwitch
+                ) {
                     Surface(color = MaterialTheme.colorScheme.background) {
                         MainScreen(
                             mainViewModel,

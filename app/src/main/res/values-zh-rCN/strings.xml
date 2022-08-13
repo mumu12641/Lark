@@ -46,4 +46,7 @@
     <string name="on_text">开启</string>
     <string name="off_text">关闭</string>
     <string name="follow_system_text">跟随系统</string>
+    <string name="select_color_text">选择颜色</string>
+    <string name="dynamic_text">动态色彩</string>
+    <string name="dynamic_color_des_text">要求Android12及以上</string>
 </resources>

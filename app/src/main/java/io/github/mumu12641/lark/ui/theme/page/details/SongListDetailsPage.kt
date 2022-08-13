@@ -134,7 +134,7 @@ fun SongListDetailsContent(
                     .padding(10.dp)
                     .clip(RectangleShape)
                     .clip(RoundedCornerShape(30.dp))
-                    .background(MaterialTheme.colorScheme.primaryContainer)
+                    .background(MaterialTheme.colorScheme.secondaryContainer)
                     .clickable(
                         onClick = {
                             if (songList?.type == CREATE_SONGLIST_TYPE) {
@@ -255,8 +255,8 @@ fun ShowSongs(
             .background(
                 brush = Brush.verticalGradient(
                     listOf(
-                        MaterialTheme.colorScheme.primaryContainer,
                         MaterialTheme.colorScheme.secondaryContainer,
+                        MaterialTheme.colorScheme.tertiaryContainer,
                         MaterialTheme.colorScheme.background
                     )
                 )

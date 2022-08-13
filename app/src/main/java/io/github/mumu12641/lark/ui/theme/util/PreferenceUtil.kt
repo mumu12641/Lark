@@ -1,5 +1,6 @@
 package io.github.mumu12641.lark.ui.theme.util
 
+import android.os.Build
 import android.util.Log
 import com.tencent.mmkv.MMKV
 import io.github.mumu12641.lark.BaseApplication.Companion.applicationScope
@@ -15,7 +16,8 @@ import kotlinx.coroutines.launch
 object PreferenceUtil {
     private val kv = MMKV.defaultMMKV()
 
-    const val DEFAULT_SEED_COLOR = 0xFF44655A.toInt()
+    const val DEFAULT_SEED_COLOR = 0xFF00221A.toInt()
+    const val EMPTY_SEED_COLOR = 0
 
     val DARK_MODE_FOLLOW_SYSTEM = context.getString(R.string.follow_system_text)
     val DARK_MODE_OPEN = context.getString(R.string.on_text)
@@ -26,21 +28,27 @@ object PreferenceUtil {
 
     private const val DARK_MODE = "dark mode value"
     private const val SEED_COLOR = "seed color value"
+    private const val DYNAMIC_COLOR = "dynamic color preference"
 
     private val _disaplayPreferenceFlow = MutableStateFlow(
         DisplayPreference(
             kv.decodeInt(DARK_MODE, FOLLOW_SYSTEM),
-            kv.decodeInt(SEED_COLOR, DEFAULT_SEED_COLOR)
+            kv.decodeInt(SEED_COLOR, DEFAULT_SEED_COLOR),
+            DynamicPreference(dynamicColorSwitch = kv.decodeInt(DYNAMIC_COLOR, OFF))
         )
     )
     val displayPreferenceFlow = _disaplayPreferenceFlow
 
     data class DisplayPreference(
         val darkModePreference: Int = FOLLOW_SYSTEM,
-        val seedColor: Int = DEFAULT_SEED_COLOR
+        val seedColor: Int = DEFAULT_SEED_COLOR,
+        val dynamicPreference: DynamicPreference = DynamicPreference()
     )
 
-//    data class DarkModePreference(var mode: Int = FOLLOW_SYSTEM)
+    data class DynamicPreference(
+        val enable:Boolean = Build.VERSION.SDK_INT >= Build.VERSION_CODES.S,
+        val dynamicColorSwitch:Int = OFF
+    )
 
     fun switchDarkMode(mode: Int) {
         applicationScope.launch(Dispatchers.IO) {
@@ -58,6 +66,15 @@ object PreferenceUtil {
                 it.copy(seedColor = color)
             }
             kv.encode(SEED_COLOR,color)
+        }
+    }
+
+    fun switchDynamicColor(mode: Int){
+        applicationScope.launch(Dispatchers.IO) {
+            _disaplayPreferenceFlow.update {
+                it.copy(dynamicPreference = DynamicPreference(dynamicColorSwitch = mode))
+            }
+            kv.encode(DYNAMIC_COLOR,mode)
         }
     }
     private const val TAG = "PreferenceUtil"

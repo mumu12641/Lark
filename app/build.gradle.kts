@@ -73,6 +73,7 @@ dependencies {
     implementation ("androidx.compose.material:material-icons-extended:$composeVersion")
     implementation ("androidx.lifecycle:lifecycle-runtime-ktx:2.5.0")
     implementation ("androidx.lifecycle:lifecycle-viewmodel-compose:2.5.0")
+    implementation ("com.afollestad.material-dialogs:color:3.3.0")
     implementation ("androidx.activity:activity-compose:1.5.1")
     testImplementation ("junit:junit:4.13.2")
     androidTestImplementation ("androidx.test.ext:junit:1.1.3")
