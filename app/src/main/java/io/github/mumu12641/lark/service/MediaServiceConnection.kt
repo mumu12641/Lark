@@ -18,6 +18,7 @@ import android.widget.RemoteViews
 import androidx.annotation.RequiresApi
 import com.bumptech.glide.Glide
 import com.tencent.mmkv.MMKV
+import io.github.mumu12641.lark.BaseApplication
 import io.github.mumu12641.lark.BaseApplication.Companion.context
 import io.github.mumu12641.lark.MainActivity
 import io.github.mumu12641.lark.R
@@ -206,7 +207,7 @@ class MediaServiceConnection(context: Context, componentName: ComponentName) {
                         .with(context)
                         .asBitmap()
                         .load(metadata?.getString(MediaMetadataCompat.METADATA_KEY_ALBUM_ART_URI))
-                        .circleCrop()
+                        .centerCrop()
                         .submit()
                         .get()
                     this@apply.setImageViewBitmap(R.id.image, bitmap)
@@ -214,8 +215,8 @@ class MediaServiceConnection(context: Context, componentName: ComponentName) {
                     val bitmap: Bitmap = Glide
                         .with(context)
                         .asBitmap()
-                        .load(R.drawable.ic_baseline_music_note_24)
-                        .circleCrop()
+                        .load(R.drawable.userbackground)
+                        .centerCrop()
                         .submit()
                         .get()
                     this@apply.setImageViewBitmap(R.id.image, bitmap)
@@ -230,43 +231,59 @@ class MediaServiceConnection(context: Context, componentName: ComponentName) {
     @RequiresApi(Build.VERSION_CODES.M)
     fun updateWidgetPlayState(state: PlaybackStateCompat?) {
         RemoteViews(context.packageName, R.layout.lark_widget).apply {
-                scope.launch(Dispatchers.IO) {
-                    val res: Int
-                    if (state?.state == PlaybackStateCompat.STATE_PLAYING) {
-                        res = R.drawable.ic_baseline_pause_24
-                        setOnClickPendingIntent(
-                            R.id.play, PendingIntent.getBroadcast(
-                                MainActivity.context,
-                                0,
-                                Intent(ACTION_PAUSE),
-                                PendingIntent.FLAG_IMMUTABLE
-                            )
+            scope.launch(Dispatchers.IO) {
+                val res: Int
+                if (state?.state == PlaybackStateCompat.STATE_PLAYING) {
+                    res = R.drawable.ic_baseline_pause_24
+                    setOnClickPendingIntent(
+                        R.id.play, PendingIntent.getBroadcast(
+                            MainActivity.context,
+                            0,
+                            Intent(ACTION_PAUSE),
+                            PendingIntent.FLAG_IMMUTABLE
                         )
-                    } else {
-                        res = R.drawable.ic_baseline_play_arrow_24
-                        setOnClickPendingIntent(
-                            R.id.play, PendingIntent.getBroadcast(
-                                MainActivity.context,
-                                0,
-                                Intent(ACTION_PLAY),
-                                PendingIntent.FLAG_IMMUTABLE
-                            )
+                    )
+                } else {
+                    res = R.drawable.ic_baseline_play_arrow_24
+                    setOnClickPendingIntent(
+                        R.id.play, PendingIntent.getBroadcast(
+                            MainActivity.context,
+                            0,
+                            Intent(ACTION_PLAY),
+                            PendingIntent.FLAG_IMMUTABLE
                         )
-                    }
-                    val bitmap: Bitmap = Glide
-                        .with(context)
-                        .asBitmap()
-                        .load(res)
-                        .circleCrop()
-                        .submit()
-                        .get()
-                    this@apply.setImageViewBitmap(R.id.play, bitmap)
-                    val manager = AppWidgetManager.getInstance(context)
-                    val component =
-                        ComponentName(context, LarkWidgetProvider::class.java)
-                    manager.updateAppWidget(component, this@apply)
+                    )
                 }
+                val bitmap: Bitmap = Glide
+                    .with(context)
+                    .asBitmap()
+                    .load(res)
+                    .circleCrop()
+                    .submit()
+                    .get()
+                val bitmapPrevious = Glide
+                    .with(context)
+                    .asBitmap()
+                    .load(R.drawable.ic_baseline_skip_previous_24)
+                    .centerCrop()
+                    .submit()
+                    .get()
+                val bitmapNext = Glide
+                    .with(context)
+                    .asBitmap()
+                    .load(R.drawable.ic_baseline_skip_next_24)
+                    .centerCrop()
+                    .submit()
+                    .get()
+                this@apply.setImageViewBitmap(R.id.play, bitmap)
+                this@apply.setImageViewBitmap(R.id.previous, bitmapPrevious)
+                this@apply.setImageViewBitmap(R.id.next, bitmapNext)
+                val manager = AppWidgetManager.getInstance(context)
+                val component =
+                    ComponentName(context, LarkWidgetProvider::class.java)
+                manager.updateAppWidget(component, this@apply)
             }
+        }
     }
 
     companion object {
@@ -283,16 +300,6 @@ class MediaServiceConnection(context: Context, componentName: ComponentName) {
             .putLong(MediaMetadataCompat.METADATA_KEY_DURATION, 0)
             .putString(METADATA_KEY_ARTIST, "未知艺术家")
             .build()
-
-//        @Volatile
-//        private var instance: MediaServiceConnection? = null
-//
-//
-//        fun getInstance(context: Context, serviceComponent: ComponentName) =
-//            instance ?: synchronized(this) {
-//                instance ?: MediaServiceConnection(context, serviceComponent)
-//                    .also { instance = it }
-//            }
     }
 
     private val TAG: String = "MediaServiceConnection"

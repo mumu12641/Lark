@@ -11,6 +11,7 @@
         <entry key="..\:/code/Lark/app/src/main/res/drawable/file_icon.xml" value="0.1565" />
         <entry key="..\:/code/Lark/app/src/main/res/drawable/history.xml" value="0.1565" />
         <entry key="..\:/code/Lark/app/src/main/res/drawable/ic_baseline_music_note_24.xml" value="0.1525" />
+        <entry key="..\:/code/Lark/app/src/main/res/drawable/ic_baseline_music_note_widget.xml" value="0.168" />
         <entry key="..\:/code/Lark/app/src/main/res/drawable/ic_baseline_pause_24.xml" value="0.1525" />
         <entry key="..\:/code/Lark/app/src/main/res/drawable/ic_baseline_play_arrow_24.xml" value="0.1525" />
         <entry key="..\:/code/Lark/app/src/main/res/drawable/ic_baseline_shuffle_24.xml" value="0.1525" />
@@ -19,7 +20,10 @@
         <entry key="..\:/code/Lark/app/src/main/res/drawable/ic_launcher_background.xml" value="0.1" />
         <entry key="..\:/code/Lark/app/src/main/res/drawable/music_note-48px.xml" value="0.163" />
         <entry key="..\:/code/Lark/app/src/main/res/drawable/music_note.xml" value="0.166" />
+        <entry key="..\:/code/Lark/app/src/main/res/drawable/shadow_down_strong.xml" value="0.168" />
+        <entry key="..\:/code/Lark/app/src/main/res/drawable/shadow_up_strong.xml" value="0.168" />
         <entry key="..\:/code/Lark/app/src/main/res/drawable/widget_background.xml" value="0.173" />
+        <entry key="..\:/code/Lark/app/src/main/res/drawable/widget_selector_dark.xml" value="0.168" />
         <entry key="..\:/code/Lark/app/src/main/res/layout/lark_widget.xml" value="0.234375" />
         <entry key="..\:/code/Lark/app/src/main/res/xml/network_security_config.xml" value="0.2866847826086957" />
       </map>

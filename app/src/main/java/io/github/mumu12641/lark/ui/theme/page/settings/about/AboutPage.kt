@@ -71,7 +71,8 @@ fun AboutContent(modifier: Modifier) {
         Pair("Seal","https://github.com/JunkFood02/Seal"),
         Pair("material color utilities","https://github.com/material-foundation/material-color-utilities"),
         Pair("NeteaseCloudMusicApi","https://github.com/mumu12641/NeteaseCloudMusicApi"),
-        Pair("retrofit","https://github.com/square/retrofit")
+        Pair("retrofit","https://github.com/square/retrofit"),
+        Pair("RetroMusicPlayer","https://github.com/RetroMusicPlayer/RetroMusicPlayer")
     )
 
     LazyColumn(modifier = modifier) {

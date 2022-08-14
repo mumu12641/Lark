@@ -1,76 +1,101 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="100dp">
-        <LinearLayout
-            android:id="@+id/line1"
+    android:layout_height="match_parent"
+    android:background="@drawable/widget_background">
+
+    <ImageView
+        android:id="@+id/image"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:scaleType="centerCrop"
+        tools:ignore="ContentDescription" />
+
+    <LinearLayout
+        android:id="@+id/media_actions"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:background="@drawable/shadow_up_strong"
+        android:gravity="center_vertical"
+        android:layoutDirection="ltr"
+        android:orientation="horizontal">
+
+        <ImageButton
+            android:id="@+id/previous"
+            android:layout_width="72dp"
+            android:layout_height="72dp"
+            android:layout_weight="1"
+            android:background="@drawable/widget_selector_dark"
+            android:padding="22dp"
+            tools:ignore="ContentDescription"
+            tools:src="@drawable/ic_baseline_skip_previous_24"/>
+<!--            tools:tint="@color/ate_primary_text_dark" />-->
+
+        <ImageButton
+            android:id="@+id/play"
+            android:layout_width="72dp"
+            android:layout_height="72dp"
+            android:layout_weight="1"
+            android:background="@drawable/widget_selector_dark"
+            android:padding="22dp"
+            tools:ignore="ContentDescription"
+            tools:src="@drawable/ic_baseline_play_arrow_24" />
+<!--            tools:tint="@color/ate_primary_text_dark" />-->
+
+        <ImageButton
+            android:id="@+id/next"
+            android:layout_width="72dp"
+            android:layout_height="72dp"
+            android:layout_weight="1"
+            android:background="@drawable/widget_selector_dark"
+            android:padding="22dp"
+            tools:ignore="ContentDescription"
+            tools:src="@drawable/ic_baseline_skip_next_24"/>
+<!--            tools:tint="@color/ate_primary_text_dark" />-->
+
+
+    </LinearLayout>
+
+    <FrameLayout
+        android:id="@+id/clickable_area"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_above="@id/media_actions"
+        android:layout_alignParentTop="true" />
+
+    <LinearLayout
+        android:id="@+id/media_titles"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:background="@drawable/shadow_down_strong"
+        android:orientation="vertical"
+        android:padding="16dp">
+
+        <TextView
+            android:id="@+id/title"
             android:layout_width="match_parent"
-            android:background="@drawable/widget_background"
             android:layout_height="match_parent"
-            android:orientation="horizontal">
-            <ImageView
-                android:layout_gravity="center"
-                android:id="@+id/image"
-                android:layout_width="80dp"
-                android:layout_height="80dp"
-                android:src="@drawable/ornithology"
-                android:layout_marginStart="10dp">
-            </ImageView>
-            <LinearLayout
-                android:layout_width="wrap_content"
-                android:layout_gravity="center"
-                android:layout_height="wrap_content"
-                android:orientation="vertical">
-                <LinearLayout
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:orientation="horizontal">
-                    <TextView
-                        android:id="@+id/title"
-                        android:layout_width="150dp"
-                        android:layout_height="wrap_content"
-                        android:singleLine="true"
-                        android:ellipsize="marquee"
-                        android:text="暂无歌曲"
-                        android:textSize="20dp"
-                        android:textColor="@color/black"/>
-                    <TextView
-                        android:id="@+id/artist"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="Jay"
-                        android:textSize="10dp"
-                        android:layout_marginLeft="10dp"
-                        />
+            android:layout_weight="1"
+            android:gravity="center_vertical"
+            android:text="暂无歌曲播放"
+            android:singleLine="true"
+            android:textColor="@color/white"
+            tools:text="Title" />
 
-                </LinearLayout>
+        <TextView
+            android:id="@+id/artist"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:text="暂无艺术家"
+            android:gravity="center_vertical"
+            android:textColor="@color/white"
+            android:singleLine="true"
+            tools:text="Text" />
 
-                <LinearLayout
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:orientation="horizontal">
-                    <ImageButton
-                        android:id="@+id/previous"
-                        android:layout_width="40dp"
-                        android:layout_height="40dp"
-                        android:src="@drawable/ic_baseline_skip_previous_24"/>
-                    <ImageButton
-                        android:layout_marginStart="20dp"
-                        android:id="@+id/play"
-                        android:layout_width="40dp"
-                        android:layout_height="40dp"
-                        android:src="@drawable/ic_baseline_play_arrow_24"/>
+    </LinearLayout>
 
-                    <ImageButton
-                        android:layout_marginStart="20dp"
-                        android:id="@+id/next"
-                        android:layout_width="40dp"
-                        android:layout_height="40dp"
-                        android:src="@drawable/ic_baseline_skip_next_24"/>
-                </LinearLayout>
-            </LinearLayout>
-
-
-        </LinearLayout>
-
-</FrameLayout>
+</RelativeLayout>
