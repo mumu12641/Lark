@@ -16,6 +16,12 @@ Play Page	done
 
 折叠标题栏 		done
 
+获取艺术家的图片以及描述 some bugs  fixed
+
+bug: minifyReleaseWithR8  https://github.com/square/retrofit/issues/3005		以后再解决吧 fixed！！！！
+
+自定义主题 done
+
 
 
 Animation			Wip
@@ -28,13 +34,13 @@ Artist	  	选取较多歌曲的显示在首页 	done
 
 
 
-获取艺术家的图片以及描述 some bugs
+homescreen ui improment
+
+第一次进入App fetch本地数据
 
 
 
-bug: minifyReleaseWithR8  https://github.com/square/retrofit/issues/3005		以后再解决吧
-
-
+搜索！
 
 
 
@@ -46,7 +52,7 @@ compose version development
 
 
 
-自定义主题 
+
 
 
 

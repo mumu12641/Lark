@@ -53,7 +53,8 @@ fun MainScreen(
                 mainViewModel,
                 metadata = mainViewModel.currentPlayMetadata,
                 playState = mainViewModel.currentPlayState,
-                flow = mainViewModel.allSongList
+                flow = mainViewModel.allSongList,
+                reFreshLocalMusicList = {functionViewModel.reFreshLocalMusicList()}
             ) {
                 mainViewModel.addSongList(it)
             }
@@ -63,35 +64,35 @@ fun MainScreen(
         ) {
             FunctionPage(
                 navController = navController, route = Route.ROUTE_LOCAL,
-                functionViewModel,
-                playMedia
-            )
+                viewModel = functionViewModel,
+                playMedia = playMedia,
+                )
         }
         AnimationComposable(
             Route.ROUTE_CLOUD
         ) {
             FunctionPage(
                 navController = navController, route = Route.ROUTE_CLOUD,
-                functionViewModel,
-                playMedia
+                viewModel = functionViewModel,
+                playMedia = playMedia
             )
         }
         AnimationComposable(
             Route.ROUTE_DOWNLOAD
         ) {
             FunctionPage(
-                navController = navController, route = Route.ROUTE_DOWNLOAD,
-                functionViewModel,
-                playMedia
+                navController = navController, route = Route.ROUTE_CLOUD,
+                viewModel = functionViewModel,
+                playMedia = playMedia
             )
         }
         AnimationComposable(
             Route.ROUTE_HISTORY
         ) {
             FunctionPage(
-                navController = navController, route = Route.ROUTE_HISTORY,
-                functionViewModel,
-                playMedia
+                navController = navController, route = Route.ROUTE_CLOUD,
+                viewModel = functionViewModel,
+                playMedia = playMedia
             )
         }
         AnimationComposable(

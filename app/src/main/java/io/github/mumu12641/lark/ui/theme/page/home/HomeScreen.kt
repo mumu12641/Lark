@@ -49,6 +49,7 @@ fun HomeScreen(
     metadata: Flow<MediaMetadataCompat>,
     playState: Flow<PlaybackStateCompat>,
     flow: Flow<List<SongList>>,
+    reFreshLocalMusicList: () -> Unit,
     addSongList: (SongList) -> Unit
 ) {
 
@@ -79,6 +80,7 @@ fun HomeScreen(
                     allSongList,
                     artistSongList,
                     navController,
+                    reFreshLocalMusicList,
                     addSongList
                 )
             },
@@ -107,6 +109,7 @@ fun HomeSetup(
     list: List<SongList>,
     artistSongList: List<SongList>,
     navController: NavController,
+    reFreshLocalMusicList: () -> Unit,
     addSongList: (SongList) -> Unit
 ) {
     var showDialog by remember {
@@ -149,7 +152,11 @@ fun HomeSetup(
                         Permission.WRITE_EXTERNAL_STORAGE
                     )
                 )
-                .request { _, _ -> }
+                .request { _, all ->
+                    if (all) {
+                        reFreshLocalMusicList()
+                    }
+                }
         }
     }
 
@@ -197,29 +204,29 @@ private fun ArtistRow(navController: NavController, list: List<SongList>) {
                 }
             }
 //            if (list.size == 5 ) {
-                item {
-                    Column(
-                        verticalArrangement = Arrangement.Center,
-                        horizontalAlignment = Alignment.CenterHorizontally
+            item {
+                Column(
+                    verticalArrangement = Arrangement.Center,
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
+                    Card(
+                        shape = CircleShape,
+                        modifier = Modifier
+                            .size(150.dp)
+                            .padding(5.dp)
+
                     ) {
-                        Card(
-                            shape = CircleShape,
+                        Icon(
+                            Icons.Filled.MoreVert,
+                            contentDescription = "more",
                             modifier = Modifier
                                 .size(150.dp)
-                                .padding(5.dp)
-
-                        ) {
-                            Icon(
-                                Icons.Filled.MoreVert,
-                                contentDescription = "more",
-                                modifier = Modifier
-                                    .size(150.dp)
-                                    .clickable(onClick = {
-                                        navController.navigate(Route.ROUTE_ARTIST_PAGE)
-                                    })
-                                    .padding(25.dp),
-                            )
-                        }
+                                .clickable(onClick = {
+                                    navController.navigate(Route.ROUTE_ARTIST_PAGE)
+                                })
+                                .padding(25.dp),
+                        )
+                    }
 //                    }
                 }
             }

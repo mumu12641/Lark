@@ -3,10 +3,7 @@ package io.github.mumu12641.lark.ui.theme.page.settings.diaplay
 import android.annotation.SuppressLint
 import android.os.Build
 import androidx.compose.animation.*
-import androidx.compose.foundation.Image
-import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
-import androidx.compose.foundation.isSystemInDarkTheme
+import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
@@ -109,7 +106,7 @@ fun DisplayPageContent(modifier: Modifier) {
                     .padding(20.dp)
                     .fillMaxWidth(), contentAlignment = Alignment.Center
             ) {
-                ElevatedCard(
+                Card(
                     modifier = Modifier
                         .fillMaxWidth()
                         .height(280.dp)
@@ -152,20 +149,22 @@ fun DisplayPageContent(modifier: Modifier) {
             }
         }
         item {
-            Row(modifier = Modifier.padding(20.dp).fillMaxWidth()) {
-                LazyRow {
+            Column {
+                Row(
+                    modifier = Modifier
+                        .horizontalScroll(rememberScrollState())
+                        .padding(horizontal = 20.dp, vertical = 12.dp)
+                ) {
                     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
-                        item { ColorCard(color = dynamicDarkColorScheme(LocalContext.current).primary) }
-                        item { ColorCard(color = dynamicDarkColorScheme(LocalContext.current).tertiary) }
+                        ColorCard(color = dynamicDarkColorScheme(LocalContext.current).primary)
+                        ColorCard(color = dynamicDarkColorScheme(LocalContext.current).tertiary)
                     }
-                    item { ColorCard(Color(DEFAULT_SEED_COLOR)) }
-                    item { ColorCard(Color(0, 68, 155)) }
-                    item { ColorCard(Color(225, 139, 46)) }
-                    item { ColorCard(Color(220, 123, 88)) }
-                    item { ColorCard(Color(181, 210, 180)) }
+                    ColorCard(Color(DEFAULT_SEED_COLOR))
+                    ColorCard(Color(0, 68, 155))
+                    ColorCard(Color(220, 123, 88))
+                    ColorCard(Color(181, 210, 180))
                 }
             }
-
         }
         item {
             SettingSwitchItem(
@@ -262,7 +261,7 @@ private fun ColorCard(color: Color) {
     val darkColor = corePalette.a2.tone(60)
     val showColor =
         if (LocalDarkTheme.current == ON || (LocalDarkTheme.current == FOLLOW_SYSTEM && isSystemInDarkTheme())) darkColor else lightColor
-    ElevatedCard(
+    Card(
         modifier = Modifier
             .padding(end = 10.dp, bottom = 5.dp)
             .size(72.dp)

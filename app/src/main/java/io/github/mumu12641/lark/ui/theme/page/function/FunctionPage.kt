@@ -37,6 +37,7 @@ import io.github.mumu12641.lark.room.DataBaseUtils
 import io.github.mumu12641.lark.ui.theme.component.*
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
@@ -49,7 +50,7 @@ fun FunctionPage(
     navController: NavController,
     route: String,
     viewModel: FunctionViewModel,
-    playMedia: (Long, Long) -> Unit
+    playMedia: (Long, Long) -> Unit,
 ) {
     val localMusicList by viewModel.localMusicList.collectAsState(initial = emptyList())
     val allSongList by viewModel.allSongList.collectAsState(initial = emptyList())
@@ -62,7 +63,6 @@ fun FunctionPage(
     var showAddDialog by remember { mutableStateOf(false) }
     var text by remember { mutableStateOf("") }
 
-//    val scrollBehavior = TopAppBarDefaults.pinnedScrollBehavior(rememberTopAppBarScrollState())
 
     val decayAnimationSpec = rememberSplineBasedDecay<Float>()
     val scrollBehavior = TopAppBarDefaults.exitUntilCollapsedScrollBehavior(
@@ -238,6 +238,7 @@ private fun AddToSongListDialog(
                                 }
                             }
                         }
+                        showDialogFunction(false)
                     }
                 }
             }

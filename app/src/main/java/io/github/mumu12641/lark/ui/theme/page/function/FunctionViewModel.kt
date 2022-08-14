@@ -25,7 +25,7 @@ class FunctionViewModel @Inject constructor() : ViewModel() {
 
     val allSongList = DataBaseUtils.queryAllSongList().map { list ->
         list.filter {
-            it.type > 0
+            it.type in 1 until ARTIST_SONGLIST_TYPE
         }
     }
 
@@ -114,24 +114,23 @@ class FunctionViewModel @Inject constructor() : ViewModel() {
         viewModelScope.launch(Dispatchers.IO) {
             val songs = DataBaseUtils.queryAllSong()
             for (i in songs) {
-                if (DataBaseUtils.isSongListExist(i.songSinger, ARTIST_SONGLIST_TYPE)) {
-                    val songListId = DataBaseUtils.querySongListId(
-                        i.songSinger,
-                        ARTIST_SONGLIST_TYPE
-                    )
-                    if (!DataBaseUtils.isRefExist(songListId, i.songId)) {
-                        DataBaseUtils.insertRef(
-                            PlaylistSongCrossRef(
-                                songListId, i.songId
-                            )
-                        )
-                    }
-                } else {
+                if (!DataBaseUtils.isSongListExist(i.songSinger, ARTIST_SONGLIST_TYPE)) {
                     DataBaseUtils.insertSongList(
                         SongList(
                             0L, i.songSinger, "xxx", 0, context.getString(
                                 R.string.no_description_text
                             ), "111", ARTIST_SONGLIST_TYPE
+                        )
+                    )
+                }
+                val songListId = DataBaseUtils.querySongListId(
+                    i.songSinger,
+                    ARTIST_SONGLIST_TYPE
+                )
+                if (!DataBaseUtils.isRefExist(songListId, i.songId)) {
+                    DataBaseUtils.insertRef(
+                        PlaylistSongCrossRef(
+                            songListId, i.songId
                         )
                     )
                 }

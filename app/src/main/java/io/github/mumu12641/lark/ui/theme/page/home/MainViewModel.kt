@@ -1,8 +1,11 @@
 package io.github.mumu12641.lark.ui.theme.page.home
 
+import android.annotation.SuppressLint
 import android.content.ComponentName
+import android.database.Cursor
 import android.os.Build
 import android.os.Bundle
+import android.provider.MediaStore
 import android.util.Log
 import androidx.annotation.RequiresApi
 import androidx.lifecycle.ViewModel
@@ -10,18 +13,19 @@ import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import io.github.mumu12641.lark.BaseApplication.Companion.context
 import io.github.mumu12641.lark.R
-import io.github.mumu12641.lark.entity.ARTIST_SONGLIST_TYPE
-import io.github.mumu12641.lark.entity.CHANGE_PLAY_LIST
-import io.github.mumu12641.lark.entity.PlaylistSongCrossRef
-import io.github.mumu12641.lark.entity.SongList
+import io.github.mumu12641.lark.entity.*
 import io.github.mumu12641.lark.network.NetworkCreator
 import io.github.mumu12641.lark.room.DataBaseUtils
 import io.github.mumu12641.lark.service.MediaPlaybackService
 import io.github.mumu12641.lark.service.MediaServiceConnection
 import io.github.mumu12641.lark.service.MediaServiceConnection.Companion.EMPTY_PLAYBACK_STATE
+import io.github.mumu12641.lark.ui.theme.page.function.FunctionViewModel
+import io.github.mumu12641.lark.ui.theme.page.function.getAlbumImageUri
 import io.github.mumu12641.lark.ui.theme.util.PreferenceUtil
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -40,6 +44,9 @@ class MainViewModel @Inject constructor() : ViewModel() {
     val currentPlaySongs by lazy { mediaServiceConnection.playList }
 
     val currentSongList by lazy { mediaServiceConnection.currentSongList }
+
+    private val _loadState = MutableStateFlow(Load.NONE)
+    val loadLocal: StateFlow<Int> = _loadState
 
     val allSongList = DataBaseUtils.queryAllSongList().map {
         it.filter { songList ->
@@ -123,12 +130,11 @@ class MainViewModel @Inject constructor() : ViewModel() {
                                 )
                             )
                         }
-                    }catch (e:Exception){
+                    } catch (e:Exception){
                         Log.d(TAG, "refreshArtist: error" + e.message)
                     }
                 }
             }
-
         }
     }
 
