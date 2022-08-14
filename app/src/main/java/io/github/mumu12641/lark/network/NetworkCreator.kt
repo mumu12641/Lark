@@ -15,5 +15,5 @@ object NetworkCreator {
         .baseUrl(BASE_URL)
         .build()
 
-    val networkService:NetworkService = retrofit.create()
+    val networkService:NetworkService = retrofit.create(NetworkService::class.java)
 }
