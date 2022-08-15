@@ -3,6 +3,7 @@
   <component name="DesignSurface">
     <option name="filePathToZoomLevelMap">
       <map>
+        <entry key="..\:/code/Lark/app/src/main/res/drawable-v24/ic_launcher_foreground.xml" value="0.165" />
         <entry key="..\:/code/Lark/app/src/main/res/drawable/album.xml" value="0.166" />
         <entry key="..\:/code/Lark/app/src/main/res/drawable/appwidget_bg_clickable.xml" value="0.253" />
         <entry key="..\:/code/Lark/app/src/main/res/drawable/cloud_upload.xml" value="0.1565" />
@@ -17,14 +18,19 @@
         <entry key="..\:/code/Lark/app/src/main/res/drawable/ic_baseline_shuffle_24.xml" value="0.1525" />
         <entry key="..\:/code/Lark/app/src/main/res/drawable/ic_baseline_skip_next_24.xml" value="0.1525" />
         <entry key="..\:/code/Lark/app/src/main/res/drawable/ic_baseline_skip_previous_24.xml" value="0.1525" />
+        <entry key="..\:/code/Lark/app/src/main/res/drawable/ic_lark__1_.xml" value="0.165" />
         <entry key="..\:/code/Lark/app/src/main/res/drawable/ic_launcher_background.xml" value="0.1" />
+        <entry key="..\:/code/Lark/app/src/main/res/drawable/lark.xml" value="0.165" />
         <entry key="..\:/code/Lark/app/src/main/res/drawable/music_note-48px.xml" value="0.163" />
         <entry key="..\:/code/Lark/app/src/main/res/drawable/music_note.xml" value="0.166" />
+        <entry key="..\:/code/Lark/app/src/main/res/drawable/new_icon_foreground.xml" value="0.165" />
         <entry key="..\:/code/Lark/app/src/main/res/drawable/shadow_down_strong.xml" value="0.168" />
         <entry key="..\:/code/Lark/app/src/main/res/drawable/shadow_up_strong.xml" value="0.168" />
         <entry key="..\:/code/Lark/app/src/main/res/drawable/widget_background.xml" value="0.173" />
         <entry key="..\:/code/Lark/app/src/main/res/drawable/widget_selector_dark.xml" value="0.168" />
         <entry key="..\:/code/Lark/app/src/main/res/layout/lark_widget.xml" value="0.234375" />
+        <entry key="..\:/code/Lark/app/src/main/res/mipmap-anydpi-v26/new_icon.xml" value="0.165" />
+        <entry key="..\:/code/Lark/app/src/main/res/mipmap-anydpi-v26/new_icon_round.xml" value="0.165" />
         <entry key="..\:/code/Lark/app/src/main/res/xml/network_security_config.xml" value="0.2866847826086957" />
       </map>
     </option>

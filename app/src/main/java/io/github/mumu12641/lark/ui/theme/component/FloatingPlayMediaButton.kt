@@ -3,6 +3,7 @@ package io.github.mumu12641.lark.ui.theme.component
 import android.support.v4.media.MediaMetadataCompat
 import android.support.v4.media.session.PlaybackStateCompat
 import androidx.compose.animation.*
+import androidx.compose.animation.core.*
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
@@ -15,6 +16,7 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
@@ -31,19 +33,13 @@ fun FloatingPlayMediaButton(
     onClickToPlayPage: () -> Unit
 ) {
     var extend by remember { mutableStateOf(false) }
+
     Row(
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.Center,
         modifier = Modifier.padding(bottom = 10.dp)
     ) {
-        AsyncImage(
-            modifier = Modifier
-                .size(60.dp)
-                .clip(CircleShape)
-                .clickable { extend = !extend },
-            imageModel = currentMetadata.getString(MediaMetadataCompat.METADATA_KEY_ALBUM_ART_URI),
-            failure = R.drawable.ic_baseline_music_note_24
-        )
+        val rotation = infiniteRotation(currentPlayState.state == PlaybackStateCompat.STATE_PLAYING)
         AnimatedVisibility(
             visible = extend,
             enter = expandVertically(
@@ -63,7 +59,39 @@ fun FloatingPlayMediaButton(
                 onClickNext
             )
         }
+        AsyncImage(
+            modifier = Modifier
+                .size(60.dp)
+                .clip(CircleShape)
+                .graphicsLayer {
+                    rotationZ = rotation.value
+                }
+                .clickable { extend = !extend },
+            imageModel = currentMetadata.getString(MediaMetadataCompat.METADATA_KEY_ALBUM_ART_URI),
+            failure = R.drawable.ic_baseline_music_note_24
+        )
     }
+}
+
+@Composable
+private fun infiniteRotation(
+    startRotate: Boolean,
+    duration: Int = 15 * 1000
+): Animatable<Float, AnimationVector1D> {
+    var rotation by remember { mutableStateOf(Animatable(0f)) }
+    LaunchedEffect(key1 = startRotate, block = {
+        if (startRotate) {
+            rotation.animateTo(
+                (rotation.value % 360f) + 360f, animationSpec = infiniteRepeatable(
+                    animation = tween(duration, easing = LinearEasing)
+                )
+            )
+        } else {
+            rotation.stop()
+            rotation = Animatable(rotation.value % 360f)
+        }
+    })
+    return rotation
 }
 
 @Composable
@@ -78,7 +106,7 @@ private fun ControlPlayBar(
 ) {
     Box(
         modifier = Modifier
-            .padding(start = 10.dp)
+            .padding(end = 10.dp)
             .clip(RoundedCornerShape(20.dp))
             .background(MaterialTheme.colorScheme.secondaryContainer)
             .clickable(onClick = onClickToPlayPage),

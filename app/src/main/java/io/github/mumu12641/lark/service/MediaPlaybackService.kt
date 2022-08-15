@@ -231,7 +231,7 @@ class MediaPlaybackService : MediaBrowserServiceCompat() {
             setContentText(description.subtitle)
             setSubText(description.description)
             setContentIntent(clickPendingIntent)
-            setSmallIcon(R.drawable.icon)
+            setSmallIcon(R.drawable.lark)
             setVisibility(NotificationCompat.VISIBILITY_PUBLIC)
             setSound(null)
             setVibrate(LongArray(1){0})
@@ -313,7 +313,7 @@ class MediaPlaybackService : MediaBrowserServiceCompat() {
                 val bitmap: Bitmap = Glide
                     .with(context)
                     .asBitmap()
-                    .load(R.drawable.ornithology)
+                    .load(R.mipmap.new_icon)
                     .submit()
                     .get()
                 notificationBuilder.setLargeIcon(bitmap)

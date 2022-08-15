@@ -3,7 +3,7 @@
     android:minWidth="250dp"
     android:minHeight="110dp"
     android:updatePeriodMillis="1000"
-    android:previewImage="@drawable/icon_64"
+    android:previewImage="@drawable/lark"
     android:initialLayout="@layout/lark_widget"
     android:widgetCategory="home_screen"
     >

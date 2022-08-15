@@ -57,6 +57,11 @@ class MediaServiceConnection(context: Context, componentName: ComponentName) {
 
     private lateinit var mediaController: MediaControllerCompat
 
+    private var bitmapPrevious: Bitmap? = null
+    private var bitmapNext: Bitmap? = null
+    private var bitmapPlay: Bitmap? = null
+    private var bitmapPause: Bitmap? = null
+
 
     private val mediaBrowserConnectionCallback = object : MediaBrowserCompat.ConnectionCallback() {
         override fun onConnected() {
@@ -202,29 +207,33 @@ class MediaServiceConnection(context: Context, componentName: ComponentName) {
                 )
             )
             scope.launch(Dispatchers.IO) {
-                try {
-                    val bitmap: Bitmap = Glide
-                        .with(context)
-                        .asBitmap()
-                        .load(metadata?.getString(MediaMetadataCompat.METADATA_KEY_ALBUM_ART_URI))
-                        .centerCrop()
-                        .submit()
-                        .get()
-                    this@apply.setImageViewBitmap(R.id.image, bitmap)
-                } catch (e: Exception) {
-                    val bitmap: Bitmap = Glide
-                        .with(context)
-                        .asBitmap()
-                        .load(R.drawable.userbackground)
-                        .centerCrop()
-                        .submit()
-                        .get()
-                    this@apply.setImageViewBitmap(R.id.image, bitmap)
-                }
+                setImageBitmap(metadata)
                 val manager = AppWidgetManager.getInstance(context)
                 val component = ComponentName(context, LarkWidgetProvider::class.java)
                 manager.updateAppWidget(component, this@apply)
             }
+        }
+    }
+
+    private fun RemoteViews.setImageBitmap(metadata: MediaMetadataCompat?) {
+        try {
+            val bitmap: Bitmap = Glide
+                .with(context)
+                .asBitmap()
+                .load(metadata?.getString(MediaMetadataCompat.METADATA_KEY_ALBUM_ART_URI))
+                .centerCrop()
+                .submit()
+                .get()
+            this.setImageViewBitmap(R.id.image, bitmap)
+        } catch (e: Exception) {
+            val bitmap: Bitmap = Glide
+                .with(context)
+                .asBitmap()
+                .load(R.drawable.userbackground)
+                .centerCrop()
+                .submit()
+                .get()
+            this.setImageViewBitmap(R.id.image, bitmap)
         }
     }
 
@@ -261,23 +270,28 @@ class MediaServiceConnection(context: Context, componentName: ComponentName) {
                     .circleCrop()
                     .submit()
                     .get()
-                val bitmapPrevious = Glide
-                    .with(context)
-                    .asBitmap()
-                    .load(R.drawable.ic_baseline_skip_previous_24)
-                    .centerCrop()
-                    .submit()
-                    .get()
-                val bitmapNext = Glide
-                    .with(context)
-                    .asBitmap()
-                    .load(R.drawable.ic_baseline_skip_next_24)
-                    .centerCrop()
-                    .submit()
-                    .get()
+                if (bitmapPrevious == null){
+                    bitmapPrevious = Glide
+                        .with(context)
+                        .asBitmap()
+                        .load(R.drawable.ic_baseline_skip_previous_24)
+                        .centerCrop()
+                        .submit()
+                        .get()
+                }
+                if (bitmapNext == null) {
+                    bitmapNext = Glide
+                        .with(context)
+                        .asBitmap()
+                        .load(R.drawable.ic_baseline_skip_next_24)
+                        .centerCrop()
+                        .submit()
+                        .get()
+                }
                 this@apply.setImageViewBitmap(R.id.play, bitmap)
                 this@apply.setImageViewBitmap(R.id.previous, bitmapPrevious)
                 this@apply.setImageViewBitmap(R.id.next, bitmapNext)
+                setImageBitmap(mediaController.metadata)
                 val manager = AppWidgetManager.getInstance(context)
                 val component =
                     ComponentName(context, LarkWidgetProvider::class.java)
