@@ -22,6 +22,8 @@ bug: minifyReleaseWithR8  https://github.com/square/retrofit/issues/3005		以后
 
 自定义主题 done
 
+第一次进入App fetch本地数据  done
+
 
 
 Animation			Wip
@@ -34,11 +36,13 @@ Artist	  	选取较多歌曲的显示在首页 	done
 
 
 
-homescreen ui improment
-
-第一次进入App fetch本地数据
+homescreen ui improment wip
 
 
+
+网易云音乐的登录
+
+历史播放
 
 搜索！
 

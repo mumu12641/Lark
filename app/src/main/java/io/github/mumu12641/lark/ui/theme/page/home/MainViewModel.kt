@@ -22,6 +22,7 @@ import io.github.mumu12641.lark.service.MediaServiceConnection.Companion.EMPTY_P
 import io.github.mumu12641.lark.ui.theme.page.function.FunctionViewModel
 import io.github.mumu12641.lark.ui.theme.page.function.getAlbumImageUri
 import io.github.mumu12641.lark.ui.theme.util.PreferenceUtil
+import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -110,6 +111,15 @@ class MainViewModel @Inject constructor() : ViewModel() {
             context,
             ComponentName(context, MediaPlaybackService::class.java)
         )
+//        viewModelScope.launch(Dispatchers.IO + CoroutineExceptionHandler { _, e ->
+//            e.message?.let { Log.d(TAG, it) }
+//        }) {
+//            Log.d(
+//                TAG,
+//                NetworkCreator.networkService.cellphoneLogin().toString()
+//            )
+//        }
+
     }
 
     fun refreshArtist() {
@@ -130,7 +140,7 @@ class MainViewModel @Inject constructor() : ViewModel() {
                                 )
                             )
                         }
-                    } catch (e:Exception){
+                    } catch (e: Exception) {
                         Log.d(TAG, "refreshArtist: error" + e.message)
                     }
                 }

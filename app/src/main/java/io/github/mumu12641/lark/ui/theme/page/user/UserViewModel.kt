@@ -1,9 +1,15 @@
 package io.github.mumu12641.lark.ui.theme.page.user
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import com.tencent.mmkv.MMKV
 import dagger.hilt.android.lifecycle.HiltViewModel
+import io.github.mumu12641.lark.network.NetworkCreator
+import kotlinx.coroutines.CoroutineExceptionHandler
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
@@ -37,6 +43,18 @@ class UserViewModel @Inject constructor() : ViewModel() {
 
     }
 
+    fun getNeteaseUserDetail() {
+        viewModelScope.launch(Dispatchers.IO + CoroutineExceptionHandler { _, e ->
+            e.message?.let { Log.d(TAG, it) }
+        }){
+            val detail  = NetworkCreator.networkService.getUserDetail(416000474)
+            changeNameValue(detail.profile.nickname)
+            changeIconValue(detail.profile.avatarUrl)
+            changeBackgroundValue(detail.profile.backgroundUrl)
+            saveInformation()
+        }
+    }
+
     data class UserState(
         val name: String,
         val iconImageUri: String?,
@@ -51,4 +69,6 @@ class UserViewModel @Inject constructor() : ViewModel() {
             MMKV.defaultMMKV().decodeString("backgroundImageUri"),
         )
     }
+
+    private val TAG = "UserViewModel"
 }

@@ -102,7 +102,6 @@ fun PlayPage(
     }
 }
 
-@OptIn(ExperimentalAnimationApi::class)
 @Composable
 fun PlayPageContent(
     modifier: Modifier,

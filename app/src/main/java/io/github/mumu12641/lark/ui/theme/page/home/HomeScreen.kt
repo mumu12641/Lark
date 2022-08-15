@@ -66,13 +66,15 @@ fun HomeScreen(
             topBar = {
                 LarkTopBar(
                     title = stringResource(id = R.string.app_name),
-                    Icons.Filled.Home,
+                    Icons.Filled.Search,
                     actions = {
                         IconButton(onClick = { navController.navigate(Route.ROUTE_SETTING) }) {
                             Icon(Icons.Filled.Settings, contentDescription = "Setting")
                         }
                     }
-                ) {}
+                ) {
+
+                }
             },
             content = { paddingValues ->
                 HomeSetup(
@@ -326,43 +328,46 @@ private fun FunctionTab(
             .padding(vertical = 10.dp),
         horizontalArrangement = Arrangement.SpaceBetween
     ) {
-//        Button(onClick = { navController.navigate(Route.ROUTE_HISTORY) }) {
-//            Row(horizontalArrangement = Arrangement.Center, verticalAlignment = Alignment.CenterVertically, modifier = Modifier.width(100.dp)) {
-//                Icon(modifier = Modifier.size(25.dp),painter = painterResource(id = R.drawable.history), contentDescription = "history")
-//                Text(text = stringResource(id = R.string.history_text), modifier = Modifier.padding(start = 10.dp, end = 10.dp))
-//            }
+        OutlinedButton(onClick = { navController.navigate(Route.ROUTE_HISTORY) }) {
+            Row(horizontalArrangement = Arrangement.Center, verticalAlignment = Alignment.CenterVertically, modifier = Modifier.width(125.dp)) {
+                Icon(modifier = Modifier.size(25.dp),painter = painterResource(id = R.drawable.history), contentDescription = "history")
+                Text(text = stringResource(id = R.string.history_text), modifier = Modifier.padding(start = 20.dp, end = 20.dp))
+            }
+        }
+        OutlinedButton(onClick = { navController.navigate(Route.ROUTE_LOCAL) }) {
+            Row(horizontalArrangement = Arrangement.Center, verticalAlignment = Alignment.CenterVertically,
+            modifier = Modifier.width(125.dp)) {
+                Icon(modifier = Modifier.size(25.dp),painter = painterResource(id = R.drawable.file_icon), contentDescription = "local")
+                Text(text = stringResource(id = R.string.local_text),modifier = Modifier.padding(start = 20.dp, end = 20.dp))
+            }
+        }
+
+
+
+//        CardIcon(
+//            resourceId = R.drawable.history,
+//            contentDescription = stringResource(id = R.string.history_text)
+//        ) {
+//            navController.navigate(Route.ROUTE_HISTORY)
 //        }
-//        Button(onClick = { navController.navigate(Route.ROUTE_LOCAL) }) {
-//            Row(horizontalArrangement = Arrangement.Center, verticalAlignment = Alignment.CenterVertically,
-//            modifier = Modifier.width(100.dp)) {
-//                Icon(modifier = Modifier.size(25.dp),painter = painterResource(id = R.drawable.file_icon), contentDescription = "local")
-//                Text(text = stringResource(id = R.string.local_text),modifier = Modifier.padding(start = 10.dp, end = 10.dp))
-//            }
+//        CardIcon(
+//            resourceId = R.drawable.file_icon,
+//            contentDescription = stringResource(id = R.string.local_text)
+//        ) {
+//            navController.navigate(Route.ROUTE_LOCAL)
 //        }
-        CardIcon(
-            resourceId = R.drawable.history,
-            contentDescription = stringResource(id = R.string.history_text)
-        ) {
-            navController.navigate(Route.ROUTE_HISTORY)
-        }
-        CardIcon(
-            resourceId = R.drawable.file_icon,
-            contentDescription = stringResource(id = R.string.local_text)
-        ) {
-            navController.navigate(Route.ROUTE_LOCAL)
-        }
-        CardIcon(
-            resourceId = R.drawable.download_icon,
-            contentDescription = stringResource(id = R.string.download_text)
-        ) {
-            navController.navigate(Route.ROUTE_DOWNLOAD)
-        }
-        CardIcon(
-            resourceId = R.drawable.cloud_upload,
-            contentDescription = stringResource(id = R.string.cloud_text)
-        ) {
-            navController.navigate(Route.ROUTE_CLOUD)
-        }
+//        CardIcon(
+//            resourceId = R.drawable.download_icon,
+//            contentDescription = stringResource(id = R.string.download_text)
+//        ) {
+//            navController.navigate(Route.ROUTE_DOWNLOAD)
+//        }
+//        CardIcon(
+//            resourceId = R.drawable.cloud_upload,
+//            contentDescription = stringResource(id = R.string.cloud_text)
+//        ) {
+//            navController.navigate(Route.ROUTE_CLOUD)
+//        }
     }
 }
 

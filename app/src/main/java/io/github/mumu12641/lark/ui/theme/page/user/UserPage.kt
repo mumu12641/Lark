@@ -13,6 +13,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.Face
+import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
@@ -51,16 +52,22 @@ fun UserPage(
                 UserContent(modifier = Modifier.padding(paddingValues), viewModel)
             },
             floatingActionButton = {
-                FloatingActionButton(onClick = {
-                    viewModel.saveInformation()
-                    Toast.makeText(
-                        context,
-                        context.getString(R.string.save_success_test),
-                        Toast.LENGTH_LONG
-                    ).show()
-                }) {
-                    Icon(Icons.Filled.Check, contentDescription = "Save")
+                Column {
+                    FloatingActionButton(modifier = Modifier.padding(bottom = 10.dp),onClick = { viewModel.getNeteaseUserDetail() }) {
+                        Icon(Icons.Filled.Refresh, contentDescription = "Refresh")
+                    }
+                    FloatingActionButton(onClick = {
+                        viewModel.saveInformation()
+                        Toast.makeText(
+                            context,
+                            context.getString(R.string.save_success_test),
+                            Toast.LENGTH_LONG
+                        ).show()
+                    }) {
+                        Icon(Icons.Filled.Check, contentDescription = "Save")
+                    }
                 }
+
             }
         )
     }

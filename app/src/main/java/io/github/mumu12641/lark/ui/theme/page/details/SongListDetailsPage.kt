@@ -266,7 +266,7 @@ fun ShowSongs(
             Box(modifier = modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
                 Text(
                     text = "暂无歌曲~",
-                    color = MaterialTheme.colorScheme.onSecondary,
+                    color = MaterialTheme.colorScheme.onSecondaryContainer,
                     style = MaterialTheme.typography.titleLarge
                 )
             }
@@ -280,7 +280,7 @@ fun ShowSongs(
             }
             Text(
                 text = "加载到底啦~",
-                color = MaterialTheme.colorScheme.onSecondary,
+                color = MaterialTheme.colorScheme.onSecondaryContainer,
                 style = MaterialTheme.typography.bodySmall
             )
         }
