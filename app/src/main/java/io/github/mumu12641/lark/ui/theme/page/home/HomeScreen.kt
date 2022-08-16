@@ -73,7 +73,7 @@ fun HomeScreen(
                         }
                     }
                 ) {
-
+                    navController.navigate(Route.ROUTE_SEARCH)
                 }
             },
             content = { paddingValues ->

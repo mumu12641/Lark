@@ -59,4 +59,6 @@
     <string name="enter_password_text">Please enter your password</string>
     <string name="refresh_user_text">Refresh User Info</string>
     <string name="logout_text">Logout</string>
+    <string name="search_text">Search</string>
+    <string name="hot_search_text">Hot search</string>
 </resources>

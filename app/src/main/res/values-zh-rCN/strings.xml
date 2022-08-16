@@ -59,4 +59,6 @@
     <string name="enter_password_text">请输入密码</string>
     <string name="refresh_user_text">刷新用户信息</string>
     <string name="logout_text">退出登录</string>
+    <string name="search_text">搜索</string>
+    <string name="hot_search_text">热门搜索</string>
 </resources>

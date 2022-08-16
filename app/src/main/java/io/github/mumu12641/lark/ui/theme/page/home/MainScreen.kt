@@ -19,6 +19,8 @@ import io.github.mumu12641.lark.ui.theme.page.details.SongListDetailsViewModel
 import io.github.mumu12641.lark.ui.theme.page.function.FunctionPage
 import io.github.mumu12641.lark.ui.theme.page.function.FunctionViewModel
 import io.github.mumu12641.lark.ui.theme.page.play.PlayPage
+import io.github.mumu12641.lark.ui.theme.page.search.SearchPage
+import io.github.mumu12641.lark.ui.theme.page.search.SearchViewModel
 import io.github.mumu12641.lark.ui.theme.page.settings.SettingPage
 import io.github.mumu12641.lark.ui.theme.page.settings.about.AboutPage
 import io.github.mumu12641.lark.ui.theme.page.settings.diaplay.DisplayPage
@@ -33,7 +35,8 @@ fun MainScreen(
     functionViewModel: FunctionViewModel,
     userViewModel: UserViewModel,
     songListDetailsViewModel: SongListDetailsViewModel,
-    artistViewModel: ArtistViewModel
+    artistViewModel: ArtistViewModel,
+    searchViewModel: SearchViewModel
 ) {
     val navController = rememberAnimatedNavController()
 
@@ -54,7 +57,7 @@ fun MainScreen(
                 metadata = mainViewModel.currentPlayMetadata,
                 playState = mainViewModel.currentPlayState,
                 flow = mainViewModel.allSongList,
-                reFreshLocalMusicList = {functionViewModel.reFreshLocalMusicList()}
+                reFreshLocalMusicList = { functionViewModel.reFreshLocalMusicList() }
             ) {
                 mainViewModel.addSongList(it)
             }
@@ -66,7 +69,7 @@ fun MainScreen(
                 navController = navController, route = Route.ROUTE_LOCAL,
                 viewModel = functionViewModel,
                 playMedia = playMedia,
-                )
+            )
         }
         AnimationComposable(
             Route.ROUTE_CLOUD
@@ -143,14 +146,17 @@ fun MainScreen(
             }
 
         }
-        AnimationComposable(Route.ROUTE_SETTING){
+        AnimationComposable(Route.ROUTE_SETTING) {
             SettingPage(navController = navController)
         }
-        AnimationComposable(Route.ROUTE_DISPLAY){
+        AnimationComposable(Route.ROUTE_DISPLAY) {
             DisplayPage(navController = navController)
         }
-        AnimationComposable(Route.ROUTE_ABOUT){
+        AnimationComposable(Route.ROUTE_ABOUT) {
             AboutPage(navController = navController)
+        }
+        AnimationComposable(Route.ROUTE_SEARCH) {
+            SearchPage(navController = navController, searchViewModel)
         }
     }
 }

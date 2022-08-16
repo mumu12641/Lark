@@ -150,11 +150,6 @@ private fun LoginDialog(
                     placeholder = {
                         Text(text = stringResource(id = R.string.enter_phone_text))
                     },
-//                        trailingIcon = {
-//                            IconButton(onClick = { onValueChange("") }) {
-//                                Icon(Icons.Filled.Close, contentDescription = "close")
-//                            }
-//                        },
                     colors = TextFieldDefaults.textFieldColors(
                         containerColor = Color.Transparent
                     )

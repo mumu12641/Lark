@@ -17,6 +17,7 @@ object Route {
     val ROUTE_SETTING = context.getString(R.string.setting_text)
     val ROUTE_DISPLAY = context.getString(R.string.display_text)
     val ROUTE_ABOUT = context.getString(R.string.about_text)
+    val ROUTE_SEARCH = context.getString(R.string.search_text)
 }
 
 object Load {
@@ -30,7 +31,7 @@ sealed class LoadState(val msg: String) {
     class Loading(msg: String = "") : LoadState(msg)
     class Success(msg: String = "") : LoadState(msg)
     class Fail(msg: String) : LoadState(msg)
-    class None(msg: String = ""):LoadState(msg)
+    class None(msg: String = "") : LoadState(msg)
 }
 
 const val LocalSongListId = 1L
@@ -50,15 +51,5 @@ const val PREFILL_SONGLIST_TYPE = 1
 const val CREATE_SONGLIST_TYPE = 2
 const val ARTIST_SONGLIST_TYPE = 3
 
-val INIT_SONG = Song(
-    0L, "最伟大的作品", "周杰伦", "11", "11", 100
-)
-val INIT_SONG_LIST = SongList(
-    0L,
-    "12",
-    "12",
-    0,
-    "12",
-    "12",
-    2
-)
+val INIT_SONG = Song(0L, "最伟大的作品", "周杰伦", "11", "11", 100)
+val INIT_SONG_LIST = SongList(0L, "12", "12", 0, "12", "12", 2)
