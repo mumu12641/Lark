@@ -20,6 +20,7 @@ import com.bumptech.glide.Glide
 import com.tencent.mmkv.MMKV
 import io.github.mumu12641.lark.BaseApplication
 import io.github.mumu12641.lark.BaseApplication.Companion.context
+import io.github.mumu12641.lark.BaseApplication.Companion.kv
 import io.github.mumu12641.lark.MainActivity
 import io.github.mumu12641.lark.R
 import io.github.mumu12641.lark.entity.*
@@ -113,7 +114,7 @@ class MediaServiceConnection(context: Context, componentName: ComponentName) {
                 } ?: emptyList()
                 Log.d(TAG, "onQueueChanged: " + _playList.value.toString())
                 _currentSongList.value = DataBaseUtils.querySongListById(
-                    MMKV.defaultMMKV().decodeLong("lastPlaySongList")
+                    kv.decodeLong("lastPlaySongList")
                 )
                 transportControls.play()
             }
@@ -130,18 +131,18 @@ class MediaServiceConnection(context: Context, componentName: ComponentName) {
                 super.onChildrenLoaded(parentId, children)
                 Log.d("TAG", "onChildrenLoaded: $children")
                 scope.launch {
-                    if (MMKV.defaultMMKV()
-                            .decodeLong("lastPlaySongList") == 0L || MMKV.defaultMMKV()
+                    if (kv
+                            .decodeLong("lastPlaySongList") == 0L || kv
                             .decodeLong("lastPlaySong") == 0L
                     ) {
                         _playList.value = emptyList<Song>().toMutableList()
                         _currentSongList.value = INIT_SONG_LIST
                     } else {
                         _currentSongList.value = DataBaseUtils.querySongListById(
-                            MMKV.defaultMMKV().decodeLong("lastPlaySongList")
+                            kv.decodeLong("lastPlaySongList")
                         )
                         _playList.value = DataBaseUtils.querySongListWithSongsBySongListId(
-                            MMKV.defaultMMKV().decodeLong("lastPlaySongList")
+                            kv.decodeLong("lastPlaySongList")
                         ).songs
                     }
                 }

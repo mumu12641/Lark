@@ -18,10 +18,16 @@ interface NetworkService {
     @GET("artist/detail")
     suspend fun getArtistDetail(@Query("id") id: Long): ArtistDetailsResponse
 
-    @POST("/login/cellphone?phone=19891810635&password=PENG20020813PENG")
+//    @GET("logout")
+//    suspend fun logout():Int
+
+    @GET("/login/cellphone")
     suspend fun cellphoneLogin(
+        @Query("phone") phoneNumber: String,
+        @Query("password") Password: String
     ): NeteaseUser
 
     @GET("/user/detail")
     suspend fun getUserDetail(@Query("uid") uid: Long): UserDetail
+
 }

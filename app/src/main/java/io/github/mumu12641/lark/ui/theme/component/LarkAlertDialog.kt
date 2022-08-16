@@ -11,7 +11,7 @@ import androidx.compose.ui.graphics.vector.ImageVector
 fun LarkAlertDialog(
     onDismissRequest: () -> Unit,
     title: String,
-    icon: ImageVector,
+    icon: ImageVector? = null,
     text: @Composable () -> Unit,
     confirmOnClick: () -> Unit,
     confirmText:String,
@@ -25,7 +25,7 @@ fun LarkAlertDialog(
             )
         },
         icon = {
-            Icon(icon, contentDescription = title)
+            icon?.let { Icon(it, contentDescription = title) }
         },
         text = text,
         confirmButton = {

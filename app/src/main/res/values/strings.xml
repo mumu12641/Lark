@@ -54,4 +54,9 @@
     <string name="thanks_text">Thanks</string>
     <string name="thanks_des_text">Thanks</string>
     <string name="version_text">Current version</string>
+    <string name="login_text">Login</string>
+    <string name="enter_phone_text">Please enter phone number</string>
+    <string name="enter_password_text">Please enter your password</string>
+    <string name="refresh_user_text">Refresh User Info</string>
+    <string name="logout_text">Logout</string>
 </resources>

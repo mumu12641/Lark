@@ -24,6 +24,7 @@ import com.google.android.exoplayer2.ExoPlayer
 import com.google.android.exoplayer2.MediaItem
 import com.google.android.exoplayer2.Player
 import com.tencent.mmkv.MMKV
+import io.github.mumu12641.lark.BaseApplication.Companion.kv
 import io.github.mumu12641.lark.MainActivity
 import io.github.mumu12641.lark.MainActivity.Companion.context
 import io.github.mumu12641.lark.R
@@ -134,7 +135,7 @@ class MediaPlaybackService : MediaBrowserServiceCompat() {
         clientUid: Int,
         rootHints: Bundle?
     ): BrowserRoot {
-        if (MMKV.defaultMMKV().decodeLong("lastPlaySongList") == 0L || MMKV.defaultMMKV()
+        if (kv.decodeLong("lastPlaySongList") == 0L || kv
                 .decodeLong("lastPlaySong") == 0L
         ) {
             currentPlayList = emptyList<Song>().toMutableList()
@@ -143,13 +144,13 @@ class MediaPlaybackService : MediaBrowserServiceCompat() {
         } else {
             runBlocking {
                 currentSongList = DataBaseUtils.querySongListById(
-                    MMKV.defaultMMKV().decodeLong("lastPlaySongList")
+                    kv.decodeLong("lastPlaySongList")
                 )
                 currentPlayList = DataBaseUtils.querySongListWithSongsBySongListId(
-                    MMKV.defaultMMKV().decodeLong("lastPlaySongList")
+                    kv.decodeLong("lastPlaySongList")
                 ).songs.toMutableList()
                 currentPlaySong =
-                    DataBaseUtils.querySongById(MMKV.defaultMMKV().decodeLong("lastPlaySong"))
+                    DataBaseUtils.querySongById(kv.decodeLong("lastPlaySong"))
             }
         }
         return BrowserRoot(MEDIA_ROOT_ID, null)
@@ -402,7 +403,7 @@ class MediaPlaybackService : MediaBrowserServiceCompat() {
                     CHANGE_PLAY_LIST -> {
                         scope.launch {
                             val songId = extras?.get("songId") as Long
-                            MMKV.defaultMMKV().apply {
+                            kv.apply {
                                 encode("lastPlaySongList", extras.get("songListId") as Long)
                                 if ( songId != CHANGE_PLAT_LIST_SHUFFLE) {
                                     encode("lastPlaySong", songId)

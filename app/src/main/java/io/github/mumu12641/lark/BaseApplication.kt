@@ -19,9 +19,10 @@ class BaseApplication : Application() {
         context = applicationContext
         applicationScope  = CoroutineScope(SupervisorJob())
         MMKV.initialize(this)
-        if (MMKV.defaultMMKV().decodeInt("first") == 0) {
-            MMKV.defaultMMKV().encode("first", 1)
-            MMKV.defaultMMKV().encode("userName", context.getString(R.string.user))
+        kv = MMKV.defaultMMKV()
+        if (kv.decodeInt("first") == 0) {
+            kv.encode("first", 1)
+            kv.encode("userName", context.getString(R.string.user))
         }
         deviceScreen = getAndroidScreenProperty()
         version = packageManager.getPackageInfo(packageName,0).versionName
@@ -32,9 +33,10 @@ class BaseApplication : Application() {
         lateinit var deviceScreen:List<Int>
         lateinit var applicationScope: CoroutineScope
         lateinit var version:String
+        lateinit var kv:MMKV
     }
 
-    fun getAndroidScreenProperty():List<Int> {
+    private fun getAndroidScreenProperty():List<Int> {
         val wm = this.getSystemService(WINDOW_SERVICE) as WindowManager
         val dm = DisplayMetrics()
         wm.defaultDisplay.getMetrics(dm)

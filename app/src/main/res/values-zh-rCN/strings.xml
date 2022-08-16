@@ -54,4 +54,9 @@
     <string name="thanks_text">致谢</string>
     <string name="thanks_des_text">致谢</string>
     <string name="version_text">当前版本</string>
+    <string name="login_text">登录</string>
+    <string name="enter_phone_text">请输入电话号码</string>
+    <string name="enter_password_text">请输入密码</string>
+    <string name="refresh_user_text">刷新用户信息</string>
+    <string name="logout_text">退出登录</string>
 </resources>

@@ -36,6 +36,7 @@ import io.github.mumu12641.lark.LocalDarkTheme
 import io.github.mumu12641.lark.LocalSeedColor
 import io.github.mumu12641.lark.R
 import io.github.mumu12641.lark.ui.theme.color.palettes.CorePalette
+import io.github.mumu12641.lark.ui.theme.component.LarkAlertDialog
 import io.github.mumu12641.lark.ui.theme.component.LarkTopBar
 import io.github.mumu12641.lark.ui.theme.component.SettingItem
 import io.github.mumu12641.lark.ui.theme.component.SettingSwitchItem
@@ -193,17 +194,12 @@ fun DisplayPageContent(modifier: Modifier) {
         }
     }
     if (showSwitchDarkModeDialog) {
-        AlertDialog(
+        LarkAlertDialog(
             onDismissRequest = { showSwitchDarkModeDialog = false },
-            confirmButton = {
-                TextButton(
-                    onClick = {
-                        showSwitchDarkModeDialog = false
-                        PreferenceUtil.switchDarkMode(radioOptions.indexOf(selectedOption))
-                    },
-                ) {
-                    Text(stringResource(id = R.string.confirm_text))
-                }
+            confirmText = stringResource(id = R.string.confirm_text),
+            confirmOnClick = {
+                showSwitchDarkModeDialog = false
+                PreferenceUtil.switchDarkMode(radioOptions.indexOf(selectedOption))
             },
             dismissButton = {
                 TextButton(
@@ -214,9 +210,7 @@ fun DisplayPageContent(modifier: Modifier) {
                     Text(stringResource(id = R.string.cancel_text))
                 }
             },
-            title = {
-                Text(text = stringResource(id = R.string.dark_mode_text))
-            },
+            title = stringResource(id = R.string.dark_mode_text),
             text = {
                 Column(Modifier.selectableGroup()) {
                     radioOptions.forEach { text ->

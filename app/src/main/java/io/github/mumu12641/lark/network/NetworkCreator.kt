@@ -2,6 +2,7 @@ package io.github.mumu12641.lark.network
 
 import android.util.Log
 import com.tencent.mmkv.MMKV
+import io.github.mumu12641.lark.BaseApplication.Companion.kv
 import okhttp3.Interceptor
 import okhttp3.OkHttpClient
 import okhttp3.Request
@@ -37,7 +38,9 @@ class ReceivedCookiesInterceptor : Interceptor {
             for (header in originalResponse.headers("Set-Cookie")) {
                 cookies.add(header)
             }
-            MMKV.defaultMMKV().encode("cookie",cookies)
+            if (kv.decodeStringSet("cookie") == null) {
+                kv.encode("cookie", cookies)
+            }
             Log.d("OkHttp", "intercept: ")
         }
         return originalResponse
@@ -47,7 +50,7 @@ class ReceivedCookiesInterceptor : Interceptor {
 class AddCookiesInterceptor : Interceptor {
     override fun intercept(chain: Interceptor.Chain): Response {
         val builder: Request.Builder = chain.request().newBuilder()
-        val cookies = MMKV.defaultMMKV().decodeStringSet("cookie")
+        val cookies = kv.decodeStringSet("cookie")
         if (cookies != null) {
             for (cookie in cookies) {
                 builder.addHeader("Cookie", cookie)
