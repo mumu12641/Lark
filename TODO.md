@@ -40,7 +40,7 @@ homescreen ui improment wip
 
 
 
-网易云音乐的登录 done
+网易云音乐的登录 done  but some bugs
 
 搜索多重匹配
 
@@ -50,7 +50,7 @@ code 重构
 
 搜索！
 
-
+![img](https://assets.uigarage.net/content/uploads/2020/06/search_ios_wetv_uigarage.jpg.jpg)
 
 compose version development
 

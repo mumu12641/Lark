@@ -2,6 +2,7 @@ package io.github.mumu12641.lark.ui.theme.page.function
 
 import android.annotation.SuppressLint
 import android.os.Build
+import android.util.Log
 import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.compose.animation.*
@@ -9,6 +10,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -16,8 +18,10 @@ import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.filled.PlayArrow
 import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.material3.*
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -54,6 +58,7 @@ fun FunctionPage(
 ) {
     val localMusicList by viewModel.localMusicList.collectAsState(initial = emptyList())
     val allSongList by viewModel.allSongList.collectAsState(initial = emptyList())
+    val historySongList by viewModel.historySongList.collectAsState(initial = emptyList())
     val loadLocal by viewModel.loadLocal.collectAsState(initial = Load.NONE)
     val currentShowSong by viewModel.currentShowSong.collectAsState(initial = INIT_SONG)
     val bottomSheetScaffoldState =
@@ -71,6 +76,7 @@ fun FunctionPage(
         canScroll = { true }
     )
 
+    Log.d("TAG", "FunctionPage: $route")
 
     Box(
         modifier = Modifier.fillMaxSize()
@@ -120,8 +126,7 @@ fun FunctionPage(
 
                         LocalContent(
                             modifier = Modifier.padding(paddingValues),
-                            showDialog,
-                            showAddDialog,
+                            LocalSongListId,
                             localMusicList,
                             loadLocal,
                             { song ->
@@ -138,22 +143,120 @@ fun FunctionPage(
                         )
                     }
                 }
-                else -> {
+                Route.ROUTE_HISTORY -> {
                     {
-                        Content(modifier = Modifier.padding(it))
+                        LocalContent(
+                            modifier = Modifier.padding(it),
+                            HistorySongListId,
+                            songs = historySongList,
+                            loadState = Load.NONE,
+                            playMedia = playMedia
+                        )
+//                        Box(modifier = Modifier.padding(it), contentAlignment = Alignment.Center) {
+//                            Text(text = stringResource(id = R.string.coming_soon_text))
+//                        }
                     }
                 }
+                else -> {
+                    {
+                        Box(modifier = Modifier.padding(it), contentAlignment = Alignment.Center) {
+                            Text(text = stringResource(id = R.string.coming_soon_text))
+                        }
+                    }
+
+                }
             },
-            floatingActionButton = {
-                FloatingActionButton(onClick = {
-                    viewModel.reFreshLocalMusicList()
-                }) {
-                    Icon(Icons.Filled.Refresh, contentDescription = "Refresh")
+            floatingActionButton =   {
+                if (route == Route.ROUTE_LOCAL) {
+                    FloatingActionButton(onClick = {
+                        viewModel.reFreshLocalMusicList()
+                    }) {
+                        Icon(Icons.Filled.Refresh, contentDescription = "Refresh")
+                    }
+                }else {
+                    FloatingActionButton(onClick = {
+                        playMedia(
+                            HistorySongListId,
+                            CHANGE_PLAT_LIST_SHUFFLE
+                        )
+                    }) {
+                        Icon(Icons.Filled.PlayArrow, contentDescription = "play")
+                    }
                 }
             }
         )
     }
 }
+
+
+
+@OptIn(ExperimentalAnimationApi::class)
+@SuppressLint("UnrememberedMutableState", "CoroutineCreationDuringComposition")
+@Composable
+fun LocalContent(
+    modifier: Modifier,
+    songListID: Long,
+    songs: List<Song>,
+    loadState: Int,
+    showBottomSheet: ((Song) -> Unit)? = null,
+    playMedia: (Long, Long) -> Unit
+) {
+    AnimatedContent(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(MaterialTheme.colorScheme.background),
+        targetState = loadState,
+        transitionSpec = {
+            slideInVertically { height -> height } + fadeIn() with
+                    slideOutVertically { height -> -height } + fadeOut()
+        }
+    ) { targetState ->
+        when (targetState) {
+            Load.LOADING -> {
+                LoadAnimation(modifier)
+            }
+            else -> {
+                Box(modifier = modifier) {
+                    LazyColumn {
+                        items(items = songs, key = {
+                            it.songId
+                        }) { song: Song ->
+                            if (showBottomSheet != null) {
+                                SongItem(song = song, showBottomSheet = showBottomSheet) {
+                                    playMedia(songListID, song.songId)
+                                }
+                            }else{
+                                SongItem(song = song, showBottomSheet = null) {
+                                    playMedia(songListID, song.songId)
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+
+@Composable
+fun LoadAnimation(modifier: Modifier) {
+    val composition by rememberLottieComposition(LottieCompositionSpec.RawRes(R.raw.loading))
+    val progress by animateLottieCompositionAsState(
+        composition,
+        iterations = LottieConstants.IterateForever
+    )
+    Box(
+        modifier = modifier.fillMaxSize(),
+        contentAlignment = Alignment.Center
+    ) {
+        CircularProgressIndicator(
+            modifier = Modifier
+                .padding(start = 5.dp)
+                .size(25.dp)
+        )
+    }
+}
+
 
 @Composable
 private fun CreateSongListDialog(
@@ -250,145 +353,3 @@ private fun AddToSongListDialog(
         confirmText = stringResource(id = R.string.create_song_Llst_text)
     )
 }
-
-
-@OptIn(ExperimentalAnimationApi::class)
-@SuppressLint("UnrememberedMutableState", "CoroutineCreationDuringComposition")
-@Composable
-fun LocalContent(
-    modifier: Modifier,
-    showDialog: Boolean,
-    showAddDialog: Boolean,
-    localMusic: List<Song>,
-    loadLocal: Int,
-    showBottomSheet: (Song) -> Unit,
-    playMedia: (Long, Long) -> Unit
-) {
-    AnimatedContent(
-        modifier = Modifier
-            .fillMaxSize()
-            .background(MaterialTheme.colorScheme.background),
-        targetState = loadLocal,
-        transitionSpec = {
-            slideInVertically { height -> height } + fadeIn() with
-                    slideOutVertically { height -> -height } + fadeOut()
-        }
-    ) { targetState ->
-        when (targetState) {
-            Load.LOADING -> {
-                LoadAnimation(modifier)
-            }
-            else -> {
-                Box(modifier = modifier) {
-                    LazyColumn {
-                        items(items = localMusic, key = {
-                            it.songId
-                        }) { song: Song ->
-                            SongItem(song = song, showBottomSheet = showBottomSheet) {
-                                playMedia(LocalSongListId, song.songId)
-                            }
-                        }
-                    }
-                }
-            }
-        }
-    }
-}
-
-@Composable
-fun LoadAnimation(modifier: Modifier) {
-    val composition by rememberLottieComposition(LottieCompositionSpec.RawRes(R.raw.loading))
-    val progress by animateLottieCompositionAsState(
-        composition,
-        iterations = LottieConstants.IterateForever
-    )
-    Box(
-        modifier = modifier.fillMaxSize(),
-        contentAlignment = Alignment.Center
-    ) {
-        LottieAnimation(composition, progress)
-    }
-}
-
-@Composable
-fun Content(
-    modifier: Modifier
-) {
-    Box(
-        modifier = modifier
-            .fillMaxSize()
-            .background(MaterialTheme.colorScheme.background),
-        contentAlignment = Alignment.Center
-    ) {
-        Text(
-            text = stringResource(id = R.string.coming_soon_text),
-            style = MaterialTheme.typography.titleMedium
-        )
-    }
-}
-
-
-//@RequiresApi(Build.VERSION_CODES.Q)
-//@SuppressLint("CoroutineCreationDuringComposition", "UnrememberedMutableState")
-//@Composable
-//fun LocalSetUp(
-//    modifier: Modifier,
-//    localMusicList: List<Song>,
-//    loadLocal: Int,
-//    showBottomSheet: (Song) -> Unit,
-//    playMedia: (Long, Long) -> Unit
-//) {
-//    var showDialog by remember {
-//        mutableStateOf(
-//            value = !XXPermissions.isGranted(context, Permission.ACCESS_MEDIA_LOCATION)
-//        )
-//    }
-//    var request by remember {
-//        mutableStateOf(false)
-//    }
-//    if (showDialog) {
-//        LarkAlertDialog(
-//            {},
-//            stringResource(id = R.string.get_media_permission_text),
-//            Icons.Filled.Notifications,
-//            {
-//                Text(
-//                    text = stringResource(id = R.string.request_permission_message_text),
-//                )
-//            },
-//            {
-//                showDialog = false
-//                request = true
-//            },
-//            stringResource(id = R.string.confirm_text),
-//            {
-//                TextButton(
-//                    onClick = {
-//                        showDialog = false
-//                    }
-//                ) {
-//                    Text(stringResource(id = R.string.cancel_text))
-//                }
-//            },
-//        )
-//    }
-//    if (request) {
-//        XXPermissions.with(context)
-//            .permission(
-//                listOf(
-//                    Permission.ACCESS_MEDIA_LOCATION,
-//                    Permission.READ_EXTERNAL_STORAGE,
-//                    Permission.WRITE_EXTERNAL_STORAGE
-//                )
-//            )
-//            .request { _, _ -> }
-//    }
-//    if (XXPermissions.isGranted(context, Permission.READ_EXTERNAL_STORAGE) && !showDialog) {
-//        LocalContent(modifier = modifier, localMusicList, loadLocal, showBottomSheet, playMedia)
-//    }
-//    Box(
-//        modifier = modifier.fillMaxSize(), contentAlignment = Alignment.Center
-//    ) {
-//
-//    }
-//}

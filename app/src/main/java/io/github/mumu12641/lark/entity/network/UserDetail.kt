@@ -88,3 +88,5 @@ data class PrivacyItemUnlimit(
     val college: Boolean,
     val villageAge: Boolean
 )
+
+

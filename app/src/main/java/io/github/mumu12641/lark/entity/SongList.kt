@@ -2,6 +2,8 @@ package io.github.mumu12641.lark.entity
 
 import androidx.room.Entity
 import androidx.room.PrimaryKey
+import java.time.LocalDateTime
+import java.util.*
 
 @Entity
 data class SongList(
@@ -11,5 +13,6 @@ data class SongList(
     var songNumber: Int,
     var description: String,
     var imageFileUri: String,
-    var type:Int
+    var type:Int,
+    var recentPlay: Date? = null
 )

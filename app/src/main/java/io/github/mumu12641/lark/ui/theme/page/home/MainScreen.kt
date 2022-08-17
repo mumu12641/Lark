@@ -72,28 +72,10 @@ fun MainScreen(
             )
         }
         AnimationComposable(
-            Route.ROUTE_CLOUD
-        ) {
-            FunctionPage(
-                navController = navController, route = Route.ROUTE_CLOUD,
-                viewModel = functionViewModel,
-                playMedia = playMedia
-            )
-        }
-        AnimationComposable(
-            Route.ROUTE_DOWNLOAD
-        ) {
-            FunctionPage(
-                navController = navController, route = Route.ROUTE_CLOUD,
-                viewModel = functionViewModel,
-                playMedia = playMedia
-            )
-        }
-        AnimationComposable(
             Route.ROUTE_HISTORY
         ) {
             FunctionPage(
-                navController = navController, route = Route.ROUTE_CLOUD,
+                navController = navController, route = Route.ROUTE_HISTORY,
                 viewModel = functionViewModel,
                 playMedia = playMedia
             )

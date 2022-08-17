@@ -22,7 +22,7 @@ import io.github.mumu12641.lark.entity.Song
 @Composable
 fun SongItem(
     song: Song,
-    showBottomSheet: (Song) -> Unit,
+    showBottomSheet: ((Song) -> Unit)?,
     onClick: () -> Unit
 ) {
     Card(

@@ -58,4 +58,6 @@ interface MusicDao {
 
     @Update
     suspend fun updateSongList(songList: SongList)
+    @Update
+    suspend fun updateSong(song: Song)
 }

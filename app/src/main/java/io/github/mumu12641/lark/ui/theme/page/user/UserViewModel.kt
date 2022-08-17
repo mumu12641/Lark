@@ -4,13 +4,13 @@ import android.util.Log
 import android.widget.Toast
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.tencent.mmkv.MMKV
 import dagger.hilt.android.lifecycle.HiltViewModel
 import io.github.mumu12641.lark.BaseApplication.Companion.context
 import io.github.mumu12641.lark.BaseApplication.Companion.kv
 import io.github.mumu12641.lark.R
 import io.github.mumu12641.lark.entity.LoadState
 import io.github.mumu12641.lark.network.NetworkCreator
+import io.github.mumu12641.lark.network.NetworkCreator.networkService
 import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
@@ -70,11 +70,23 @@ class UserViewModel @Inject constructor() : ViewModel() {
         viewModelScope.launch(Dispatchers.IO + CoroutineExceptionHandler { _, e ->
             _loadState.value = LoadState.Fail(e.message ?: "Load Fail")
             e.message?.let { Log.d(TAG, it) }
+            Log.d(TAG, "loginUser: " + kv.decodeStringSet("cookie"))
+            getLoginStatus()
+            getNeteaseUserDetail()
         }) {
             _loadState.value = LoadState.Loading()
-            val user = NetworkCreator.networkService.cellphoneLogin(phoneNumber, password)
+            val user = networkService.cellphoneLogin(phoneNumber, password)
             delay(1000)
             _loadState.value = LoadState.Success()
+        }
+    }
+
+    private fun getLoginStatus(){
+        viewModelScope.launch(Dispatchers.IO + CoroutineExceptionHandler { _, e ->
+            e.message?.let { Log.d(TAG, it) }
+        }) {
+            val status = networkService.getLoginStatus()
+            Log.d(TAG, "getLoginStatus: $status")
         }
     }
 
@@ -87,11 +99,12 @@ class UserViewModel @Inject constructor() : ViewModel() {
             }
         }) {
             _loadState.value = LoadState.Loading()
-            val detail = NetworkCreator.networkService.getUserDetail(416000474)
+            val detail = networkService.getUserDetail(416000474)
             changeNameValue(detail.profile.nickname)
             changeIconValue(detail.profile.avatarUrl)
             changeBackgroundValue(detail.profile.backgroundUrl)
             saveInformation()
+            getLoginStatus()
             _loadState.value = LoadState.Success()
         }
     }

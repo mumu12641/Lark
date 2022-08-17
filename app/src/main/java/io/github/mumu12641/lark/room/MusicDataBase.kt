@@ -3,19 +3,22 @@ package io.github.mumu12641.lark.room
 import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
+import androidx.room.TypeConverters
 import androidx.sqlite.db.SupportSQLiteDatabase
 import com.tencent.mmkv.MMKV
 import io.github.mumu12641.lark.BaseApplication.Companion.context
 import io.github.mumu12641.lark.BaseApplication.Companion.kv
+import io.github.mumu12641.lark.entity.Converters
 import io.github.mumu12641.lark.entity.PlaylistSongCrossRef
 import io.github.mumu12641.lark.entity.Song
 import io.github.mumu12641.lark.entity.SongList
 
 @Database(
     entities = [SongList::class, Song::class, PlaylistSongCrossRef::class],
-    version = 14,
+    version = 15,
     exportSchema = true
 )
+@TypeConverters(Converters::class)
 abstract class MusicDataBase : RoomDatabase() {
     abstract val musicDao: MusicDao
 

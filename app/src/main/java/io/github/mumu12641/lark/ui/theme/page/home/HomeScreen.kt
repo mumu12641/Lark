@@ -29,6 +29,7 @@ import com.hjq.permissions.Permission
 import com.hjq.permissions.XXPermissions
 import com.skydoves.landscapist.glide.GlideImage
 import com.tencent.mmkv.MMKV
+import io.github.mumu12641.lark.BaseApplication
 import io.github.mumu12641.lark.BaseApplication.Companion.context
 import io.github.mumu12641.lark.MainActivity
 import io.github.mumu12641.lark.R
@@ -329,19 +330,39 @@ private fun FunctionTab(
         horizontalArrangement = Arrangement.SpaceBetween
     ) {
         OutlinedButton(onClick = { navController.navigate(Route.ROUTE_HISTORY) }) {
-            Row(horizontalArrangement = Arrangement.Center, verticalAlignment = Alignment.CenterVertically, modifier = Modifier.width(125.dp)) {
-                Icon(modifier = Modifier.size(25.dp),painter = painterResource(id = R.drawable.history), contentDescription = "history")
-                Text(text = stringResource(id = R.string.history_text), modifier = Modifier.padding(start = 20.dp, end = 20.dp))
+            Row(
+                horizontalArrangement = Arrangement.Center,
+                verticalAlignment = Alignment.CenterVertically,
+                modifier = Modifier.width((BaseApplication.deviceScreen[0] / 2 - 70).dp)
+            ) {
+                Icon(
+                    modifier = Modifier.size(25.dp),
+                    painter = painterResource(id = R.drawable.history),
+                    contentDescription = "history"
+                )
+                Text(
+                    text = stringResource(id = R.string.history_text),
+                    modifier = Modifier.padding(start = 20.dp, end = 20.dp)
+                )
             }
         }
         OutlinedButton(onClick = { navController.navigate(Route.ROUTE_LOCAL) }) {
-            Row(horizontalArrangement = Arrangement.Center, verticalAlignment = Alignment.CenterVertically,
-            modifier = Modifier.width(125.dp)) {
-                Icon(modifier = Modifier.size(25.dp),painter = painterResource(id = R.drawable.file_icon), contentDescription = "local")
-                Text(text = stringResource(id = R.string.local_text),modifier = Modifier.padding(start = 20.dp, end = 20.dp))
+            Row(
+                horizontalArrangement = Arrangement.Center,
+                verticalAlignment = Alignment.CenterVertically,
+                modifier = Modifier.width((BaseApplication.deviceScreen[0] / 2 - 70).dp)
+            ) {
+                Icon(
+                    modifier = Modifier.size(25.dp),
+                    painter = painterResource(id = R.drawable.file_icon),
+                    contentDescription = "local"
+                )
+                Text(
+                    text = stringResource(id = R.string.local_text),
+                    modifier = Modifier.padding(start = 20.dp, end = 20.dp)
+                )
             }
         }
-
 
 
 //        CardIcon(

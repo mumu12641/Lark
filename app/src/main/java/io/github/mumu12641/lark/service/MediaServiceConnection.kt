@@ -19,6 +19,7 @@ import androidx.annotation.RequiresApi
 import com.bumptech.glide.Glide
 import com.tencent.mmkv.MMKV
 import io.github.mumu12641.lark.BaseApplication
+import io.github.mumu12641.lark.BaseApplication.Companion.applicationScope
 import io.github.mumu12641.lark.BaseApplication.Companion.context
 import io.github.mumu12641.lark.BaseApplication.Companion.kv
 import io.github.mumu12641.lark.MainActivity
@@ -31,6 +32,8 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
+import java.time.LocalDateTime
+import java.util.*
 
 class MediaServiceConnection(context: Context, componentName: ComponentName) {
 
@@ -92,10 +95,23 @@ class MediaServiceConnection(context: Context, componentName: ComponentName) {
         @RequiresApi(Build.VERSION_CODES.M)
         override fun onMetadataChanged(metadata: MediaMetadataCompat?) {
             _playMetadata.value = metadata ?: NOTHING_PLAYING
-            Log.d(
-                TAG,
-                "onMetadataChanged: " + metadata?.getString(MediaMetadataCompat.METADATA_KEY_TITLE)
-            )
+
+            applicationScope.launch(Dispatchers.IO) {
+                val id = metadata?.getString(MediaMetadataCompat.METADATA_KEY_MEDIA_URI)
+                    ?.let { DataBaseUtils.querySongIdByMediaUri(it) }
+                Log.d(TAG, "onMetadataChanged: $id")
+                val song = id?.let { DataBaseUtils.querySongById(it) }
+
+                song?.let {
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                        DataBaseUtils.updateSong(it.copy(recentPlay = Date()))
+                        if (!DataBaseUtils.isRefExist(HistorySongListId,id)){
+                            DataBaseUtils.insertRef(PlaylistSongCrossRef(HistorySongListId,id))
+                        }
+                    }
+                }
+            }
+
             updateWidgetMetadata(metadata)
         }
 
@@ -271,7 +287,7 @@ class MediaServiceConnection(context: Context, componentName: ComponentName) {
                     .circleCrop()
                     .submit()
                     .get()
-                if (bitmapPrevious == null){
+                if (bitmapPrevious == null) {
                     bitmapPrevious = Glide
                         .with(context)
                         .asBitmap()

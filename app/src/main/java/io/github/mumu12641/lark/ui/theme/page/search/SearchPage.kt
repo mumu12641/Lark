@@ -2,6 +2,7 @@ package io.github.mumu12641.lark.ui.theme.page.search
 
 import androidx.compose.animation.rememberSplineBasedDecay
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -15,7 +16,9 @@ import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.rememberTopAppBarScrollState
 import androidx.compose.runtime.*
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.res.stringResource
@@ -97,16 +100,37 @@ fun SearchPageContent(modifier: Modifier, searchViewModel: SearchViewModel) {
             Text(
                 text = stringResource(id = R.string.hot_search_text),
                 modifier = Modifier.padding(horizontal = 10.dp, vertical = 20.dp),
-                style = MaterialTheme.typography.titleLarge
+                style = MaterialTheme.typography.titleMedium
             )
         }
-        repeat(hotSearchWord.size){
-            item { 
-                Row(modifier = Modifier.padding(10.dp)) {
-                    Text(text = (it + 1).toString())
-                    Text(text = hotSearchWord[it].hotSearchWord)
+        repeat(hotSearchWord.size) {
+            item {
+                Row(
+                    modifier = Modifier
+                        .clip(RoundedCornerShape(15.dp))
+                        .padding(5.dp)
+                        .clickable { },
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.Center
+                ) {
+                    Text(
+                        text = (it + 1).toString(),
+                        color = if (it <= 2) MaterialTheme.colorScheme.primary else Color.Unspecified,
+                        modifier = Modifier.padding(10.dp),
+                        style = MaterialTheme.typography.titleSmall
+                    )
+                    Text(
+                        text = hotSearchWord[it].hotSearchWord,
+                        modifier = Modifier.padding(5.dp),
+                        color = if (it <= 2) MaterialTheme.colorScheme.primary else Color.Unspecified,
+                    )
                     Spacer(modifier = Modifier.weight(1f))
-                    Text(text = hotSearchWord[it].hotScore.toString())
+                    Text(
+                        text = hotSearchWord[it].hotScore.toString(),
+                        modifier = Modifier.padding(5.dp),
+                        color = MaterialTheme.colorScheme.tertiary,
+                        style = MaterialTheme.typography.bodySmall
+                    )
                 }
             }
         }

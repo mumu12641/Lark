@@ -24,4 +24,7 @@ interface NetworkService {
 
     @GET("/search/hot/detail")
     suspend fun getSearchHot():SearchHot
+
+    @GET("/user/account")
+    suspend fun getLoginStatus():UserAccount
 }

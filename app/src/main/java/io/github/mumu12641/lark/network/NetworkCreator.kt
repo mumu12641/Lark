@@ -41,7 +41,7 @@ class ReceivedCookiesInterceptor : Interceptor {
             if (kv.decodeStringSet("cookie") == null) {
                 kv.encode("cookie", cookies)
             }
-            Log.d("OkHttp", "intercept: ")
+            Log.d("Retrofit", "intercept: ")
         }
         return originalResponse
     }
@@ -55,6 +55,7 @@ class AddCookiesInterceptor : Interceptor {
             for (cookie in cookies) {
                 builder.addHeader("Cookie", cookie)
             }
+            Log.d("Retrofit", "intercept: add cookie")
         }
         return chain.proceed(builder.build())
     }
