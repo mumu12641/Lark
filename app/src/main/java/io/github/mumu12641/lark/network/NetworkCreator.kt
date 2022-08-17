@@ -33,7 +33,7 @@ object NetworkCreator {
 class ReceivedCookiesInterceptor : Interceptor {
     override fun intercept(chain: Interceptor.Chain): Response {
         val originalResponse = chain.proceed(chain.request())
-        if (originalResponse.headers("Set-Cookie").isNotEmpty()) {
+        if (originalResponse.headers("Set-Cookie").isNotEmpty() && kv.decodeLong("neteaseId") == 0L) {
             val cookies: HashSet<String> = HashSet()
             for (header in originalResponse.headers("Set-Cookie")) {
                 cookies.add(header)

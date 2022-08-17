@@ -11,11 +11,8 @@ import io.github.mumu12641.lark.R
 import io.github.mumu12641.lark.entity.LoadState
 import io.github.mumu12641.lark.network.NetworkCreator
 import io.github.mumu12641.lark.network.NetworkCreator.networkService
-import kotlinx.coroutines.CoroutineExceptionHandler
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.delay
+import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
@@ -55,13 +52,26 @@ class UserViewModel @Inject constructor() : ViewModel() {
         viewModelScope.launch(Dispatchers.IO + CoroutineExceptionHandler { _, e ->
             _loadState.value = LoadState.Fail(e.message ?: "Load Fail")
             e.message?.let { Log.d(TAG, it) }
+            Toast.makeText(context,"请先登录",Toast.LENGTH_LONG).show()
         }) {
             _loadState.value = LoadState.Loading()
+            val async = async {
+                Log.d(TAG, "logout: start")
+                val s = networkService.logout()
+                Log.d(TAG, "logout: $s")
+                Log.d(TAG, "logout: end")
+            }
+            async.await()
+
+            Log.d(TAG, "another start")
             changeNameValue(context.getString(R.string.user))
             changeIconValue("")
             changeBackgroundValue("")
             saveInformation()
             kv.removeValueForKey("cookie")
+            kv.removeValueForKey("neteaseId")
+            Log.d(TAG, "logout: " + kv.decodeStringSet("cookie") )
+            Log.d(TAG, "logout: " + kv.decodeLong("neteaseId"))
             _loadState.value = LoadState.Success()
         }
     }
@@ -70,41 +80,28 @@ class UserViewModel @Inject constructor() : ViewModel() {
         viewModelScope.launch(Dispatchers.IO + CoroutineExceptionHandler { _, e ->
             _loadState.value = LoadState.Fail(e.message ?: "Load Fail")
             e.message?.let { Log.d(TAG, it) }
-            Log.d(TAG, "loginUser: " + kv.decodeStringSet("cookie"))
-            getLoginStatus()
-            getNeteaseUserDetail()
         }) {
             _loadState.value = LoadState.Loading()
             val user = networkService.cellphoneLogin(phoneNumber, password)
-            delay(1000)
+            kv.encode("neteaseId",user.account.id)
+            getNeteaseUserDetail()
             _loadState.value = LoadState.Success()
         }
     }
 
-    private fun getLoginStatus(){
-        viewModelScope.launch(Dispatchers.IO + CoroutineExceptionHandler { _, e ->
-            e.message?.let { Log.d(TAG, it) }
-        }) {
-            val status = networkService.getLoginStatus()
-            Log.d(TAG, "getLoginStatus: $status")
-        }
-    }
 
     fun getNeteaseUserDetail() {
         viewModelScope.launch(Dispatchers.IO + CoroutineExceptionHandler { _, e ->
             _loadState.value = LoadState.Fail(e.message ?: "Load Fail")
-            e.message?.let {
-                Log.d(TAG, it)
-                Toast.makeText(context,"登录成功",Toast.LENGTH_LONG).show()
-            }
+            e.message?.let { Log.d(TAG, it) }
+            Toast.makeText(context,"请先登录",Toast.LENGTH_LONG).show()
         }) {
             _loadState.value = LoadState.Loading()
-            val detail = networkService.getUserDetail(416000474)
+            val detail = networkService.getUserDetail(kv.decodeLong("neteaseId"))
             changeNameValue(detail.profile.nickname)
             changeIconValue(detail.profile.avatarUrl)
             changeBackgroundValue(detail.profile.backgroundUrl)
             saveInformation()
-            getLoginStatus()
             _loadState.value = LoadState.Success()
         }
     }

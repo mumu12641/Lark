@@ -28,6 +28,7 @@ import androidx.navigation.NavController
 import com.skydoves.landscapist.glide.GlideImage
 import com.tencent.mmkv.MMKV
 import io.github.mumu12641.lark.BaseApplication.Companion.context
+import io.github.mumu12641.lark.BaseApplication.Companion.kv
 import io.github.mumu12641.lark.R
 import io.github.mumu12641.lark.entity.LoadState
 import io.github.mumu12641.lark.ui.theme.component.LarkAlertDialog
@@ -56,7 +57,9 @@ fun UserPage(
                         IconButton(onClick = { actionMenu = !actionMenu }) {
                             Icon(Icons.Filled.MoreVert, contentDescription = "Menu")
                         }
-                        DropdownMenu(expanded = actionMenu, onDismissRequest = { actionMenu = false }) {
+                        DropdownMenu(
+                            expanded = actionMenu,
+                            onDismissRequest = { actionMenu = false }) {
                             DropdownMenuItem(
                                 text = { Text(text = stringResource(id = R.string.refresh_user_text)) },
                                 onClick = {
@@ -85,14 +88,10 @@ fun UserPage(
                             .padding(bottom = 5.dp)
                             .size(60.dp),
                         onClick = {
-                            if (MMKV.defaultMMKV().decodeStringSet("cookie") == null) {
-                                showLoginDialog = true
-                            } else {
-                                Log.d(
-                                    "TAG",
-                                    "UserPage: " + MMKV.defaultMMKV().decodeStringSet("cookie")
-                                )
+                            if (kv.decodeLong("neteaseId") != 0L) {
                                 Toast.makeText(context, "你已经登录过了", Toast.LENGTH_LONG).show()
+                            } else {
+                                showLoginDialog = true
                             }
                         }) {
                         Icon(
@@ -276,8 +275,12 @@ fun UserContent(
                         )
                     }
                 )
-                AnimatedVisibility(visible = loadState is LoadState.Loading,) {
-                    CircularProgressIndicator(modifier = Modifier.padding(start = 5.dp).size(25.dp))
+                AnimatedVisibility(visible = loadState is LoadState.Loading) {
+                    CircularProgressIndicator(
+                        modifier = Modifier
+                            .padding(start = 5.dp)
+                            .size(25.dp)
+                    )
                 }
                 OutlinedTextField(
                     modifier = Modifier
