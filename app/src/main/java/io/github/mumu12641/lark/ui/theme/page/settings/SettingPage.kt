@@ -7,8 +7,6 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material.Scaffold
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
-import androidx.compose.material.icons.filled.Notifications
-import androidx.compose.material.icons.filled.Phone
 import androidx.compose.material.icons.sharp.Info
 import androidx.compose.material.icons.sharp.Palette
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -17,9 +15,9 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.navigation.NavController
-import io.github.mumu12641.lark.ui.theme.component.LarkTopBar
 import io.github.mumu12641.lark.R
 import io.github.mumu12641.lark.entity.Route
+import io.github.mumu12641.lark.ui.theme.component.LarkTopBar
 import io.github.mumu12641.lark.ui.theme.component.SettingItem
 
 @OptIn(ExperimentalMaterial3Api::class)

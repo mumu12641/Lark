@@ -5,7 +5,6 @@ import androidx.room.Room
 import androidx.room.RoomDatabase
 import androidx.room.TypeConverters
 import androidx.sqlite.db.SupportSQLiteDatabase
-import com.tencent.mmkv.MMKV
 import io.github.mumu12641.lark.BaseApplication.Companion.context
 import io.github.mumu12641.lark.BaseApplication.Companion.kv
 import io.github.mumu12641.lark.entity.Converters
@@ -15,7 +14,7 @@ import io.github.mumu12641.lark.entity.SongList
 
 @Database(
     entities = [SongList::class, Song::class, PlaylistSongCrossRef::class],
-    version = 15,
+    version = 16,
     exportSchema = true
 )
 @TypeConverters(Converters::class)

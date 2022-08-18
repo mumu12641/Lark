@@ -18,6 +18,7 @@ object Route {
     val ROUTE_DISPLAY = context.getString(R.string.display_text)
     val ROUTE_ABOUT = context.getString(R.string.about_text)
     val ROUTE_SEARCH = context.getString(R.string.search_text)
+    val ROUTE_SUGGESTION = context.getString(R.string.suggestion_text)
 }
 
 object Load {
@@ -40,12 +41,20 @@ const val HistorySongListId = 3L
 
 
 const val CHANGE_PLAY_LIST = "CHANGE_PLAY_LIST"
+const val ADD_SONG_TO_LIST = "ADD_SONG_TO_LIST"
 const val CHANGE_PLAT_LIST_SHUFFLE = -1L
 
 const val ACTION_PAUSE = "PAUSE"
 const val ACTION_NEXT = "NEXT"
 const val ACTION_PREVIOUS = "PREVIOUS"
 const val ACTION_PLAY = "PLAY"
+
+// song buffer
+const val NOT_NEED_BUFFER = 0
+const val NOT_BUFFERED = 1
+const val BUFFERED = 2
+const val EMPTY_URI = "not buffered yet"
+
 
 const val PREFILL_SONGLIST_TYPE = 1
 const val CREATE_SONGLIST_TYPE = 2

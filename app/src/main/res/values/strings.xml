@@ -61,4 +61,5 @@
     <string name="logout_text">Logout</string>
     <string name="search_text">Search</string>
     <string name="hot_search_text">Hot search</string>
+    <string name="suggestion_text">Suggestion</string>
 </resources>

@@ -7,10 +7,7 @@ import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.compose.animation.*
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -20,12 +17,14 @@ import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.PlayArrow
 import androidx.compose.material.icons.filled.Refresh
-import androidx.compose.material3.*
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBarDefaults
+import androidx.compose.material3.rememberTopAppBarScrollState
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -33,7 +32,10 @@ import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
-import com.airbnb.lottie.compose.*
+import com.airbnb.lottie.compose.LottieCompositionSpec
+import com.airbnb.lottie.compose.LottieConstants
+import com.airbnb.lottie.compose.animateLottieCompositionAsState
+import com.airbnb.lottie.compose.rememberLottieComposition
 import io.github.mumu12641.lark.MainActivity.Companion.context
 import io.github.mumu12641.lark.R
 import io.github.mumu12641.lark.entity.*
@@ -41,7 +43,6 @@ import io.github.mumu12641.lark.room.DataBaseUtils
 import io.github.mumu12641.lark.ui.theme.component.*
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
@@ -159,35 +160,42 @@ fun FunctionPage(
                 }
                 else -> {
                     {
-                        Box(modifier = Modifier.padding(it), contentAlignment = Alignment.Center) {
+                        Box(modifier = Modifier.padding(it).fillMaxSize(), contentAlignment = Alignment.Center) {
                             Text(text = stringResource(id = R.string.coming_soon_text))
                         }
                     }
 
                 }
             },
-            floatingActionButton =   {
-                if (route == Route.ROUTE_LOCAL) {
-                    FloatingActionButton(onClick = {
-                        viewModel.reFreshLocalMusicList()
-                    }) {
-                        Icon(Icons.Filled.Refresh, contentDescription = "Refresh")
+            floatingActionButton = {
+                when (route) {
+                    Route.ROUTE_LOCAL -> {
+                        FloatingActionButton(onClick = {
+                            viewModel.reFreshLocalMusicList()
+                        }) {
+                            Icon(Icons.Filled.Refresh, contentDescription = "Refresh")
+                        }
                     }
-                }else {
-                    FloatingActionButton(onClick = {
-                        playMedia(
-                            HistorySongListId,
-                            CHANGE_PLAT_LIST_SHUFFLE
-                        )
-                    }) {
-                        Icon(Icons.Filled.PlayArrow, contentDescription = "play")
+                    Route.ROUTE_HISTORY -> {
+                        FloatingActionButton(onClick = {
+                            playMedia(
+                                HistorySongListId,
+                                CHANGE_PLAT_LIST_SHUFFLE
+                            )
+                        }) {
+                            Icon(Icons.Filled.PlayArrow, contentDescription = "play")
+                        }
+                    }
+                    else  -> {
+                        FloatingActionButton(onClick = { /*TODO*/ }) {
+
+                        }
                     }
                 }
             }
         )
     }
 }
-
 
 
 @OptIn(ExperimentalAnimationApi::class)
@@ -225,7 +233,7 @@ fun LocalContent(
                                 SongItem(song = song, showBottomSheet = showBottomSheet) {
                                     playMedia(songListID, song.songId)
                                 }
-                            }else{
+                            } else {
                                 SongItem(song = song, showBottomSheet = null) {
                                     playMedia(songListID, song.songId)
                                 }

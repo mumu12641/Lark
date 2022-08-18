@@ -16,15 +16,16 @@
 
 package io.github.mumu12641.lark.ui.theme.color.score;
 
-import io.github.mumu12641.lark.ui.theme.color.hct.Cam16;
-import io.github.mumu12641.lark.ui.theme.color.utils.ColorUtils;
-import io.github.mumu12641.lark.ui.theme.color.utils.MathUtils;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import io.github.mumu12641.lark.ui.theme.color.hct.Cam16;
+import io.github.mumu12641.lark.ui.theme.color.utils.ColorUtils;
+import io.github.mumu12641.lark.ui.theme.color.utils.MathUtils;
 
 /**
  * Given a large set of colors, remove colors that are unsuitable for a UI theme, and rank the rest

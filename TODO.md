@@ -34,11 +34,13 @@ UI Improvement   always wip
 
 Artist	  	选取较多歌曲的显示在首页 	done
 
+历史播放	done
+
+
+
 
 
 homescreen ui improment wip
-
-
 
 网易云音乐的登录 done  but some bugs
 
@@ -46,9 +48,11 @@ homescreen ui improment wip
 
 code 重构
 
-历史播放
-
 搜索！
+
+banner中的网络歌曲播放
+
+
 
 ![img](https://assets.uigarage.net/content/uploads/2020/06/search_ios_wetv_uigarage.jpg.jpg)
 

@@ -64,8 +64,11 @@ fun LarkSmallTopBar(
     title: String,
     scrollBehavior: TopAppBarScrollBehavior? = null,
     colors: TopAppBarColors = TopAppBarDefaults.smallTopAppBarColors(),
+    navIcon:ImageVector = Icons.Filled.ArrowBack,
+    actionIcon:ImageVector = Icons.Filled.MoreVert,
     navIconClick: () -> Unit,
-    actionClick: (() -> Unit)? = null
+    actionClick: (() -> Unit)? = null,
+    singleActionClick:(() -> Unit)? = null
 ) {
     var actionMenu by remember {
         mutableStateOf(false)
@@ -90,19 +93,24 @@ fun LarkSmallTopBar(
             title = { Text(text = title) },
             navigationIcon = {
                 IconButton(onClick = navIconClick) {
-                    Icon(Icons.Filled.ArrowBack, contentDescription = "back")
+                    Icon(navIcon, contentDescription = "back")
                 }
             },
             actions = {
                 actionClick?.let {
                     IconButton(onClick = { actionMenu = !actionMenu }) {
-                        Icon(Icons.Filled.MoreVert, contentDescription = "Menu")
+                        Icon(actionIcon, contentDescription = "Menu")
                     }
                     DropdownMenu(expanded = actionMenu, onDismissRequest = { actionMenu = false }) {
                         DropdownMenuItem(
                             text = { Text(text = stringResource(id = R.string.reset_artist_text)) },
                             onClick = actionClick
                         )
+                    }
+                }
+                singleActionClick?.let {
+                    IconButton(onClick = it) {
+                        Icon(actionIcon, contentDescription = "Menu")
                     }
                 }
 

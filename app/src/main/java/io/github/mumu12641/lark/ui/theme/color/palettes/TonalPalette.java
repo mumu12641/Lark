@@ -16,9 +16,10 @@
 
 package io.github.mumu12641.lark.ui.theme.color.palettes;
 
-import io.github.mumu12641.lark.ui.theme.color.hct.Hct;
 import java.util.HashMap;
 import java.util.Map;
+
+import io.github.mumu12641.lark.ui.theme.color.hct.Hct;
 
 /**
  * A convenience class for retrieving colors that are constant in hue and chroma, but vary in tone.

@@ -26,6 +26,7 @@ fun AsyncImage(
                 )
             }
         },
+//        bitmapPalette = ,
         failure = {
             Image(
                 painter = painterResource(id = failure),
@@ -35,4 +36,5 @@ fun AsyncImage(
         }
 
     )
+
 }

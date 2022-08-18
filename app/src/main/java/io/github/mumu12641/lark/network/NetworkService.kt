@@ -14,14 +14,23 @@ interface NetworkService {
     suspend fun getArtistDetail(@Query("id") id: Long): ArtistDetailsResponse
 
     @GET("login/cellphone")
-    suspend fun cellphoneLogin(@Query("phone") phoneNumber: String, @Query("password") Password: String): NeteaseUser
+    suspend fun cellphoneLogin(
+        @Query("phone") phoneNumber: String,
+        @Query("password") Password: String
+    ): NeteaseUser
 
     @GET("user/detail")
     suspend fun getUserDetail(@Query("uid") uid: Long): UserDetail
 
     @GET("search/hot/detail")
-    suspend fun getSearchHot():SearchHot
+    suspend fun getSearchHot(): SearchHot
 
     @GET("logout")
-    suspend fun logout():Any
+    suspend fun logout(): Any
+
+    @GET("banner?type=1")
+    suspend fun getBanner(): Banner
+
+    @GET("song/url")
+    suspend fun getSearchSong(@Query("id") id: Long): SearchSong
 }

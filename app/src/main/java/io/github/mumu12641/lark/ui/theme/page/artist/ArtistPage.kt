@@ -1,6 +1,5 @@
 package io.github.mumu12641.lark.ui.theme.page.artist
 
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size

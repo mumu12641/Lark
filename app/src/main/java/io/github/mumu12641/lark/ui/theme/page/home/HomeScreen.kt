@@ -4,42 +4,51 @@ import android.os.Build
 import android.support.v4.media.MediaMetadataCompat
 import android.support.v4.media.session.PlaybackStateCompat
 import androidx.annotation.RequiresApi
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
+import androidx.compose.material.icons.rounded.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.font.FontFamily
-import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.util.lerp
 import androidx.navigation.NavController
+import com.google.accompanist.pager.ExperimentalPagerApi
+import com.google.accompanist.pager.HorizontalPager
+import com.google.accompanist.pager.calculateCurrentOffsetForPage
+import com.google.accompanist.pager.rememberPagerState
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.rememberPermissionState
 import com.hjq.permissions.Permission
 import com.hjq.permissions.XXPermissions
 import com.skydoves.landscapist.glide.GlideImage
 import com.tencent.mmkv.MMKV
-import io.github.mumu12641.lark.BaseApplication
+import io.github.mumu12641.lark.BaseApplication.Companion.applicationScope
 import io.github.mumu12641.lark.BaseApplication.Companion.context
 import io.github.mumu12641.lark.MainActivity
 import io.github.mumu12641.lark.R
-import io.github.mumu12641.lark.entity.CREATE_SONGLIST_TYPE
-import io.github.mumu12641.lark.entity.Route
-import io.github.mumu12641.lark.entity.SongList
+import io.github.mumu12641.lark.entity.*
+import io.github.mumu12641.lark.entity.network.BannerX
+import io.github.mumu12641.lark.room.DataBaseUtils
 import io.github.mumu12641.lark.service.MediaServiceConnection.Companion.EMPTY_PLAYBACK_STATE
 import io.github.mumu12641.lark.service.MediaServiceConnection.Companion.NOTHING_PLAYING
 import io.github.mumu12641.lark.ui.theme.component.*
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
+import kotlin.math.absoluteValue
 
 @RequiresApi(Build.VERSION_CODES.Q)
 @OptIn(ExperimentalMaterial3Api::class)
@@ -51,6 +60,7 @@ fun HomeScreen(
     playState: Flow<PlaybackStateCompat>,
     flow: Flow<List<SongList>>,
     reFreshLocalMusicList: () -> Unit,
+    addBannerSongToList: (Long) -> Unit,
     addSongList: (SongList) -> Unit
 ) {
 
@@ -59,23 +69,32 @@ fun HomeScreen(
     val currentPlayState by playState.collectAsState(initial = EMPTY_PLAYBACK_STATE)
     val artistSongList by mainViewModel.artistSongList.collectAsState(initial = listOf())
 
+    val banner by mainViewModel.bannerState.collectAsState(initial = emptyList())
 
     Box(
         modifier = Modifier.fillMaxSize()
     ) {
         Scaffold(
             topBar = {
-                LarkTopBar(
+//                LarkTopBar(
+//                    title = stringResource(id = R.string.app_name),
+//                    Icons.Filled.Search,
+//                    actions = {
+//                        IconButton(onClick = { navController.navigate(Route.ROUTE_SETTING) }) {
+//                            Icon(Icons.Filled.Settings, contentDescription = "Setting")
+//                        }
+//                    }
+//                ) {
+//                    navController.navigate(Route.ROUTE_SEARCH)
+//                }
+                LarkSmallTopBar(
                     title = stringResource(id = R.string.app_name),
-                    Icons.Filled.Search,
-                    actions = {
-                        IconButton(onClick = { navController.navigate(Route.ROUTE_SETTING) }) {
-                            Icon(Icons.Filled.Settings, contentDescription = "Setting")
-                        }
-                    }
-                ) {
-                    navController.navigate(Route.ROUTE_SEARCH)
-                }
+                    navIcon = Icons.Filled.Search,
+                    navIconClick = { navController.navigate(Route.ROUTE_SEARCH) },
+                    actionIcon = Icons.Filled.Settings,
+                    singleActionClick = {
+                        navController.navigate(Route.ROUTE_SETTING)
+                    })
             },
             content = { paddingValues ->
                 HomeSetup(
@@ -83,8 +102,10 @@ fun HomeScreen(
                     allSongList,
                     artistSongList,
                     navController,
+                    banner,
                     reFreshLocalMusicList,
-                    addSongList
+                    addSongList,
+                    addBannerSongToList
                 )
             },
             floatingActionButton = {
@@ -112,8 +133,10 @@ fun HomeSetup(
     list: List<SongList>,
     artistSongList: List<SongList>,
     navController: NavController,
+    banner: List<BannerX>,
     reFreshLocalMusicList: () -> Unit,
-    addSongList: (SongList) -> Unit
+    addSongList: (SongList) -> Unit,
+    addBannerSongToList: (Long) -> Unit,
 ) {
     var showDialog by remember {
         mutableStateOf(true)
@@ -125,7 +148,15 @@ fun HomeSetup(
         rememberPermissionState(permission = android.Manifest.permission.ACCESS_MEDIA_LOCATION)
     if (permissionState.hasPermission) {
         showDialog = false
-        HomeContent(modifier, list, artistSongList, navController, addSongList)
+        HomeContent(
+            modifier,
+            list,
+            artistSongList,
+            navController,
+            banner,
+            addSongList,
+            addBannerSongToList
+        )
     } else {
         if (showDialog) {
             LarkAlertDialog(
@@ -172,17 +203,99 @@ fun HomeContent(
     list: List<SongList>,
     artistSongList: List<SongList>,
     navController: NavController,
-    addSongList: (SongList) -> Unit
+    banner: List<BannerX>,
+    addSongList: (SongList) -> Unit,
+    addBannerSongToList: (Long) -> Unit,
 ) {
+
+
     Column(
         modifier = modifier.padding(horizontal = 10.dp, vertical = 10.dp)
     ) {
         WelcomeUser(navController)
+        Banner(banner, addBannerSongToList)
         FunctionTab(navController)
-        SongListRow(list, addSongList) {
-            navController.navigate(Route.ROUTE_SONG_LIST_DETAILS + it.toString())
-        }
+        SongListRow(
+            list,
+            addSongList
+        ) { navController.navigate(Route.ROUTE_SONG_LIST_DETAILS + it.toString()) }
         ArtistRow(navController, artistSongList)
+    }
+}
+
+@OptIn(ExperimentalPagerApi::class)
+@Composable
+private fun Banner(
+    banner: List<BannerX>,
+    addBannerSongToList: (Long) -> Unit,
+) {
+    val pagerState = rememberPagerState(
+        initialPage = 0
+    )
+    val modifier = Modifier
+        .fillMaxWidth()
+        .padding(vertical = 5.dp)
+        .height(125.dp)
+        .clip(
+            RoundedCornerShape(20.dp)
+        )
+
+    if (banner.isEmpty()) {
+        Box(
+            modifier = modifier,
+            contentAlignment = Alignment.Center
+        ) {
+            CircularProgressIndicator()
+        }
+    } else {
+        HorizontalPager(
+            state = pagerState,
+            count = banner.size,
+            contentPadding = PaddingValues()
+        ) { page ->
+            AsyncImage(
+                modifier = modifier
+                    .clickable {
+//                        applicationScope.launch(Dispatchers.IO) {
+//                            val song = Song(
+//                                0L,
+//                                banner[page].song.name,
+//                                songSinger = banner[page].song.ar
+//                                    .map { it.name }
+//                                    .toString(),
+//                                songAlbumFileUri = banner[page].song.al.picUrl,
+//                                mediaFileUri = EMPTY_URI + banner[page].song.al.picUrl,
+//                                duration = 0,
+//                                isBuffered = NOT_BUFFERED,
+//                                neteaseId = banner[page].song.id.toLong(),
+//                            )
+//                            val async = async {
+//                                DataBaseUtils.insertSong(song)
+//                            }
+//                            async.await()
+//                            addBannerSongToList(DataBaseUtils.querySongIdByMediaUri(EMPTY_URI + banner[page].song.al.picUrl))
+//                        }
+                    }
+                    .graphicsLayer {
+                        val pageOffset = calculateCurrentOffsetForPage(page).absoluteValue
+                        lerp(
+                            start = 0.85f,
+                            stop = 1f,
+                            fraction = 1f - pageOffset.coerceIn(0f, 1f)
+                        ).also { scale ->
+                            scaleX = scale
+                            scaleY = scale
+                        }
+                        alpha = lerp(
+                            start = 0.5f,
+                            stop = 1f,
+                            fraction = 1f - pageOffset.coerceIn(0f, 1f)
+                        )
+                    },
+                imageModel = banner[page].pic,
+                failure = R.drawable.lark
+            )
+        }
     }
 }
 
@@ -329,66 +442,73 @@ private fun FunctionTab(
             .padding(vertical = 10.dp),
         horizontalArrangement = Arrangement.SpaceBetween
     ) {
-        OutlinedButton(onClick = { navController.navigate(Route.ROUTE_HISTORY) }) {
-            Row(
-                horizontalArrangement = Arrangement.Center,
-                verticalAlignment = Alignment.CenterVertically,
-                modifier = Modifier.width((BaseApplication.deviceScreen[0] / 2 - 70).dp)
-            ) {
-                Icon(
-                    modifier = Modifier.size(25.dp),
-                    painter = painterResource(id = R.drawable.history),
-                    contentDescription = "history"
-                )
-                Text(
-                    text = stringResource(id = R.string.history_text),
-                    modifier = Modifier.padding(start = 20.dp, end = 20.dp)
-                )
-            }
-        }
-        OutlinedButton(onClick = { navController.navigate(Route.ROUTE_LOCAL) }) {
-            Row(
-                horizontalArrangement = Arrangement.Center,
-                verticalAlignment = Alignment.CenterVertically,
-                modifier = Modifier.width((BaseApplication.deviceScreen[0] / 2 - 70).dp)
-            ) {
-                Icon(
-                    modifier = Modifier.size(25.dp),
-                    painter = painterResource(id = R.drawable.file_icon),
-                    contentDescription = "local"
-                )
-                Text(
-                    text = stringResource(id = R.string.local_text),
-                    modifier = Modifier.padding(start = 20.dp, end = 20.dp)
-                )
-            }
-        }
+//        OutlinedButton(onClick = { navController.navigate(Route.ROUTE_HISTORY) }) {
+//            Row(
+//                horizontalArrangement = Arrangement.Center,
+//                verticalAlignment = Alignment.CenterVertically,
+//                modifier = Modifier.width((BaseApplication.deviceScreen[0] / 2 - 70).dp)
+//            ) {
+//                Icon(
+//                    modifier = Modifier.size(25.dp),
+//                    painter = painterResource(id = R.drawable.history),
+//                    contentDescription = "history"
+//                )
+//                Text(
+//                    text = stringResource(id = R.string.history_text),
+//                    modifier = Modifier.padding(start = 20.dp, end = 20.dp)
+//                )
+//            }
+//        }
+//        OutlinedButton(onClick = { navController.navigate(Route.ROUTE_LOCAL) }) {
+//            Row(
+//                horizontalArrangement = Arrangement.Center,
+//                verticalAlignment = Alignment.CenterVertically,
+//                modifier = Modifier.width((BaseApplication.deviceScreen[0] / 2 - 70).dp)
+//            ) {
+//                Icon(
+//                    modifier = Modifier.size(25.dp),
+//                    painter = painterResource(id = R.drawable.file_icon),
+//                    contentDescription = "local"
+//                )
+//                Text(
+//                    text = stringResource(id = R.string.local_text),
+//                    modifier = Modifier.padding(start = 20.dp, end = 20.dp)
+//                )
+//            }
+//        }
 
 
-//        CardIcon(
-//            resourceId = R.drawable.history,
-//            contentDescription = stringResource(id = R.string.history_text)
-//        ) {
-//            navController.navigate(Route.ROUTE_HISTORY)
-//        }
-//        CardIcon(
-//            resourceId = R.drawable.file_icon,
-//            contentDescription = stringResource(id = R.string.local_text)
-//        ) {
-//            navController.navigate(Route.ROUTE_LOCAL)
-//        }
-//        CardIcon(
-//            resourceId = R.drawable.download_icon,
-//            contentDescription = stringResource(id = R.string.download_text)
-//        ) {
-//            navController.navigate(Route.ROUTE_DOWNLOAD)
-//        }
-//        CardIcon(
-//            resourceId = R.drawable.cloud_upload,
-//            contentDescription = stringResource(id = R.string.cloud_text)
-//        ) {
-//            navController.navigate(Route.ROUTE_CLOUD)
-//        }
+        CardIcon(
+            Icons.Rounded.InsertInvitation,
+            contentDescription = stringResource(id = R.string.suggestion_text)
+        ) {
+            navController.navigate(Route.ROUTE_SUGGESTION)
+        }
+        CardIcon(
+            Icons.Rounded.HourglassTop,
+            contentDescription = stringResource(id = R.string.history_text)
+        ) {
+            navController.navigate(Route.ROUTE_HISTORY)
+        }
+        CardIcon(
+            Icons.Rounded.FolderOpen,
+            contentDescription = stringResource(id = R.string.local_text)
+        ) {
+            navController.navigate(Route.ROUTE_LOCAL)
+        }
+        CardIcon(
+            Icons.Rounded.Download,
+            contentDescription = stringResource(id = R.string.download_text)
+        ) {
+            navController.navigate(Route.ROUTE_DOWNLOAD)
+        }
+        CardIcon(
+//            FilterDrama
+            Icons.Rounded.Backup,
+            contentDescription = stringResource(id = R.string.cloud_text)
+        ) {
+            navController.navigate(Route.ROUTE_CLOUD)
+        }
     }
 }
 
@@ -399,7 +519,8 @@ fun WelcomeUser(
 ) {
     Row(
         modifier = Modifier
-            .fillMaxWidth(),
+            .fillMaxWidth()
+            .padding(bottom = 5.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
         GlideImage(

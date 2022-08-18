@@ -9,10 +9,12 @@ import io.github.mumu12641.lark.BaseApplication.Companion.context
 import io.github.mumu12641.lark.BaseApplication.Companion.kv
 import io.github.mumu12641.lark.R
 import io.github.mumu12641.lark.entity.LoadState
-import io.github.mumu12641.lark.network.NetworkCreator
 import io.github.mumu12641.lark.network.NetworkCreator.networkService
-import kotlinx.coroutines.*
+import kotlinx.coroutines.CoroutineExceptionHandler
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
@@ -52,7 +54,6 @@ class UserViewModel @Inject constructor() : ViewModel() {
         viewModelScope.launch(Dispatchers.IO + CoroutineExceptionHandler { _, e ->
             _loadState.value = LoadState.Fail(e.message ?: "Load Fail")
             e.message?.let { Log.d(TAG, it) }
-            Toast.makeText(context,"请先登录",Toast.LENGTH_LONG).show()
         }) {
             _loadState.value = LoadState.Loading()
             val async = async {
@@ -79,11 +80,13 @@ class UserViewModel @Inject constructor() : ViewModel() {
     fun loginUser(phoneNumber: String, password: String) {
         viewModelScope.launch(Dispatchers.IO + CoroutineExceptionHandler { _, e ->
             _loadState.value = LoadState.Fail(e.message ?: "Load Fail")
+            kv.encode("neteaseId",416000474L)
             e.message?.let { Log.d(TAG, it) }
         }) {
             _loadState.value = LoadState.Loading()
             val user = networkService.cellphoneLogin(phoneNumber, password)
-            kv.encode("neteaseId",user.account.id)
+            Log.d(TAG, "loginUser: $user")
+            kv.encode("neteaseId",user.account.id.toLong())
             getNeteaseUserDetail()
             _loadState.value = LoadState.Success()
         }
@@ -94,7 +97,6 @@ class UserViewModel @Inject constructor() : ViewModel() {
         viewModelScope.launch(Dispatchers.IO + CoroutineExceptionHandler { _, e ->
             _loadState.value = LoadState.Fail(e.message ?: "Load Fail")
             e.message?.let { Log.d(TAG, it) }
-            Toast.makeText(context,"请先登录",Toast.LENGTH_LONG).show()
         }) {
             _loadState.value = LoadState.Loading()
             val detail = networkService.getUserDetail(kv.decodeLong("neteaseId"))

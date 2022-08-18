@@ -1,7 +1,6 @@
 package io.github.mumu12641.lark.network
 
 import android.util.Log
-import com.tencent.mmkv.MMKV
 import io.github.mumu12641.lark.BaseApplication.Companion.kv
 import okhttp3.Interceptor
 import okhttp3.OkHttpClient

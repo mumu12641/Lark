@@ -16,11 +16,12 @@
 
 package io.github.mumu12641.lark.ui.theme.color.quantize;
 
-import io.github.mumu12641.lark.ui.theme.color.utils.ColorUtils;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import io.github.mumu12641.lark.ui.theme.color.utils.ColorUtils;
 
 /**
  * An image quantizer that divides the image's pixels into clusters by recursively cutting an RGB

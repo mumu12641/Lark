@@ -17,8 +17,6 @@ import android.util.Log
 import android.widget.RemoteViews
 import androidx.annotation.RequiresApi
 import com.bumptech.glide.Glide
-import com.tencent.mmkv.MMKV
-import io.github.mumu12641.lark.BaseApplication
 import io.github.mumu12641.lark.BaseApplication.Companion.applicationScope
 import io.github.mumu12641.lark.BaseApplication.Companion.context
 import io.github.mumu12641.lark.BaseApplication.Companion.kv
@@ -32,7 +30,6 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
-import java.time.LocalDateTime
 import java.util.*
 
 class MediaServiceConnection(context: Context, componentName: ComponentName) {
@@ -63,8 +60,6 @@ class MediaServiceConnection(context: Context, componentName: ComponentName) {
 
     private var bitmapPrevious: Bitmap? = null
     private var bitmapNext: Bitmap? = null
-    private var bitmapPlay: Bitmap? = null
-    private var bitmapPause: Bitmap? = null
 
 
     private val mediaBrowserConnectionCallback = object : MediaBrowserCompat.ConnectionCallback() {
@@ -111,7 +106,6 @@ class MediaServiceConnection(context: Context, componentName: ComponentName) {
                     }
                 }
             }
-
             updateWidgetMetadata(metadata)
         }
 

@@ -57,7 +57,8 @@ fun MainScreen(
                 metadata = mainViewModel.currentPlayMetadata,
                 playState = mainViewModel.currentPlayState,
                 flow = mainViewModel.allSongList,
-                reFreshLocalMusicList = { functionViewModel.reFreshLocalMusicList() }
+                reFreshLocalMusicList = { functionViewModel.reFreshLocalMusicList() },
+                addBannerSongToList = { mainViewModel.addSongToCurrentList(it) }
             ) {
                 mainViewModel.addSongList(it)
             }
@@ -76,6 +77,33 @@ fun MainScreen(
         ) {
             FunctionPage(
                 navController = navController, route = Route.ROUTE_HISTORY,
+                viewModel = functionViewModel,
+                playMedia = playMedia
+            )
+        }
+        AnimationComposable(
+            Route.ROUTE_DOWNLOAD
+        ) {
+            FunctionPage(
+                navController = navController, route = Route.ROUTE_DOWNLOAD,
+                viewModel = functionViewModel,
+                playMedia = playMedia,
+            )
+        }
+        AnimationComposable(
+            Route.ROUTE_CLOUD
+        ) {
+            FunctionPage(
+                navController = navController, route = Route.ROUTE_CLOUD,
+                viewModel = functionViewModel,
+                playMedia = playMedia
+            )
+        }
+        AnimationComposable(
+            Route.ROUTE_SUGGESTION
+        ) {
+            FunctionPage(
+                navController = navController, route = Route.ROUTE_SUGGESTION,
                 viewModel = functionViewModel,
                 playMedia = playMedia
             )

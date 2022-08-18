@@ -8,11 +8,8 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
 import androidx.annotation.RequiresApi
-import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
 import androidx.core.view.WindowCompat
 import dagger.hilt.android.AndroidEntryPoint
 import io.github.mumu12641.lark.ui.theme.LarkTheme
@@ -23,7 +20,6 @@ import io.github.mumu12641.lark.ui.theme.page.home.MainScreen
 import io.github.mumu12641.lark.ui.theme.page.home.MainViewModel
 import io.github.mumu12641.lark.ui.theme.page.search.SearchViewModel
 import io.github.mumu12641.lark.ui.theme.page.user.UserViewModel
-import io.github.mumu12641.lark.ui.theme.util.PreferenceUtil
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {

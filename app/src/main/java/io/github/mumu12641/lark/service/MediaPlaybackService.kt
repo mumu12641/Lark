@@ -12,6 +12,7 @@ import android.graphics.Bitmap
 import android.os.Build
 import android.os.Bundle
 import android.support.v4.media.MediaBrowserCompat
+import android.support.v4.media.MediaDescriptionCompat
 import android.support.v4.media.MediaMetadataCompat
 import android.support.v4.media.session.MediaSessionCompat
 import android.support.v4.media.session.PlaybackStateCompat
@@ -22,13 +23,15 @@ import androidx.media.MediaBrowserServiceCompat
 import com.bumptech.glide.Glide
 import com.google.android.exoplayer2.ExoPlayer
 import com.google.android.exoplayer2.MediaItem
+import com.google.android.exoplayer2.PlaybackException
 import com.google.android.exoplayer2.Player
-import com.tencent.mmkv.MMKV
+import io.github.mumu12641.lark.BaseApplication.Companion.applicationScope
 import io.github.mumu12641.lark.BaseApplication.Companion.kv
 import io.github.mumu12641.lark.MainActivity
 import io.github.mumu12641.lark.MainActivity.Companion.context
 import io.github.mumu12641.lark.R
 import io.github.mumu12641.lark.entity.*
+import io.github.mumu12641.lark.network.NetworkCreator.networkService
 import io.github.mumu12641.lark.room.DataBaseUtils
 import kotlinx.coroutines.*
 
@@ -84,13 +87,40 @@ class MediaPlaybackService : MediaBrowserServiceCompat() {
 
         mExoPlayer = ExoPlayer.Builder(this).build()
         mExoPlayer.addListener(object : Player.Listener {
-            @RequiresApi(Build.VERSION_CODES.M)
 
+            override fun onPlayerError(error: PlaybackException) {
+                super.onPlayerError(error)
+                Log.d(TAG, "onPlayerError: " + error.message)
+            }
+
+            @RequiresApi(Build.VERSION_CODES.M)
             override fun onMediaItemTransition(mediaItem: MediaItem?, reason: Int) {
                 super.onMediaItemTransition(mediaItem, reason)
                 Log.d(TAG, "onMediaItemTransition: ")
+                val song = currentPlayList[mExoPlayer.currentMediaItemIndex]
                 updatePlayBackState(PlaybackStateCompat.STATE_PLAYING)
-                updateMetadata(createMetadataFromSong(currentPlayList[mExoPlayer.currentMediaItemIndex]))
+                updateMetadata(createMetadataFromSong(song))
+                if (song.isBuffered == NOT_BUFFERED) {
+                    applicationScope.launch(Dispatchers.IO) {
+                        withContext(Dispatchers.Main) {
+                            updatePlayBackState(PlaybackStateCompat.STATE_BUFFERING)
+                        }
+                        val searchSong = networkService.getSearchSong(song.neteaseId)
+                        Log.d(TAG, "onMediaItemTransition: $searchSong")
+                        DataBaseUtils.updateSong(
+                            song.copy(
+                                isBuffered = BUFFERED,
+                                mediaFileUri = searchSong.data[0].url
+                            )
+                        )
+                        currentPlayList[mExoPlayer.currentMediaItemIndex] =
+                            song.copy(isBuffered = BUFFERED, mediaFileUri = searchSong.data[0].url)
+                        withContext(Dispatchers.Main) {
+                            updatePlayBackState(PlaybackStateCompat.STATE_PLAYING)
+                            updateMetadata(createMetadataFromSong(song))
+                        }
+                    }
+                }
                 createNotification(
                     PlaybackStateCompat.STATE_PLAYING,
                     currentPlayList[mExoPlayer.currentMediaItemIndex]
@@ -107,8 +137,8 @@ class MediaPlaybackService : MediaBrowserServiceCompat() {
             mChannel.enableVibration(true)
             mChannel.vibrationPattern = longArrayOf(100, 200, 300, 400, 500, 400, 300, 200, 400)
             mChannel.enableVibration(false)
-            mChannel.vibrationPattern = LongArray(1){0}
-            mChannel.setSound(null,null)
+            mChannel.vibrationPattern = LongArray(1) { 0 }
+            mChannel.setSound(null, null)
             manager.createNotificationChannel(mChannel)
         }
 
@@ -174,7 +204,7 @@ class MediaPlaybackService : MediaBrowserServiceCompat() {
             }
             mExoPlayer.prepare()
             currentPlaySong?.let {
-                mExoPlayer.seekTo(currentPlayList.indexOf(it),0L)
+                mExoPlayer.seekTo(currentPlayList.indexOf(it), 0L)
             }
             result.sendResult(mediaItems)
         }
@@ -213,7 +243,166 @@ class MediaPlaybackService : MediaBrowserServiceCompat() {
             })
         }
         mExoPlayer.prepare()
-        mExoPlayer.seekTo(currentPlayList.indexOf(currentPlaySong),0L)
+        mExoPlayer.seekTo(currentPlayList.indexOf(currentPlaySong), 0L)
+    }
+
+
+    private val mSessionCallback: MediaSessionCompat.Callback =
+        object : MediaSessionCompat.Callback() {
+            @RequiresApi(Build.VERSION_CODES.M)
+            override fun onPlay() {
+                super.onPlay()
+                Log.d(TAG, "onPlay")
+                if (mPlaybackState.state == PlaybackStateCompat.STATE_PAUSED || mPlaybackState.state == PlaybackStateCompat.STATE_NONE
+                    || mPlaybackState.state == PlaybackStateCompat.STATE_SKIPPING_TO_NEXT || mPlaybackState.state == PlaybackStateCompat.STATE_PLAYING
+                ) {
+                    mExoPlayer.play()
+                    updatePlayBackState(PlaybackStateCompat.STATE_PLAYING)
+                    updateMetadata(createMetadataFromSong(currentPlayList[mExoPlayer.currentMediaItemIndex]))
+                    createNotification(
+                        PlaybackStateCompat.STATE_PLAYING,
+                        currentPlayList[mExoPlayer.currentMediaItemIndex]
+                    )
+                }
+            }
+
+            @RequiresApi(Build.VERSION_CODES.M)
+            override fun onPause() {
+                super.onPause()
+                Log.d(TAG, "onPause")
+                if (mPlaybackState.state == PlaybackStateCompat.STATE_PLAYING) {
+                    mExoPlayer.pause()
+                    updatePlayBackState(PlaybackStateCompat.STATE_PAUSED)
+                    createNotification(
+                        PlaybackStateCompat.STATE_PAUSED,
+                        currentPlayList[mExoPlayer.currentMediaItemIndex]
+                    )
+//                    updateNotificationAction(PlaybackStateCompat.STATE_PAUSED)
+
+                }
+            }
+
+            override fun onSeekTo(pos: Long) {
+                super.onSeekTo(pos)
+                mExoPlayer.seekTo(pos)
+                updatePlayBackState(PlaybackStateCompat.STATE_PLAYING)
+            }
+
+            @RequiresApi(Build.VERSION_CODES.M)
+            override fun onSkipToNext() {
+                super.onSkipToNext()
+                Log.d(TAG, "onSkipToNext")
+                mExoPlayer.seekToNextMediaItem()
+                updatePlayBackState(mPlaybackState.state)
+//                updateMetadata(createMetadataFromSong(currentPlayList[mExoPlayer.currentMediaItemIndex]))
+                createNotification(
+                    mPlaybackState.state,
+                    currentPlayList[mExoPlayer.currentMediaItemIndex]
+                )
+//                updateNotificationAction(PlaybackStateCompat.STATE_PLAYING)
+
+            }
+
+            @RequiresApi(Build.VERSION_CODES.M)
+            override fun onSkipToPrevious() {
+                super.onSkipToPrevious()
+                Log.d(TAG, "onSkipToPrevious: ")
+                mExoPlayer.seekToPreviousMediaItem()
+                updatePlayBackState(mPlaybackState.state)
+//                updateMetadata(createMetadataFromSong(currentPlayList[mExoPlayer.currentMediaItemIndex]))
+                createNotification(
+                    mPlaybackState.state,
+                    currentPlayList[mExoPlayer.currentMediaItemIndex]
+                )
+//                updateNotificationAction(PlaybackStateCompat.STATE_PLAYING)
+
+            }
+
+            override fun onCustomAction(action: String?, extras: Bundle?) {
+                super.onCustomAction(action, extras)
+                when (action) {
+                    CHANGE_PLAY_LIST -> {
+                        changePlayList(extras)
+                    }
+                    ADD_SONG_TO_LIST -> {
+                        scope.launch {
+                            val songId = extras?.get("songId") as Long
+                            val song = DataBaseUtils.querySongById(songId)
+                            withContext(Dispatchers.Main) {
+                                currentPlayList.add(mExoPlayer.currentMediaItemIndex + 1, song)
+                                mediaSession.setQueue(currentPlayList.map {
+                                    MediaSessionCompat.QueueItem(
+                                        createMetadataFromSong(it).description,
+                                        it.songId
+                                    )
+                                })
+                                mExoPlayer.addMediaItem(
+                                    mExoPlayer.currentMediaItemIndex + 1,
+                                    MediaItem.fromUri(song.mediaFileUri)
+                                )
+                            }
+                        }
+                    }
+                }
+            }
+//            override fun onSetRepeatMode(repeatMode: Int) {
+//                super.onSetRepeatMode(repeatMode)
+//            }
+//
+//            override fun onSetShuffleMode(shuffleMode: Int) {
+//                super.onSetShuffleMode(shuffleMode)
+//            }
+//
+//            override fun onAddQueueItem(description: MediaDescriptionCompat?) {
+//                super.onAddQueueItem(description)
+//            }
+        }
+
+    private fun changePlayList(extras: Bundle?) {
+        scope.launch {
+            val songId = extras?.get("songId") as Long
+            kv.apply {
+                encode("lastPlaySongList", extras.get("songListId") as Long)
+                if (songId != CHANGE_PLAT_LIST_SHUFFLE) {
+                    encode("lastPlaySong", songId)
+                }
+            }
+            extras.apply {
+                currentPlayList = DataBaseUtils.querySongListWithSongsBySongListId(
+                    get("songListId") as Long
+                ).songs.toMutableList()
+                currentPlaySong = if (songId != CHANGE_PLAT_LIST_SHUFFLE) {
+                    DataBaseUtils.querySongById(get("songId") as Long)
+                } else {
+                    currentPlayList.shuffle()
+                    currentPlayList[0]
+                }
+                currentSongList =
+                    DataBaseUtils.querySongListById(get("songListId") as Long)
+                withContext(Dispatchers.Main) {
+                    updateQueue(currentPlayList)
+                }
+            }
+        }
+    }
+
+    inner class MediaActionReceiver : BroadcastReceiver() {
+        override fun onReceive(context: Context?, intent: Intent?) {
+            when (intent?.action) {
+                ACTION_PAUSE -> {
+                    mediaSession.controller?.transportControls?.pause()
+                }
+                ACTION_NEXT -> {
+                    mediaSession.controller?.transportControls?.skipToNext()
+                }
+                ACTION_PREVIOUS -> {
+                    mediaSession.controller?.transportControls?.skipToPrevious()
+                }
+                ACTION_PLAY -> {
+                    mediaSession.controller?.transportControls?.play()
+                }
+            }
+        }
     }
 
     @RequiresApi(Build.VERSION_CODES.M)
@@ -235,7 +424,7 @@ class MediaPlaybackService : MediaBrowserServiceCompat() {
             setSmallIcon(R.drawable.lark)
             setVisibility(NotificationCompat.VISIBILITY_PUBLIC)
             setSound(null)
-            setVibrate(LongArray(1){0})
+            setVibrate(LongArray(1) { 0 })
             setSilent(true)
 
 
@@ -323,140 +512,6 @@ class MediaPlaybackService : MediaBrowserServiceCompat() {
             notification = notificationBuilder.build()
             startForeground(1, notification)
         }.start()
-    }
-
-
-    private val mSessionCallback: MediaSessionCompat.Callback =
-        object : MediaSessionCompat.Callback() {
-            @RequiresApi(Build.VERSION_CODES.M)
-            override fun onPlay() {
-                super.onPlay()
-                Log.d(TAG, "onPlay")
-                if (mPlaybackState.state == PlaybackStateCompat.STATE_PAUSED || mPlaybackState.state == PlaybackStateCompat.STATE_NONE
-                    || mPlaybackState.state == PlaybackStateCompat.STATE_SKIPPING_TO_NEXT || mPlaybackState.state == PlaybackStateCompat.STATE_PLAYING
-                ) {
-                    mExoPlayer.play()
-                    updatePlayBackState(PlaybackStateCompat.STATE_PLAYING)
-                    updateMetadata(createMetadataFromSong(currentPlayList[mExoPlayer.currentMediaItemIndex]))
-                    createNotification(
-                        PlaybackStateCompat.STATE_PLAYING,
-                        currentPlayList[mExoPlayer.currentMediaItemIndex]
-                    )
-                }
-            }
-
-            @RequiresApi(Build.VERSION_CODES.M)
-            override fun onPause() {
-                super.onPause()
-                Log.d(TAG, "onPause")
-                if (mPlaybackState.state == PlaybackStateCompat.STATE_PLAYING) {
-                    mExoPlayer.pause()
-                    updatePlayBackState(PlaybackStateCompat.STATE_PAUSED)
-                    createNotification(
-                        PlaybackStateCompat.STATE_PAUSED,
-                        currentPlayList[mExoPlayer.currentMediaItemIndex]
-                    )
-//                    updateNotificationAction(PlaybackStateCompat.STATE_PAUSED)
-
-                }
-            }
-
-            override fun onSeekTo(pos: Long) {
-                super.onSeekTo(pos)
-                mExoPlayer.seekTo(pos)
-                updatePlayBackState(PlaybackStateCompat.STATE_PLAYING)
-            }
-
-            @RequiresApi(Build.VERSION_CODES.M)
-            override fun onSkipToNext() {
-                super.onSkipToNext()
-                Log.d(TAG, "onSkipToNext")
-                mExoPlayer.seekToNextMediaItem()
-                updatePlayBackState(mPlaybackState.state)
-                updateMetadata(createMetadataFromSong(currentPlayList[mExoPlayer.currentMediaItemIndex]))
-                createNotification(
-                    mPlaybackState.state,
-                    currentPlayList[mExoPlayer.currentMediaItemIndex]
-                )
-//                updateNotificationAction(PlaybackStateCompat.STATE_PLAYING)
-
-            }
-
-            @RequiresApi(Build.VERSION_CODES.M)
-            override fun onSkipToPrevious() {
-                super.onSkipToPrevious()
-                Log.d(TAG, "onSkipToPrevious: ")
-                mExoPlayer.seekToPreviousMediaItem()
-                updatePlayBackState(mPlaybackState.state)
-                updateMetadata(createMetadataFromSong(currentPlayList[mExoPlayer.currentMediaItemIndex]))
-                createNotification(
-                    mPlaybackState.state,
-                    currentPlayList[mExoPlayer.currentMediaItemIndex]
-                )
-//                updateNotificationAction(PlaybackStateCompat.STATE_PLAYING)
-
-            }
-
-            override fun onCustomAction(action: String?, extras: Bundle?) {
-                super.onCustomAction(action, extras)
-                when (action) {
-                    CHANGE_PLAY_LIST -> {
-                        scope.launch {
-                            val songId = extras?.get("songId") as Long
-                            kv.apply {
-                                encode("lastPlaySongList", extras.get("songListId") as Long)
-                                if ( songId != CHANGE_PLAT_LIST_SHUFFLE) {
-                                    encode("lastPlaySong", songId)
-                                }
-                            }
-                            extras.apply {
-                                currentPlayList = DataBaseUtils.querySongListWithSongsBySongListId(
-                                    get("songListId") as Long
-                                ).songs.toMutableList()
-                                currentPlaySong = if (songId!= CHANGE_PLAT_LIST_SHUFFLE) {
-                                    DataBaseUtils.querySongById(get("songId") as Long)
-                                } else {
-                                    currentPlayList.shuffle()
-                                    currentPlayList[0]
-                                }
-                                currentSongList =
-                                    DataBaseUtils.querySongListById(get("songListId") as Long)
-                                withContext(Dispatchers.Main) {
-                                    updateQueue(currentPlayList)
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-
-
-            override fun onSetRepeatMode(repeatMode: Int) {
-                super.onSetRepeatMode(repeatMode)
-            }
-
-            override fun onSetShuffleMode(shuffleMode: Int) {
-                super.onSetShuffleMode(shuffleMode)
-            }
-        }
-
-    inner class MediaActionReceiver : BroadcastReceiver() {
-        override fun onReceive(context: Context?, intent: Intent?) {
-            when (intent?.action) {
-                ACTION_PAUSE -> {
-                    mediaSession.controller?.transportControls?.pause()
-                }
-                ACTION_NEXT -> {
-                    mediaSession.controller?.transportControls?.skipToNext()
-                }
-                ACTION_PREVIOUS -> {
-                    mediaSession.controller?.transportControls?.skipToPrevious()
-                }
-                ACTION_PLAY -> {
-                    mediaSession.controller?.transportControls?.play()
-                }
-            }
-        }
     }
 }
 

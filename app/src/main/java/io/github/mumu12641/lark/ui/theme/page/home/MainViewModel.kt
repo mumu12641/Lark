@@ -1,11 +1,8 @@
 package io.github.mumu12641.lark.ui.theme.page.home
 
-import android.annotation.SuppressLint
 import android.content.ComponentName
-import android.database.Cursor
 import android.os.Build
 import android.os.Bundle
-import android.provider.MediaStore
 import android.util.Log
 import androidx.annotation.RequiresApi
 import androidx.lifecycle.ViewModel
@@ -14,17 +11,16 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import io.github.mumu12641.lark.BaseApplication.Companion.context
 import io.github.mumu12641.lark.R
 import io.github.mumu12641.lark.entity.*
+import io.github.mumu12641.lark.entity.network.Banner
+import io.github.mumu12641.lark.entity.network.BannerX
 import io.github.mumu12641.lark.network.NetworkCreator
+import io.github.mumu12641.lark.network.NetworkCreator.networkService
 import io.github.mumu12641.lark.room.DataBaseUtils
 import io.github.mumu12641.lark.service.MediaPlaybackService
 import io.github.mumu12641.lark.service.MediaServiceConnection
 import io.github.mumu12641.lark.service.MediaServiceConnection.Companion.EMPTY_PLAYBACK_STATE
-import io.github.mumu12641.lark.ui.theme.page.function.FunctionViewModel
-import io.github.mumu12641.lark.ui.theme.page.function.getAlbumImageUri
-import io.github.mumu12641.lark.ui.theme.util.PreferenceUtil
 import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.map
@@ -48,6 +44,9 @@ class MainViewModel @Inject constructor() : ViewModel() {
 
     private val _loadState = MutableStateFlow(Load.NONE)
     val loadLocal: StateFlow<Int> = _loadState
+
+    private val _bannerState = MutableStateFlow<List<BannerX>>(emptyList())
+    val bannerState = _bannerState
 
     val allSongList = DataBaseUtils.queryAllSongList().map {
         it.filter { songList ->
@@ -111,15 +110,13 @@ class MainViewModel @Inject constructor() : ViewModel() {
             context,
             ComponentName(context, MediaPlaybackService::class.java)
         )
-//        viewModelScope.launch(Dispatchers.IO + CoroutineExceptionHandler { _, e ->
-//            e.message?.let { Log.d(TAG, it) }
-//        }) {
-//            Log.d(
-//                TAG,
-//                NetworkCreator.networkService.cellphoneLogin().toString()
-//            )
-//        }
-
+        viewModelScope.launch(Dispatchers.IO + CoroutineExceptionHandler { _, e ->
+            e.message?.let { Log.d(TAG, it) }
+        }) {
+            _bannerState.value = networkService.getBanner().banners.filter {
+                it.targetType == 1
+            }
+        }
     }
 
     fun refreshArtist() {
@@ -129,10 +126,10 @@ class MainViewModel @Inject constructor() : ViewModel() {
                 if (i.description == context.getString(R.string.no_description_text)) {
                     try {
                         val artistId =
-                            NetworkCreator.networkService.getSearchArtistResponse(i.songListTitle).result.artists[0].artistId
+                            networkService.getSearchArtistResponse(i.songListTitle).result.artists[0].artistId
                         artistId?.let {
                             val artistDetails =
-                                NetworkCreator.networkService.getArtistDetail(artistId).data.artist
+                                networkService.getArtistDetail(artistId).data.artist
                             DataBaseUtils.updateSongList(
                                 i.copy(
                                     imageFileUri = artistDetails.cover,
@@ -157,6 +154,14 @@ class MainViewModel @Inject constructor() : ViewModel() {
             putLong("songId", songId)
         }
         mediaServiceConnection.transportControls.sendCustomAction(CHANGE_PLAY_LIST, bundle)
+    }
+
+    fun addSongToCurrentList(songId: Long){
+        val bundle = Bundle()
+        bundle.apply {
+            putLong("songId", songId)
+        }
+        mediaServiceConnection.transportControls.sendCustomAction(ADD_SONG_TO_LIST,bundle)
     }
 
 

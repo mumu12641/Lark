@@ -79,6 +79,7 @@ dependencies {
     androidTestImplementation ("androidx.test.ext:junit:1.1.3")
     androidTestImplementation ("androidx.test.espresso:espresso-core:3.4.0")
     androidTestImplementation ("androidx.compose.ui:ui-test-junit4:$composeVersion")
+    implementation ("androidx.compose.ui:ui-util:$composeVersion")
     debugImplementation ("androidx.compose.ui:ui-tooling:$composeVersion")
     debugImplementation( "androidx.compose.ui:ui-test-manifest:$composeVersion")
     implementation ("androidx.room:room-runtime:$roomVersion")
@@ -88,14 +89,14 @@ dependencies {
     implementation ("com.google.dagger:hilt-android:$hiltVersion")
     kapt ("com.google.dagger:hilt-android-compiler:$hiltVersion")
     implementation("androidx.navigation:navigation-compose:$navVersion")
-    implementation("com.google.accompanist:accompanist-navigation-animation:0.24.13-rc")
-    implementation("io.coil-kt:coil-compose:2.1.0")
+
+    implementation("io.coil-kt:coil-compose:2.2.0")
     implementation("com.github.skydoves:landscapist-glide:1.5.3")
     implementation("me.onebone:toolbar-compose:2.3.4")
 
     implementation("com.guolindev.permissionx:permissionx:$permissionXVersion")
     implementation("com.github.getActivity:XXPermissions:15.0")
-    implementation("com.google.accompanist:accompanist-permissions:0.24.0-alpha")
+
 
     implementation("com.tencent:mmkv:1.2.13")
     implementation("com.airbnb.android:lottie-compose:$lottieVersion")
@@ -105,9 +106,13 @@ dependencies {
     implementation ("com.google.android.exoplayer:exoplayer-dash:2.18.1")
     implementation ("com.google.android.exoplayer:exoplayer-ui:2.18.1")
 
+    // accompanist
+    implementation("com.google.accompanist:accompanist-navigation-animation:0.24.13-rc")
+    implementation("com.google.accompanist:accompanist-permissions:0.24.0-alpha")
     implementation ("com.google.accompanist:accompanist-insets:0.24.13-rc")
     implementation ("com.google.accompanist:accompanist-insets-ui:0.24.13-rc")
-    implementation ("com.google.accompanist:accompanist-systemuicontroller:0.24.13-rc")
+    implementation ("com.google.accompanist:accompanist-systemuicontroller:0.25.1")
+    implementation ("com.google.accompanist:accompanist-pager:0.25.1")
 
     implementation ("com.android.support:palette-v7:32.0.0")
 

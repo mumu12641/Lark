@@ -3,7 +3,6 @@ package io.github.mumu12641.lark.ui.theme.page.artist
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.tencent.mmkv.MMKV
 import dagger.hilt.android.lifecycle.HiltViewModel
 import io.github.mumu12641.lark.entity.ARTIST_SONGLIST_TYPE
 import io.github.mumu12641.lark.entity.LoadState

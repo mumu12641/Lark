@@ -17,7 +17,6 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.focus.focusModifier
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.res.painterResource
@@ -25,11 +24,9 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import io.github.mumu12641.lark.BaseApplication.Companion.version
-import io.github.mumu12641.lark.ui.theme.component.LarkSmallTopBar
 import io.github.mumu12641.lark.R
 import io.github.mumu12641.lark.ui.theme.component.LarkTopBar
 import io.github.mumu12641.lark.ui.theme.component.SettingItem
-import io.github.mumu12641.lark.ui.theme.component.TextFieldDialog
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
