@@ -219,7 +219,22 @@ class MediaPlaybackService : MediaBrowserServiceCompat() {
             override fun onPlayerError(error: PlaybackException) {
                 super.onPlayerError(error)
                 Log.d(TAG, "onPlayerError: " + error.errorCodeName)
-                // ERROR_CODE_IO_BAD_HTTP_STATUS
+                if (currentPlayList[mExoPlayer.currentMediaItemIndex].isBuffered == BUFFERED){
+                    applicationScope.launch(Dispatchers.IO + CoroutineExceptionHandler { _, _ -> }){
+                        var song = currentPlayList[mExoPlayer.currentMediaItemIndex]
+                        val searchSong = networkService.getSongUrl(song.neteaseId)
+                        if (searchSong.data[0].url != null) {
+                            song = song.copy(
+                                mediaFileUri = searchSong.data[0].url!!
+                            )
+                            DataBaseUtils.updateSong(song)
+                        }else{
+                            song = song.copy(isBuffered = NOT_BUFFERED)
+                            DataBaseUtils.updateSong(song)
+                        }
+                    }
+                }
+
                 mExoPlayer.seekToNextMediaItem()
                 updatePlayBackState(mPlaybackState.state)
                 createNotification(
@@ -232,12 +247,13 @@ class MediaPlaybackService : MediaBrowserServiceCompat() {
             override fun onMediaItemTransition(mediaItem: MediaItem?, reason: Int) {
                 super.onMediaItemTransition(mediaItem, reason)
                 Log.d(TAG, "onMediaItemTransition: ")
+
                 var song = currentPlayList[mExoPlayer.currentMediaItemIndex]
+                val index = mExoPlayer.currentMediaItemIndex
+
                 when (song.isBuffered) {
                     NOT_BUFFERED -> {
-                        applicationScope.launch(Dispatchers.IO + CoroutineExceptionHandler { _, e ->
-                            Log.d(TAG, "onMediaItemTransition: " + e.message)
-                        }) {
+                        applicationScope.launch(Dispatchers.IO + CoroutineExceptionHandler { _, _ -> }) {
                             withContext(Dispatchers.Main) {
                                 updatePlayBackState(PlaybackStateCompat.STATE_BUFFERING)
                             }
@@ -250,18 +266,17 @@ class MediaPlaybackService : MediaBrowserServiceCompat() {
                                     mediaFileUri = searchSong.data[0].url!!,
                                     duration = detail.songs[0].dt
                                 )
-                                DataBaseUtils.updateSong(
-                                    song
-                                )
+                                DataBaseUtils.updateSong(song)
                                 withContext(Dispatchers.Main) {
-                                    val index = mExoPlayer.currentMediaItemIndex
                                     currentPlayList[index] = song
                                     Log.d(TAG, "onMediaItemTransition: $index")
-                                    mExoPlayer.removeMediaItem(index)
-                                    mExoPlayer.addMediaItem(
-                                        index - 1,
-                                        MediaItem.fromUri(song.mediaFileUri)
-                                    )
+//                                    mExoPlayer.removeMediaItem(index)
+//                                    mExoPlayer.addMediaItem(
+//                                        index - 1,
+//                                        MediaItem.fromUri(song.mediaFileUri)
+//                                    )
+                                    currentPlaySong = song
+                                    updateQueue(currentPlayList)
                                     updatePlayBackState(PlaybackStateCompat.STATE_PLAYING)
                                     updateMetadata(createMetadataFromSong(song))
                                 }

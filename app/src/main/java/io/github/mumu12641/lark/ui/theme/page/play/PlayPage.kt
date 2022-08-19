@@ -125,9 +125,16 @@ fun PlayPageContent(
                 verticalArrangement = Arrangement.Center,
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                if(currentPlayState.state == PlaybackStateCompat.STATE_BUFFERING){
-                    androidx.compose.material3.CircularProgressIndicator()
-                }else {
+                if (currentPlayState.state == PlaybackStateCompat.STATE_BUFFERING) {
+                    Box(
+                        modifier = Modifier
+                            .clip(RoundedCornerShape(cornerAlbum.dp))
+                            .size(width = 350.dp, height = 300.dp),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        androidx.compose.material3.CircularProgressIndicator()
+                    }
+                } else {
                     AsyncImage(
                         modifier = Modifier
                             .clip(RoundedCornerShape(cornerAlbum.dp))

@@ -131,7 +131,6 @@ class MediaServiceConnection(context: Context, componentName: ComponentName) {
             super.onQueueChanged(queue)
             scope.launch {
                 _playList.value = queue?.map {
-                    Log.d(TAG, "onQueueChanged: " + it.queueId)
                     DataBaseUtils.querySongById(it.queueId)
                 } ?: emptyList()
                 Log.d(TAG, "onQueueChanged: " + _playList.value.toString())

@@ -14,8 +14,8 @@ object NetworkCreator {
 
     //TODO https://github.com/square/retrofit/issues/3005
     // https://github.com/Mr-lin930819/ComposeMany
-
-    private const val BASE_URL = "https://netease-cloud-music-api-self-ten.vercel.app/"
+//"https://netease-cloud-music-api-self-ten.vercel.app/"
+    private const val BASE_URL = "https://www.orientsky.xyz/"
     private val client: OkHttpClient = OkHttpClient.Builder()
         .addInterceptor(AddCookiesInterceptor())
         .addInterceptor(ReceivedCookiesInterceptor())
@@ -26,13 +26,15 @@ object NetworkCreator {
         .client(client)
         .build()
 
-    val networkService:NetworkService = retrofit.create(NetworkService::class.java)
+    val networkService: NetworkService = retrofit.create(NetworkService::class.java)
 }
 
 class ReceivedCookiesInterceptor : Interceptor {
     override fun intercept(chain: Interceptor.Chain): Response {
         val originalResponse = chain.proceed(chain.request())
-        if (originalResponse.headers("Set-Cookie").isNotEmpty() && kv.decodeLong("neteaseId") == 0L) {
+        if (originalResponse.headers("Set-Cookie")
+                .isNotEmpty() && kv.decodeLong("neteaseId") == 0L
+        ) {
             val cookies: HashSet<String> = HashSet()
             for (header in originalResponse.headers("Set-Cookie")) {
                 cookies.add(header)
