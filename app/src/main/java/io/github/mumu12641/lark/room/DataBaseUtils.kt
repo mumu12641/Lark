@@ -21,6 +21,14 @@ class DataBaseUtils {
             return musicDao.querySongIdByMediaUri(mediaFileUri)
         }
 
+        suspend fun querySongIdByNeteaseId(neteaseId:Long):Long{
+            return musicDao.querySongIdByNeteaseId(neteaseId)
+        }
+
+        suspend fun isNeteaseIdExist(neteaseId: Long) : Boolean{
+            return musicDao.isNeteaseIdExist(neteaseId)
+        }
+
         suspend fun insertSong(song: Song): Long {
             return musicDao.insertSong(song)
         }

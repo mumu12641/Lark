@@ -25,6 +25,10 @@ interface MusicDao {
     suspend fun querySongById(songId:Long):Song
     @Query("SELECT songId FROM Song WHERE mediaFileUri = :mediaFileUri")
     suspend fun querySongIdByMediaUri(mediaFileUri:String):Long
+    @Query("SELECT songId FROM Song WHERE neteaseId = :neteaseId")
+    suspend fun querySongIdByNeteaseId(neteaseId:Long):Long
+    @Query("SELECT EXISTS(SELECT * FROM song WHERE neteaseId = :neteaseId)")
+    suspend fun isNeteaseIdExist(neteaseId: Long) : Boolean
 
     @Query("SELECT * FROM SongList")
     fun queryAllSongList():Flow<List<SongList>>

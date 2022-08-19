@@ -32,5 +32,8 @@ interface NetworkService {
     suspend fun getBanner(): Banner
 
     @GET("song/url")
-    suspend fun getSearchSong(@Query("id") id: Long): SearchSong
+    suspend fun getSongUrl(@Query("id") id: Long): SongUrl
+
+    @GET("song/detail")
+    suspend fun getSongDetail(@Query("ids") ids: String): SongDetail
 }

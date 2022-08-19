@@ -9,6 +9,7 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -59,17 +60,21 @@ fun FloatingPlayMediaButton(
                 onClickNext
             )
         }
-        AsyncImage(
-            modifier = Modifier
-                .size(60.dp)
-                .clip(CircleShape)
-                .graphicsLayer {
-                    rotationZ = rotation.value
-                }
-                .clickable { extend = !extend },
-            imageModel = currentMetadata.getString(MediaMetadataCompat.METADATA_KEY_ALBUM_ART_URI),
-            failure = R.drawable.ic_baseline_music_note_24
-        )
+        if(currentPlayState.state == PlaybackStateCompat.STATE_BUFFERING){
+            CircularProgressIndicator()
+        }else {
+            AsyncImage(
+                modifier = Modifier
+                    .size(60.dp)
+                    .clip(CircleShape)
+                    .graphicsLayer {
+                        rotationZ = rotation.value
+                    }
+                    .clickable { extend = !extend },
+                imageModel = currentMetadata.getString(MediaMetadataCompat.METADATA_KEY_ALBUM_ART_URI),
+                failure = R.drawable.ic_baseline_music_note_24
+            )
+        }
     }
 }
 

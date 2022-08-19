@@ -1,5 +1,5 @@
 package io.github.mumu12641.lark.entity.network
-data class SearchSong(
+data class SongUrl(
     val code: Int,
     val `data`: List<Data>
 ){
@@ -24,7 +24,7 @@ data class SearchSong(
         val size: Int,
         val type: String,
         val uf: Any,
-        val url: String,
+        val url: String?,
         val urlSource: Int
     )
 

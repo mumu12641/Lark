@@ -6,6 +6,7 @@ import android.support.v4.media.session.PlaybackStateCompat
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
@@ -209,17 +210,19 @@ fun HomeContent(
 ) {
 
 
-    Column(
+    LazyColumn(
         modifier = modifier.padding(horizontal = 10.dp, vertical = 10.dp)
     ) {
-        WelcomeUser(navController)
-        Banner(banner, addBannerSongToList)
-        FunctionTab(navController)
-        SongListRow(
-            list,
-            addSongList
-        ) { navController.navigate(Route.ROUTE_SONG_LIST_DETAILS + it.toString()) }
-        ArtistRow(navController, artistSongList)
+        item { WelcomeUser(navController) }
+        item { Banner(banner, addBannerSongToList) }
+        item { FunctionTab(navController) }
+        item {
+            SongListRow(
+                list,
+                addSongList
+            ) { navController.navigate(Route.ROUTE_SONG_LIST_DETAILS + it.toString()) }
+        }
+        item { ArtistRow(navController, artistSongList) }
     }
 }
 
@@ -256,25 +259,27 @@ private fun Banner(
             AsyncImage(
                 modifier = modifier
                     .clickable {
-//                        applicationScope.launch(Dispatchers.IO) {
-//                            val song = Song(
-//                                0L,
-//                                banner[page].song.name,
-//                                songSinger = banner[page].song.ar
-//                                    .map { it.name }
-//                                    .toString(),
-//                                songAlbumFileUri = banner[page].song.al.picUrl,
-//                                mediaFileUri = EMPTY_URI + banner[page].song.al.picUrl,
-//                                duration = 0,
-//                                isBuffered = NOT_BUFFERED,
-//                                neteaseId = banner[page].song.id.toLong(),
-//                            )
-//                            val async = async {
-//                                DataBaseUtils.insertSong(song)
-//                            }
-//                            async.await()
-//                            addBannerSongToList(DataBaseUtils.querySongIdByMediaUri(EMPTY_URI + banner[page].song.al.picUrl))
-//                        }
+                        applicationScope.launch(Dispatchers.IO) {
+                            val song = Song(
+                                0L,
+                                banner[page].song.name,
+                                songSinger = banner[page].song.ar
+                                    .map { it.name }
+                                    .toString(),
+                                songAlbumFileUri = banner[page].song.al.picUrl,
+                                mediaFileUri = EMPTY_URI + banner[page].song.al.picUrl,
+                                duration = 0,
+                                isBuffered = NOT_BUFFERED,
+                                neteaseId = banner[page].song.id.toLong(),
+                            )
+                            val async = async {
+                                if (!DataBaseUtils.isNeteaseIdExist(song.neteaseId)) {
+                                    DataBaseUtils.insertSong(song)
+                                }
+                            }
+                            async.await()
+                            addBannerSongToList(DataBaseUtils.querySongIdByNeteaseId(song.neteaseId))
+                        }
                     }
                     .graphicsLayer {
                         val pageOffset = calculateCurrentOffsetForPage(page).absoluteValue

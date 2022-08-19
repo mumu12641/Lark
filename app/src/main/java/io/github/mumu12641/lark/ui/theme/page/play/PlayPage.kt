@@ -125,13 +125,17 @@ fun PlayPageContent(
                 verticalArrangement = Arrangement.Center,
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                AsyncImage(
-                    modifier = Modifier
-                        .clip(RoundedCornerShape(cornerAlbum.dp))
-                        .size(width = 350.dp, height = 300.dp),
-                    imageModel = currentMetadata.getString(MediaMetadataCompat.METADATA_KEY_ALBUM_ART_URI),
-                    failure = R.drawable.ic_baseline_music_note_24
-                )
+                if(currentPlayState.state == PlaybackStateCompat.STATE_BUFFERING){
+                    androidx.compose.material3.CircularProgressIndicator()
+                }else {
+                    AsyncImage(
+                        modifier = Modifier
+                            .clip(RoundedCornerShape(cornerAlbum.dp))
+                            .size(width = 350.dp, height = 300.dp),
+                        imageModel = currentMetadata.getString(MediaMetadataCompat.METADATA_KEY_ALBUM_ART_URI),
+                        failure = R.drawable.ic_baseline_music_note_24
+                    )
+                }
                 Text(
                     text = currentMetadata.getString(MediaMetadataCompat.METADATA_KEY_TITLE),
                     style = MaterialTheme.typography.titleLarge,
