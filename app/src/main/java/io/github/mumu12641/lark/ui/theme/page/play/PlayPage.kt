@@ -126,11 +126,12 @@ fun PlayPageContent(
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
                 if (currentPlayState.state == PlaybackStateCompat.STATE_BUFFERING) {
-                    Box(
+                    Row(
                         modifier = Modifier
                             .clip(RoundedCornerShape(cornerAlbum.dp))
                             .size(width = 350.dp, height = 300.dp),
-                        contentAlignment = Alignment.Center
+                        horizontalArrangement = Arrangement.Center,
+                        verticalAlignment = Alignment.CenterVertically
                     ) {
                         androidx.compose.material3.CircularProgressIndicator()
                     }

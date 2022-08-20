@@ -145,6 +145,9 @@ class MediaPlaybackService : MediaBrowserServiceCompat() {
                 ).songs.toMutableList()
                 currentPlaySong =
                     DataBaseUtils.querySongById(kv.decodeLong("lastPlaySong"))
+                if (!currentPlayList.contains(currentPlaySong)) {
+                    currentPlaySong = currentPlayList[0]
+                }
             }
         }
         return BrowserRoot(MEDIA_ROOT_ID, null)
@@ -219,28 +222,38 @@ class MediaPlaybackService : MediaBrowserServiceCompat() {
             override fun onPlayerError(error: PlaybackException) {
                 super.onPlayerError(error)
                 Log.d(TAG, "onPlayerError: " + error.errorCodeName)
-                if (currentPlayList[mExoPlayer.currentMediaItemIndex].isBuffered == BUFFERED){
-                    applicationScope.launch(Dispatchers.IO + CoroutineExceptionHandler { _, _ -> }){
-                        var song = currentPlayList[mExoPlayer.currentMediaItemIndex]
+
+                val index = mExoPlayer.currentMediaItemIndex
+                if (currentPlayList[index].isBuffered >= NOT_BUFFERED) {
+                    applicationScope.launch(Dispatchers.IO + CoroutineExceptionHandler { _, _ -> }) {
+                        var song = currentPlayList[index]
                         val searchSong = networkService.getSongUrl(song.neteaseId)
+                        Log.d(TAG, "onPlayerError: ")
                         if (searchSong.data[0].url != null) {
                             song = song.copy(
                                 mediaFileUri = searchSong.data[0].url!!
                             )
+                            Log.d(TAG, "onPlayerError: " + searchSong.data[0].url )
                             DataBaseUtils.updateSong(song)
-                        }else{
+                            currentPlayList[index] = song
+                            currentPlaySong = currentPlayList[mExoPlayer.currentMediaItemIndex + 1]
+                            updateQueue(currentPlayList)
+                        } else {
                             song = song.copy(isBuffered = NOT_BUFFERED)
                             DataBaseUtils.updateSong(song)
+                            currentPlaySong = currentPlayList[mExoPlayer.currentMediaItemIndex + 1]
+                            updateQueue(currentPlayList)
                         }
                     }
                 }
 
-                mExoPlayer.seekToNextMediaItem()
-                updatePlayBackState(mPlaybackState.state)
-                createNotification(
-                    mPlaybackState.state,
-                    currentPlayList[mExoPlayer.currentMediaItemIndex]
-                )
+//                mExoPlayer.seekToNextMediaItem()
+//                updatePlayBackState(mPlaybackState.state)
+//                createNotification(
+//                    mPlaybackState.state,
+//                    currentPlayList[mExoPlayer.currentMediaItemIndex]
+//                )
+
             }
 
             @RequiresApi(Build.VERSION_CODES.M)
