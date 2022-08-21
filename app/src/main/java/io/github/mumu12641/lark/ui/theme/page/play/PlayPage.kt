@@ -2,6 +2,8 @@ package io.github.mumu12641.lark.ui.theme.page.play
 
 import android.support.v4.media.MediaMetadataCompat
 import android.support.v4.media.session.PlaybackStateCompat
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.Crossfade
 import androidx.compose.animation.core.animateIntAsState
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -14,6 +16,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Slider
 import androidx.compose.material3.SliderColors
 import androidx.compose.material3.SliderDefaults
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -125,24 +128,18 @@ fun PlayPageContent(
                 verticalArrangement = Arrangement.Center,
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                if (currentPlayState.state == PlaybackStateCompat.STATE_BUFFERING) {
-                    Row(
-                        modifier = Modifier
-                            .clip(RoundedCornerShape(cornerAlbum.dp))
-                            .size(width = 350.dp, height = 300.dp),
-                        horizontalArrangement = Arrangement.Center,
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        androidx.compose.material3.CircularProgressIndicator()
+                Crossfade(targetState = currentPlayState.state == PlaybackStateCompat.STATE_BUFFERING) { isBuffering ->
+                    when (isBuffering) {
+                        true ->
+                            CircularProgressIndicator()
+                        false -> AsyncImage(
+                            modifier = Modifier
+                                .clip(RoundedCornerShape(cornerAlbum.dp))
+                                .size(width = 350.dp, height = 300.dp),
+                            imageModel = currentMetadata.getString(MediaMetadataCompat.METADATA_KEY_ALBUM_ART_URI),
+                            failure = R.drawable.ic_baseline_music_note_24
+                        )
                     }
-                } else {
-                    AsyncImage(
-                        modifier = Modifier
-                            .clip(RoundedCornerShape(cornerAlbum.dp))
-                            .size(width = 350.dp, height = 300.dp),
-                        imageModel = currentMetadata.getString(MediaMetadataCompat.METADATA_KEY_ALBUM_ART_URI),
-                        failure = R.drawable.ic_baseline_music_note_24
-                    )
                 }
                 Text(
                     text = currentMetadata.getString(MediaMetadataCompat.METADATA_KEY_TITLE),
@@ -154,7 +151,7 @@ fun PlayPageContent(
                     color = MaterialTheme.colorScheme.onBackground
                 )
                 Text(
-                    text = currentMetadata.getString(MediaMetadataCompat.METADATA_KEY_TITLE),
+                    text = currentMetadata.getString(MediaMetadataCompat.METADATA_KEY_ARTIST),
                     maxLines = 1,
                     softWrap = false,
                     overflow = TextOverflow.Ellipsis,
@@ -175,32 +172,6 @@ fun PlayPageContent(
                         ),
                     contentAlignment = Alignment.Center
                 ) {
-//                    Row {
-//                        AnimatedVisibility(
-//                            visible = currentPlayState.state == PlaybackStateCompat.STATE_PLAYING,
-//                            enter =   fadeIn() + scaleIn(),
-//                            exit =   fadeOut() + scaleOut()
-//                        ) {
-//                            Icon(
-//                                painter = painterResource(id = R.drawable.ic_baseline_pause_24),
-//                                modifier = Modifier.size(30.dp),
-//                                contentDescription = "pause"
-//                            )
-//                        }
-//                        AnimatedVisibility(
-//                            visible = currentPlayState.state != PlaybackStateCompat.STATE_PLAYING,
-//                            enter =   fadeIn() + scaleIn(),
-//                            exit =   fadeOut() + scaleOut()
-//                        ) {
-//                            Icon(
-//                                Icons.Filled.PlayArrow,
-//                                modifier = Modifier.size(30.dp),
-//                                contentDescription = "play"
-//                            )
-//                        }
-//                    }
-
-
                     if (currentPlayState.state == PlaybackStateCompat.STATE_PLAYING) {
                         Icon(
                             painter = painterResource(id = R.drawable.ic_baseline_pause_24),

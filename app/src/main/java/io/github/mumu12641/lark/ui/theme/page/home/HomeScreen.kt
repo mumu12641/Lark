@@ -262,9 +262,7 @@ private fun Banner(
                             val song = Song(
                                 0L,
                                 banner[page].song.name,
-                                songSinger = banner[page].song.ar
-                                    .map { it.name }
-                                    .toString(),
+                                songSinger = banner[page].song.ar.joinToString(",") { it.name },
                                 songAlbumFileUri = banner[page].song.al.picUrl,
                                 mediaFileUri = EMPTY_URI + banner[page].song.al.picUrl,
                                 duration = 0,
