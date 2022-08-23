@@ -1,5 +1,7 @@
 package io.github.mumu12641.lark.ui.theme.component
-
+/*
+* https://github.com/Iamlooker/Howl/blob/stable/core-ui/src/main/java/com/looker/core_ui/components/Seekbar.kt
+* */
 
 import androidx.annotation.FloatRange
 import androidx.compose.animation.core.LinearEasing
@@ -76,6 +78,7 @@ import kotlin.math.abs
 import kotlin.math.max
 import kotlin.math.min
 import kotlin.math.sin
+
 
 private const val waveWidth = 75F
 private const val waveHeight = 15F

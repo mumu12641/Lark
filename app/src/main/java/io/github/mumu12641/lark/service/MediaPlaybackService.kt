@@ -218,7 +218,7 @@ class MediaPlaybackService : MediaBrowserServiceCompat() {
                 super.onPlayerError(error)
                 Log.d(TAG, "onPlayerError: " + error.errorCodeName)
                 Log.d(TAG, "onPlayerError: " + mPlaybackState.state)
-                Toast.makeText(context, "播放出错，自动播放下一首", Toast.LENGTH_LONG).show()
+                Toast.makeText(context, "播放出错，跳过该歌曲", Toast.LENGTH_LONG).show()
 
                 val index = mExoPlayer.currentMediaItemIndex
                 if (currentPlayList[index].isBuffered >= NOT_BUFFERED) {
@@ -231,7 +231,8 @@ class MediaPlaybackService : MediaBrowserServiceCompat() {
                         Log.d(TAG, "onPlayerError: ")
                         if (searchSong.data[0].url != null) {
                             song = song.copy(
-                                mediaFileUri = searchSong.data[0].url!!
+                                mediaFileUri = searchSong.data[0].url!!,
+                                isBuffered = BUFFERED
                             )
                             Log.d(TAG, "onPlayerError: " + searchSong.data[0].url)
                         } else {
@@ -244,7 +245,7 @@ class MediaPlaybackService : MediaBrowserServiceCompat() {
                             } else {
                                 currentPlayList[index] = song
                             }
-                            currentPlaySong = currentPlayList[mExoPlayer.currentMediaItemIndex + 1]
+                            currentPlaySong = currentPlayList[index + 1]
                             updatePlayBackState(PlaybackStateCompat.STATE_PLAYING)
                             updateQueue(currentPlayList)
                         }
@@ -447,9 +448,6 @@ class MediaPlaybackService : MediaBrowserServiceCompat() {
 
                 currentSongList =
                     DataBaseUtils.querySongListById(get("songListId") as Long)
-                if (!currentPlayList.contains(currentPlaySong)) {
-                    currentPlaySong = currentPlayList[0]
-                }
                 withContext(Dispatchers.Main) {
                     updateQueue(currentPlayList)
                 }
