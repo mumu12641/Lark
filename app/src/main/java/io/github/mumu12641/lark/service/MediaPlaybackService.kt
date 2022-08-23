@@ -217,10 +217,15 @@ class MediaPlaybackService : MediaBrowserServiceCompat() {
             override fun onPlayerError(error: PlaybackException) {
                 super.onPlayerError(error)
                 Log.d(TAG, "onPlayerError: " + error.errorCodeName)
+                Log.d(TAG, "onPlayerError: " + mPlaybackState.state)
                 Toast.makeText(context, "播放出错，自动播放下一首", Toast.LENGTH_LONG).show()
+
                 val index = mExoPlayer.currentMediaItemIndex
                 if (currentPlayList[index].isBuffered >= NOT_BUFFERED) {
                     applicationScope.launch(Dispatchers.IO + CoroutineExceptionHandler { _, _ -> }) {
+                        withContext(Dispatchers.Main) {
+                            updatePlayBackState(PlaybackStateCompat.STATE_BUFFERING)
+                        }
                         var song = currentPlayList[index]
                         val searchSong = networkService.getSongUrl(song.neteaseId)
                         Log.d(TAG, "onPlayerError: ")
@@ -240,6 +245,7 @@ class MediaPlaybackService : MediaBrowserServiceCompat() {
                                 currentPlayList[index] = song
                             }
                             currentPlaySong = currentPlayList[mExoPlayer.currentMediaItemIndex + 1]
+                            updatePlayBackState(PlaybackStateCompat.STATE_PLAYING)
                             updateQueue(currentPlayList)
                         }
                     }
@@ -291,6 +297,7 @@ class MediaPlaybackService : MediaBrowserServiceCompat() {
                         }
                     }
                     else -> {
+                        currentPlaySong = song
                         updatePlayBackState(PlaybackStateCompat.STATE_PLAYING)
                         updateMetadata(createMetadataFromSong(song))
                         createNotification(
@@ -376,6 +383,24 @@ class MediaPlaybackService : MediaBrowserServiceCompat() {
                     CHANGE_PLAY_LIST -> {
                         changePlayList(extras)
                     }
+                    SEEK_TO_SONG -> {
+                        scope.launch {
+                            Log.d(TAG, "onCustomAction: " + "SEEK_TO_SONG")
+                            val songId = extras?.get("songId") as Long
+                            val song = DataBaseUtils.querySongById(songId)
+                            withContext(Dispatchers.Main) {
+                                var index: Int
+                                currentPlaySong = song
+                                index = currentPlayList.indexOf(currentPlaySong)
+                                if (currentPlayList.indexOf(currentPlaySong) == -1) {
+                                    index = 0
+                                }
+                                mExoPlayer.seekTo(index, 0L)
+                                mExoPlayer.play()
+                                updatePlayBackState(PlaybackStateCompat.STATE_PLAYING)
+                            }
+                        }
+                    }
                     ADD_SONG_TO_LIST -> {
                         scope.launch {
                             val songId = extras?.get("songId") as Long
@@ -410,15 +435,16 @@ class MediaPlaybackService : MediaBrowserServiceCompat() {
                 }
             }
             extras.apply {
-                currentPlayList = DataBaseUtils.querySongListWithSongsBySongListId(
-                    get("songListId") as Long
-                ).songs.toMutableList()
                 currentPlaySong = if (songId != CHANGE_PLAT_LIST_SHUFFLE) {
                     DataBaseUtils.querySongById(get("songId") as Long)
                 } else {
                     currentPlayList.shuffle()
                     currentPlayList[0]
                 }
+                currentPlayList = DataBaseUtils.querySongListWithSongsBySongListId(
+                    get("songListId") as Long
+                ).songs.toMutableList()
+
                 currentSongList =
                     DataBaseUtils.querySongListById(get("songListId") as Long)
                 if (!currentPlayList.contains(currentPlaySong)) {

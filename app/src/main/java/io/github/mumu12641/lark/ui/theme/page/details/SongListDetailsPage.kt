@@ -243,9 +243,15 @@ fun ShowSongs(
     songs: List<Song>,
     modifier: Modifier,
     top: Int,
-    playMedia: (Long, Long) -> Unit,
+    playMedia: ((Long, Long) -> Unit)? = null,
+    seekToSong: ((Long) -> Unit)? = null,
     songList: SongList
 ) {
+    val onClick: (Song) -> Unit = if (playMedia != null) { song: Song ->
+        playMedia(songList.songListId, song.songId)
+    } else { song: Song ->
+        seekToSong?.let { it(song.songId) }
+    }
     Column(
         modifier = Modifier
             .fillMaxWidth()
@@ -273,9 +279,12 @@ fun ShowSongs(
         } else {
             LazyColumn {
                 items(songs) { item ->
-                    SongItemRow(item, null) {
-                        playMedia(songList.songListId, item.songId)
-                    }
+                    SongItemRow(
+                        item, null, onClick = {
+                            Log.d("TAG", "ShowSongs: $item")
+                            onClick(item)
+                        }
+                    )
                 }
             }
             Text(
@@ -295,13 +304,13 @@ fun ShowArtistSongs(
     songList: SongList
 ) {
     Column(modifier = modifier) {
-        repeat(songs.size){
+        repeat(songs.size) {
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
                     .clip(RoundedCornerShape(5.dp))
                     .clickable {
-                        playMedia(songList.songListId,songs[it].songId)
+                        playMedia(songList.songListId, songs[it].songId)
                     }
                     .padding(10.dp),
                 verticalAlignment = Alignment.CenterVertically

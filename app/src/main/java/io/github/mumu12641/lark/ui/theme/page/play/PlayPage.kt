@@ -33,6 +33,7 @@ import io.github.mumu12641.lark.entity.INIT_SONG_LIST
 import io.github.mumu12641.lark.service.MediaServiceConnection.Companion.EMPTY_PLAYBACK_STATE
 import io.github.mumu12641.lark.service.MediaServiceConnection.Companion.NOTHING_PLAYING
 import io.github.mumu12641.lark.ui.theme.component.AsyncImage
+import io.github.mumu12641.lark.ui.theme.component.WavySeekbar
 import io.github.mumu12641.lark.ui.theme.page.details.ShowSongs
 import io.github.mumu12641.lark.ui.theme.page.home.MainViewModel
 
@@ -75,9 +76,7 @@ fun PlayPage(
                     songs = currentPlaySongs,
                     modifier = Modifier,
                     top = 0,
-                    playMedia = { songListId: Long, songId: Long ->
-                        mainViewModel.playMedia(songListId, songId)
-                    },
+                    seekToSong = { songId: Long -> mainViewModel.seekToSong(songId) },
                     songList = currentSongList
                 )
             },
@@ -128,11 +127,15 @@ fun PlayPageContent(
                 verticalArrangement = Arrangement.Center,
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                Crossfade(targetState = currentPlayState.state == PlaybackStateCompat.STATE_BUFFERING) { isBuffering ->
-                    when (isBuffering) {
-                        true ->
-                            CircularProgressIndicator()
-                        false -> AsyncImage(
+                if (currentPlayState.state == PlaybackStateCompat.STATE_BUFFERING) {
+                    Box(modifier = Modifier.fillMaxWidth(), contentAlignment = Alignment.Center) {
+                        CircularProgressIndicator(
+                            modifier = Modifier.align(Alignment.Center)
+                        )
+                    }
+                } else {
+                    Box(modifier = Modifier.fillMaxWidth(), contentAlignment = Alignment.Center) {
+                        AsyncImage(
                             modifier = Modifier
                                 .clip(RoundedCornerShape(cornerAlbum.dp))
                                 .size(width = 350.dp, height = 300.dp),
@@ -220,35 +223,21 @@ fun PlayPageContent(
                         contentDescription = "previous"
                     )
                 }
-                PlayProgressBar(
+                WavySeekbar(
                     modifier = Modifier.padding(start = 5.dp),
-                    progress = currentPlayState.position.toFloat(),
-                    valueRange = 0f..currentMetadata.getLong(MediaMetadataCompat.METADATA_KEY_DURATION)
-                        .toFloat(),
-                    onValueChanged = {
+                    value = currentPlayState.position.toFloat(),
+                    onValueChange = {
                         onSeekTo(it.toLong())
                     },
-                    colors = SliderDefaults.colors(activeTrackColor = MaterialTheme.colorScheme.primaryContainer)
+                    valueRange = 0f..currentMetadata.getLong(MediaMetadataCompat.METADATA_KEY_DURATION)
+                        .toFloat(),
+                    colors = androidx.compose.material.SliderDefaults.colors(
+                        activeTrackColor = MaterialTheme.colorScheme.primaryContainer,
+                        thumbColor = MaterialTheme.colorScheme.primary
+                    )
                 )
             }
         }
     }
 }
 
-@Composable
-fun PlayProgressBar(
-    modifier: Modifier = Modifier,
-    progress: Float,
-    valueRange: ClosedFloatingPointRange<Float>,
-    onValueChanged: (Float) -> Unit,
-    colors: SliderColors
-) {
-
-    Slider(
-        modifier = modifier,
-        value = progress,
-        valueRange = valueRange,
-        onValueChange = onValueChanged,
-        colors = colors
-    )
-}

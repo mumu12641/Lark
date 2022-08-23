@@ -24,19 +24,21 @@ bug: minifyReleaseWithR8  https://github.com/square/retrofit/issues/3005		以后
 
 第一次进入App fetch本地数据  done
 
-
-
 Animation			Wip
 
 UI Improvement   always wip
 
-随机播放	wip
+随机播放	wip	done
 
 Artist	  	选取较多歌曲的显示在首页 	done
 
 历史播放	done
 
 
+
+banner中的网络歌曲播放	fixed
+
+playbackService bugs  fixed
 
 
 
@@ -50,7 +52,13 @@ code 重构
 
 搜索！
 
-banner中的网络歌曲播放
+导入网易云歌单
+
+[UI]: https://dribbble.com/shots/16033507-Streamy-Podcast-App-Concept
+
+
+
+感觉funtionTab可以写在一个page里面
 
 
 

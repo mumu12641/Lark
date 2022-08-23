@@ -3,7 +3,9 @@ package io.github.mumu12641.lark.ui.theme.page.home
 import android.os.Build
 import android.support.v4.media.MediaMetadataCompat
 import android.support.v4.media.session.PlaybackStateCompat
+import android.widget.Toast
 import androidx.annotation.RequiresApi
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -14,6 +16,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
 import androidx.compose.material.icons.rounded.*
+import androidx.compose.material.icons.sharp.PlayArrow
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -225,7 +228,7 @@ fun HomeContent(
     }
 }
 
-@OptIn(ExperimentalPagerApi::class)
+@OptIn(ExperimentalPagerApi::class, ExperimentalMaterial3Api::class)
 @Composable
 private fun Banner(
     banner: List<BannerX>,
@@ -237,10 +240,32 @@ private fun Banner(
     val modifier = Modifier
         .fillMaxWidth()
         .padding(vertical = 5.dp)
-        .height(125.dp)
+        .height(150.dp)
         .clip(
             RoundedCornerShape(20.dp)
         )
+
+    val onClick: (page: Int) -> Unit = { page ->
+        applicationScope.launch(Dispatchers.IO) {
+            val song = Song(
+                0L,
+                banner[page].song.name,
+                songSinger = banner[page].song.ar.joinToString(",") { it.name },
+                songAlbumFileUri = banner[page].song.al.picUrl,
+                mediaFileUri = EMPTY_URI + banner[page].song.al.picUrl,
+                duration = 0,
+                isBuffered = NOT_BUFFERED,
+                neteaseId = banner[page].song.id.toLong(),
+            )
+            val async = async {
+                if (!DataBaseUtils.isNeteaseIdExist(song.neteaseId)) {
+                    DataBaseUtils.insertSong(song)
+                }
+            }
+            async.await()
+            addBannerSongToList(DataBaseUtils.querySongIdByNeteaseId(song.neteaseId))
+        }
+    }
 
     if (banner.isEmpty()) {
         Box(
@@ -255,29 +280,9 @@ private fun Banner(
             count = banner.size,
             contentPadding = PaddingValues()
         ) { page ->
+
             AsyncImage(
                 modifier = modifier
-                    .clickable {
-                        applicationScope.launch(Dispatchers.IO) {
-                            val song = Song(
-                                0L,
-                                banner[page].song.name,
-                                songSinger = banner[page].song.ar.joinToString(",") { it.name },
-                                songAlbumFileUri = banner[page].song.al.picUrl,
-                                mediaFileUri = EMPTY_URI + banner[page].song.al.picUrl,
-                                duration = 0,
-                                isBuffered = NOT_BUFFERED,
-                                neteaseId = banner[page].song.id.toLong(),
-                            )
-                            val async = async {
-                                if (!DataBaseUtils.isNeteaseIdExist(song.neteaseId)) {
-                                    DataBaseUtils.insertSong(song)
-                                }
-                            }
-                            async.await()
-                            addBannerSongToList(DataBaseUtils.querySongIdByNeteaseId(song.neteaseId))
-                        }
-                    }
                     .graphicsLayer {
                         val pageOffset = calculateCurrentOffsetForPage(page).absoluteValue
                         lerp(
@@ -297,6 +302,43 @@ private fun Banner(
                 imageModel = banner[page].pic,
                 failure = R.drawable.lark
             )
+            Box(
+                modifier
+                    .fillMaxWidth()
+                    .padding(vertical = 5.dp)
+                    .height(150.dp)
+            ) {
+                Column(modifier = Modifier.fillMaxSize()) {
+                    Spacer(modifier = Modifier.weight(1f))
+                    Row {
+                        Spacer(modifier = Modifier.weight(1f))
+                        Card(
+                            modifier = Modifier
+                                .size(60.dp)
+                                .padding(10.dp)
+                                .clickable(onClick = {
+                                    onClick(page)
+                                    Toast
+                                        .makeText(context, "成功添加到播放列表", Toast.LENGTH_LONG)
+                                        .show()
+                                }),
+                                shape = CircleShape
+                            ) {
+                            Row(
+                                modifier.fillMaxSize(),
+                                verticalAlignment = Alignment.CenterVertically,
+                                horizontalArrangement = Arrangement.Center
+                            ) {
+                                Icon(
+                                    Icons.Sharp.PlayArrow,
+                                    contentDescription = "Play",
+                                    tint = MaterialTheme.colorScheme.onPrimaryContainer
+                                )
+                            }
+                        }
+                    }
+                }
+            }
         }
     }
 }
@@ -416,19 +458,16 @@ private fun SongListRow(
                 }
             )
         }
-        if (list.size == 1) {
-            SongListItemCard(list[0], navigationToDetails)
-        } else if (list.size > 1) {
-            LazyRow(
-                contentPadding = PaddingValues(5.dp)
-            ) {
-                items(list, key = {
-                    it.songListId
-                }) { item ->
-                    SongListItemCard(songList = item, navigationToDetails)
-                }
+        LazyRow(
+            contentPadding = PaddingValues(5.dp)
+        ) {
+            items(list, key = {
+                it.songListId
+            }) { item ->
+                SongListItemCard(songList = item, navigationToDetails)
             }
         }
+
     }
 }
 

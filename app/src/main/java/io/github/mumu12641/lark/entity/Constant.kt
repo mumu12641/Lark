@@ -39,9 +39,10 @@ const val LocalSongListId = 1L
 const val LikeSongListId = 2L
 const val HistorySongListId = 3L
 
-
+// PlaybackService Custom Command
 const val CHANGE_PLAY_LIST = "CHANGE_PLAY_LIST"
 const val ADD_SONG_TO_LIST = "ADD_SONG_TO_LIST"
+const val SEEK_TO_SONG = "SEEK_TO_SONG"
 const val CHANGE_PLAT_LIST_SHUFFLE = -1L
 
 const val ACTION_PAUSE = "PAUSE"

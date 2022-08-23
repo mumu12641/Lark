@@ -63,13 +63,13 @@ fun AboutContent(modifier: Modifier) {
     var showThanksDialog by remember {
         mutableStateOf(false)
     }
-//    val map = mapOf(Pair(1, "A"), Pair("2", "B"))
     val uris = listOf(
         Pair("Seal","https://github.com/JunkFood02/Seal"),
         Pair("material color utilities","https://github.com/material-foundation/material-color-utilities"),
         Pair("NeteaseCloudMusicApi","https://github.com/mumu12641/NeteaseCloudMusicApi"),
         Pair("retrofit","https://github.com/square/retrofit"),
-        Pair("RetroMusicPlayer","https://github.com/RetroMusicPlayer/RetroMusicPlayer")
+        Pair("RetroMusicPlayer","https://github.com/RetroMusicPlayer/RetroMusicPlayer"),
+        Pair("Howl","https://github.com/Iamlooker/Howl")
     )
 
     LazyColumn(modifier = modifier) {

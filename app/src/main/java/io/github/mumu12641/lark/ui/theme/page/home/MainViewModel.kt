@@ -164,6 +164,14 @@ class MainViewModel @Inject constructor() : ViewModel() {
         mediaServiceConnection.transportControls.sendCustomAction(ADD_SONG_TO_LIST,bundle)
     }
 
+    fun seekToSong(songId: Long){
+        val bundle = Bundle()
+        bundle.apply {
+            putLong("songId", songId)
+        }
+        mediaServiceConnection.transportControls.sendCustomAction(SEEK_TO_SONG,bundle)
+    }
+
 
     @RequiresApi(Build.VERSION_CODES.M)
     override fun onCleared() {
