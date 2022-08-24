@@ -1,9 +1,14 @@
 package io.github.mumu12641.lark.ui.theme.page.home
 
+import android.Manifest
+import android.Manifest.permission.FOREGROUND_SERVICE
+import android.content.pm.PackageManager
 import android.os.Build
 import android.support.v4.media.MediaMetadataCompat
 import android.support.v4.media.session.PlaybackStateCompat
 import android.widget.Toast
+import androidx.activity.ComponentActivity
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
@@ -25,19 +30,21 @@ import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.util.lerp
+import androidx.core.content.ContextCompat
 import androidx.navigation.NavController
 import com.google.accompanist.pager.ExperimentalPagerApi
 import com.google.accompanist.pager.HorizontalPager
 import com.google.accompanist.pager.calculateCurrentOffsetForPage
 import com.google.accompanist.pager.rememberPagerState
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
+import com.google.accompanist.permissions.isGranted
 import com.google.accompanist.permissions.rememberPermissionState
 import com.hjq.permissions.Permission
 import com.hjq.permissions.XXPermissions
 import com.skydoves.landscapist.glide.GlideImage
 import com.tencent.mmkv.MMKV
 import io.github.mumu12641.lark.BaseApplication.Companion.applicationScope
-import io.github.mumu12641.lark.BaseApplication.Companion.context
+import io.github.mumu12641.lark.MainActivity.Companion.context
 import io.github.mumu12641.lark.MainActivity
 import io.github.mumu12641.lark.R
 import io.github.mumu12641.lark.entity.*
@@ -146,9 +153,12 @@ fun HomeSetup(
     var request by remember {
         mutableStateOf(false)
     }
-    val permissionState =
-        rememberPermissionState(permission = android.Manifest.permission.ACCESS_MEDIA_LOCATION)
-    if (permissionState.hasPermission) {
+    val permissionState = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+        rememberPermissionState(permission = Manifest.permission.READ_MEDIA_AUDIO)
+    }else{
+        rememberPermissionState(permission = Manifest.permission.READ_EXTERNAL_STORAGE)
+    }
+    if (permissionState.status.isGranted) {
         showDialog = false
         HomeContent(
             modifier,
@@ -179,14 +189,22 @@ fun HomeSetup(
                 },
             )
         }
+        val permissionList: List<String> =
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                listOf(
+                    Permission.POST_NOTIFICATIONS,
+                    FOREGROUND_SERVICE,
+                    Permission.READ_MEDIA_IMAGES,
+                    Permission.READ_MEDIA_AUDIO,
+                )
+            } else {
+                listOf(Permission.READ_EXTERNAL_STORAGE)
+            }
+
         if (request) {
-            XXPermissions.with(MainActivity.context)
+            XXPermissions.with(context)
                 .permission(
-                    listOf(
-                        Permission.ACCESS_MEDIA_LOCATION,
-                        Permission.READ_EXTERNAL_STORAGE,
-                        Permission.WRITE_EXTERNAL_STORAGE
-                    )
+                    permissionList
                 )
                 .request { _, all ->
                     if (all) {
@@ -321,8 +339,8 @@ private fun Banner(
                                         .makeText(context, "成功添加到播放列表", Toast.LENGTH_LONG)
                                         .show()
                                 }),
-                                shape = CircleShape
-                            ) {
+                            shape = CircleShape
+                        ) {
                             Row(
                                 modifier.fillMaxSize(),
                                 verticalAlignment = Alignment.CenterVertically,

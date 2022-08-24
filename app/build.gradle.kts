@@ -16,12 +16,12 @@ val permissionXVersion = "1.6.4"
 val lottieVersion = "5.2.0"
 
 android {
-    compileSdk = 32
+    compileSdk = 33
 
     defaultConfig {
         applicationId = "io.github.mumu12641.lark"
         minSdk = 21
-        targetSdk = 32
+        targetSdk = 33
         versionCode = 2
         versionName = "0.2.0-alpha"
 
@@ -75,6 +75,7 @@ dependencies {
     implementation ("androidx.lifecycle:lifecycle-viewmodel-compose:2.5.0")
     implementation ("com.afollestad.material-dialogs:color:3.3.0")
     implementation ("androidx.activity:activity-compose:1.5.1")
+    implementation ("androidx.activity:activity-ktx:1.5.1")
     testImplementation ("junit:junit:4.13.2")
     androidTestImplementation ("androidx.test.ext:junit:1.1.3")
     androidTestImplementation ("androidx.test.espresso:espresso-core:3.4.0")
@@ -95,7 +96,7 @@ dependencies {
     implementation("me.onebone:toolbar-compose:2.3.4")
 
     implementation("com.guolindev.permissionx:permissionx:$permissionXVersion")
-    implementation("com.github.getActivity:XXPermissions:15.0")
+    implementation("com.github.getActivity:XXPermissions:16.0")
 
 
     implementation("com.tencent:mmkv:1.2.13")
@@ -108,14 +109,11 @@ dependencies {
 
     // accompanist
     implementation("com.google.accompanist:accompanist-navigation-animation:0.24.13-rc")
-    implementation("com.google.accompanist:accompanist-permissions:0.24.0-alpha")
+    implementation("com.google.accompanist:accompanist-permissions:0.24.11-rc")
     implementation ("com.google.accompanist:accompanist-insets:0.24.13-rc")
     implementation ("com.google.accompanist:accompanist-insets-ui:0.24.13-rc")
     implementation ("com.google.accompanist:accompanist-systemuicontroller:0.25.1")
     implementation ("com.google.accompanist:accompanist-pager:0.25.1")
-
-    implementation ("com.android.support:palette-v7:32.0.0")
-
 
     implementation ("com.squareup.retrofit2:retrofit:2.9.0")
     implementation ("com.squareup.retrofit2:converter-gson:2.9.0")

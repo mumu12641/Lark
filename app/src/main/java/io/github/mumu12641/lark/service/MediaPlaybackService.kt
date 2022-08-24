@@ -15,6 +15,7 @@ import android.support.v4.media.MediaBrowserCompat
 import android.support.v4.media.MediaMetadataCompat
 import android.support.v4.media.session.MediaSessionCompat
 import android.support.v4.media.session.PlaybackStateCompat
+import android.util.Log
 import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.core.app.NotificationCompat
@@ -203,6 +204,8 @@ class MediaPlaybackService : MediaBrowserServiceCompat() {
         }
         mExoPlayer.prepare()
         song?.let {
+            Log.d(TAG, "updateQueue: $it")
+            Log.d(TAG, "updateQueue: $currentPlayList")
             mExoPlayer.seekTo(currentPlayList.indexOf(it), 0L)
             return@updateQueue
         }
@@ -216,7 +219,6 @@ class MediaPlaybackService : MediaBrowserServiceCompat() {
             override fun onPlayerError(error: PlaybackException) {
                 super.onPlayerError(error)
                 Toast.makeText(context, "播放出错，跳过该歌曲", Toast.LENGTH_LONG).show()
-
                 val index = mExoPlayer.currentMediaItemIndex
                 if (currentPlayList[index].isBuffered >= NOT_BUFFERED) {
                     applicationScope.launch(Dispatchers.IO + CoroutineExceptionHandler { _, _ -> }) {
@@ -241,6 +243,7 @@ class MediaPlaybackService : MediaBrowserServiceCompat() {
                                 currentPlayList[index] = song
                             }
                             currentPlaySong = currentPlayList[index + 1]
+                            Log.d(TAG, "onPlayerError: $currentPlaySong")
                             updateQueue(currentPlayList,currentPlaySong)
                             updatePlayBackState(PlaybackStateCompat.STATE_PLAYING)
                         }
@@ -257,7 +260,7 @@ class MediaPlaybackService : MediaBrowserServiceCompat() {
 
                 when (song.isBuffered) {
                     NOT_BUFFERED -> {
-                        applicationScope.launch(Dispatchers.IO + CoroutineExceptionHandler { _, e ->
+                        applicationScope.launch(Dispatchers.IO + CoroutineExceptionHandler { _, _ ->
                             Toast.makeText(context,"播放出错，跳过该歌曲",Toast.LENGTH_LONG).show()
                             mExoPlayer.seekToNextMediaItem()
                         }) {
@@ -273,6 +276,7 @@ class MediaPlaybackService : MediaBrowserServiceCompat() {
                                     duration = detail.songs[0].dt
                                 )
                                 DataBaseUtils.updateSong(song)
+
                                 withContext(Dispatchers.Main) {
                                     currentPlayList[index] = song
                                     currentPlaySong = song
@@ -377,8 +381,8 @@ class MediaPlaybackService : MediaBrowserServiceCompat() {
                     }
                     SEEK_TO_SONG -> {
                         scope.launch {
-                            val songId = extras?.get("songId") as Long
-                            val song = DataBaseUtils.querySongById(songId)
+                            val songId = extras?.getLong("songId")
+                            val song = songId?.let { DataBaseUtils.querySongById(it) }
                             withContext(Dispatchers.Main) {
                                 var index: Int
                                 currentPlaySong = song
@@ -394,10 +398,10 @@ class MediaPlaybackService : MediaBrowserServiceCompat() {
                     }
                     ADD_SONG_TO_LIST -> {
                         scope.launch {
-                            val songId = extras?.get("songId") as Long
-                            val song = DataBaseUtils.querySongById(songId)
+                            val songId = extras?.getLong("songId")
+                            val song = songId?.let { DataBaseUtils.querySongById(it) }
                             withContext(Dispatchers.Main) {
-                                currentPlayList.add(mExoPlayer.currentMediaItemIndex + 1, song)
+                                currentPlayList.add(mExoPlayer.currentMediaItemIndex + 1, song!!)
                                 mediaSession.setQueue(currentPlayList.map {
                                     MediaSessionCompat.QueueItem(
                                         createMetadataFromSong(it).description,
@@ -417,25 +421,25 @@ class MediaPlaybackService : MediaBrowserServiceCompat() {
 
     private fun changePlayList(extras: Bundle?) {
         scope.launch {
-            val songId = extras?.get("songId") as Long
+            val songId = extras?.getLong("songId")
             kv.apply {
-                encode("lastPlaySongList", extras.get("songListId") as Long)
+                extras?.getLong("songListId")?.let { encode("lastPlaySongList", it) }
                 if (songId != CHANGE_PLAT_LIST_SHUFFLE) {
-                    encode("lastPlaySong", songId)
+                    songId?.let { encode("lastPlaySong", it) }
                 }
             }
-            extras.apply {
+            extras?.apply {
                 currentPlaySong = if (songId != CHANGE_PLAT_LIST_SHUFFLE) {
-                    DataBaseUtils.querySongById(get("songId") as Long)
+                    DataBaseUtils.querySongById(getLong("songId"))
                 } else {
                     currentPlayList.shuffle()
                     currentPlayList[0]
                 }
                 currentPlayList = DataBaseUtils.querySongListWithSongsBySongListId(
-                    get("songListId") as Long
+                    getLong("songListId")
                 ).songs.toMutableList()
                 currentSongList =
-                    DataBaseUtils.querySongListById(get("songListId") as Long)
+                    DataBaseUtils.querySongListById(getLong("songListId"))
                 withContext(Dispatchers.Main) {
                     updateQueue(currentPlayList)
                 }

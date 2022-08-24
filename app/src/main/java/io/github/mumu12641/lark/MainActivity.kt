@@ -28,8 +28,6 @@ class MainActivity : ComponentActivity() {
         lateinit var context: Context
     }
 
-    private val TAG = "MainActivity"
-
     private val mainViewModel: MainViewModel by viewModels()
     private val functionViewModel: FunctionViewModel by viewModels()
     private val userViewModel: UserViewModel by viewModels()
