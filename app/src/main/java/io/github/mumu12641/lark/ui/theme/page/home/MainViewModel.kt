@@ -11,9 +11,7 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import io.github.mumu12641.lark.BaseApplication.Companion.context
 import io.github.mumu12641.lark.R
 import io.github.mumu12641.lark.entity.*
-import io.github.mumu12641.lark.entity.network.Banner
 import io.github.mumu12641.lark.entity.network.BannerX
-import io.github.mumu12641.lark.network.NetworkCreator
 import io.github.mumu12641.lark.network.NetworkCreator.networkService
 import io.github.mumu12641.lark.room.DataBaseUtils
 import io.github.mumu12641.lark.service.MediaPlaybackService

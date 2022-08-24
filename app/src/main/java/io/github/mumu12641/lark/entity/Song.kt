@@ -16,7 +16,24 @@ data class Song(
     var recentPlay: Date? = null,
     var neteaseId:Long = 0L,
     var isBuffered:Int = NOT_NEED_BUFFER,
-)
+){
+    override fun equals(other: Any?): Boolean {
+        return (other as Song).songId == this.songId
+    }
+
+    override fun hashCode(): Int {
+        var result = songId.hashCode()
+        result = 31 * result + songTitle.hashCode()
+        result = 31 * result + songSinger.hashCode()
+        result = 31 * result + songAlbumFileUri.hashCode()
+        result = 31 * result + mediaFileUri.hashCode()
+        result = 31 * result + duration
+        result = 31 * result + (recentPlay?.hashCode() ?: 0)
+        result = 31 * result + neteaseId.hashCode()
+        result = 31 * result + isBuffered
+        return result
+    }
+}
 
 class Converters {
     @TypeConverter

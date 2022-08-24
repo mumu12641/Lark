@@ -9,15 +9,12 @@ import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
 import android.graphics.Bitmap
-import android.media.session.PlaybackState.STATE_BUFFERING
 import android.os.Build
 import android.os.Bundle
 import android.support.v4.media.MediaBrowserCompat
-import android.support.v4.media.MediaDescriptionCompat
 import android.support.v4.media.MediaMetadataCompat
 import android.support.v4.media.session.MediaSessionCompat
 import android.support.v4.media.session.PlaybackStateCompat
-import android.util.Log
 import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.core.app.NotificationCompat
@@ -27,9 +24,6 @@ import com.google.android.exoplayer2.ExoPlayer
 import com.google.android.exoplayer2.MediaItem
 import com.google.android.exoplayer2.PlaybackException
 import com.google.android.exoplayer2.Player
-import com.google.android.exoplayer2.Player.STATE_BUFFERING
-import com.google.android.exoplayer2.Player.STATE_READY
-import com.google.android.exoplayer2.metadata.Metadata
 import io.github.mumu12641.lark.BaseApplication.Companion.applicationScope
 import io.github.mumu12641.lark.BaseApplication.Companion.kv
 import io.github.mumu12641.lark.MainActivity
@@ -116,6 +110,7 @@ class MediaPlaybackService : MediaBrowserServiceCompat() {
         super.onDestroy()
         mExoPlayer.release()
         scope.cancel()
+
         unregisterReceiver(mReceiver)
     }
 
@@ -196,7 +191,7 @@ class MediaPlaybackService : MediaBrowserServiceCompat() {
         mediaSession.setMetadata(mediaMetadataCompat)
     }
 
-    private fun updateQueue(songList: List<Song>) {
+    private fun updateQueue(songList: List<Song>,song: Song? =null) {
         mExoPlayer.clearMediaItems()
         songList.apply {
             mediaSession.setQueue(this.map {
@@ -207,6 +202,10 @@ class MediaPlaybackService : MediaBrowserServiceCompat() {
             })
         }
         mExoPlayer.prepare()
+        song?.let {
+            mExoPlayer.seekTo(currentPlayList.indexOf(it), 0L)
+            return@updateQueue
+        }
         mExoPlayer.seekTo(currentPlayList.indexOf(currentPlaySong), 0L)
     }
 
@@ -216,8 +215,6 @@ class MediaPlaybackService : MediaBrowserServiceCompat() {
             @RequiresApi(Build.VERSION_CODES.M)
             override fun onPlayerError(error: PlaybackException) {
                 super.onPlayerError(error)
-                Log.d(TAG, "onPlayerError: " + error.errorCodeName)
-                Log.d(TAG, "onPlayerError: " + mPlaybackState.state)
                 Toast.makeText(context, "播放出错，跳过该歌曲", Toast.LENGTH_LONG).show()
 
                 val index = mExoPlayer.currentMediaItemIndex
@@ -228,26 +225,24 @@ class MediaPlaybackService : MediaBrowserServiceCompat() {
                         }
                         var song = currentPlayList[index]
                         val searchSong = networkService.getSongUrl(song.neteaseId)
-                        Log.d(TAG, "onPlayerError: ")
-                        if (searchSong.data[0].url != null) {
-                            song = song.copy(
+                        song = if (searchSong.data[0].url != null) {
+                            song.copy(
                                 mediaFileUri = searchSong.data[0].url!!,
                                 isBuffered = BUFFERED
                             )
-                            Log.d(TAG, "onPlayerError: " + searchSong.data[0].url)
                         } else {
-                            song = song.copy(isBuffered = NOT_BUFFERED)
+                            song.copy(isBuffered = NOT_BUFFERED)
                         }
+                        DataBaseUtils.updateSong(song)
                         withContext(Dispatchers.Main) {
-                            DataBaseUtils.updateSong(song)
                             if (song.isBuffered == NOT_BUFFERED) {
                                 currentPlayList.removeAt(index)
                             } else {
                                 currentPlayList[index] = song
                             }
                             currentPlaySong = currentPlayList[index + 1]
+                            updateQueue(currentPlayList,currentPlaySong)
                             updatePlayBackState(PlaybackStateCompat.STATE_PLAYING)
-                            updateQueue(currentPlayList)
                         }
                     }
                 }
@@ -256,20 +251,21 @@ class MediaPlaybackService : MediaBrowserServiceCompat() {
             @RequiresApi(Build.VERSION_CODES.M)
             override fun onMediaItemTransition(mediaItem: MediaItem?, reason: Int) {
                 super.onMediaItemTransition(mediaItem, reason)
-                Log.d(TAG, "onMediaItemTransition: ")
 
                 var song = currentPlayList[mExoPlayer.currentMediaItemIndex]
                 val index = mExoPlayer.currentMediaItemIndex
 
                 when (song.isBuffered) {
                     NOT_BUFFERED -> {
-                        applicationScope.launch(Dispatchers.IO + CoroutineExceptionHandler { _, _ -> }) {
+                        applicationScope.launch(Dispatchers.IO + CoroutineExceptionHandler { _, e ->
+                            Toast.makeText(context,"播放出错，跳过该歌曲",Toast.LENGTH_LONG).show()
+                            mExoPlayer.seekToNextMediaItem()
+                        }) {
                             withContext(Dispatchers.Main) {
                                 updatePlayBackState(PlaybackStateCompat.STATE_BUFFERING)
                             }
                             val searchSong = networkService.getSongUrl(song.neteaseId)
                             val detail = networkService.getSongDetail(song.neteaseId.toString())
-                            Log.d(TAG, "onMediaItemTransition: $searchSong")
                             if (searchSong.data[0].url != null) {
                                 song = song.copy(
                                     isBuffered = BUFFERED,
@@ -279,11 +275,10 @@ class MediaPlaybackService : MediaBrowserServiceCompat() {
                                 DataBaseUtils.updateSong(song)
                                 withContext(Dispatchers.Main) {
                                     currentPlayList[index] = song
-                                    Log.d(TAG, "onMediaItemTransition: $index")
                                     currentPlaySong = song
                                     updateQueue(currentPlayList)
-                                    updatePlayBackState(PlaybackStateCompat.STATE_PLAYING)
                                     updateMetadata(createMetadataFromSong(song))
+                                    updatePlayBackState(PlaybackStateCompat.STATE_PLAYING)
                                 }
                             } else {
                                 withContext(Dispatchers.Main) {
@@ -316,7 +311,6 @@ class MediaPlaybackService : MediaBrowserServiceCompat() {
             @RequiresApi(Build.VERSION_CODES.M)
             override fun onPlay() {
                 super.onPlay()
-                Log.d(TAG, "onPlay")
                 if (mPlaybackState.state == PlaybackStateCompat.STATE_PAUSED || mPlaybackState.state == PlaybackStateCompat.STATE_NONE
                     || mPlaybackState.state == PlaybackStateCompat.STATE_SKIPPING_TO_NEXT || mPlaybackState.state == PlaybackStateCompat.STATE_PLAYING
                 ) {
@@ -333,7 +327,6 @@ class MediaPlaybackService : MediaBrowserServiceCompat() {
             @RequiresApi(Build.VERSION_CODES.M)
             override fun onPause() {
                 super.onPause()
-                Log.d(TAG, "onPause")
                 if (mPlaybackState.state == PlaybackStateCompat.STATE_PLAYING) {
                     mExoPlayer.pause()
                     updatePlayBackState(PlaybackStateCompat.STATE_PAUSED)
@@ -354,7 +347,6 @@ class MediaPlaybackService : MediaBrowserServiceCompat() {
             @RequiresApi(Build.VERSION_CODES.M)
             override fun onSkipToNext() {
                 super.onSkipToNext()
-                Log.d(TAG, "onSkipToNext")
                 mExoPlayer.seekToNextMediaItem()
                 mExoPlayer.play()
                 updatePlayBackState(PlaybackStateCompat.STATE_PLAYING)
@@ -367,7 +359,6 @@ class MediaPlaybackService : MediaBrowserServiceCompat() {
             @RequiresApi(Build.VERSION_CODES.M)
             override fun onSkipToPrevious() {
                 super.onSkipToPrevious()
-                Log.d(TAG, "onSkipToPrevious: ")
                 mExoPlayer.seekToPreviousMediaItem()
                 mExoPlayer.play()
                 updatePlayBackState(PlaybackStateCompat.STATE_PLAYING)
@@ -386,7 +377,6 @@ class MediaPlaybackService : MediaBrowserServiceCompat() {
                     }
                     SEEK_TO_SONG -> {
                         scope.launch {
-                            Log.d(TAG, "onCustomAction: " + "SEEK_TO_SONG")
                             val songId = extras?.get("songId") as Long
                             val song = DataBaseUtils.querySongById(songId)
                             withContext(Dispatchers.Main) {
@@ -406,7 +396,6 @@ class MediaPlaybackService : MediaBrowserServiceCompat() {
                         scope.launch {
                             val songId = extras?.get("songId") as Long
                             val song = DataBaseUtils.querySongById(songId)
-                            Log.d(TAG, "onCustomAction: $song")
                             withContext(Dispatchers.Main) {
                                 currentPlayList.add(mExoPlayer.currentMediaItemIndex + 1, song)
                                 mediaSession.setQueue(currentPlayList.map {
@@ -445,7 +434,6 @@ class MediaPlaybackService : MediaBrowserServiceCompat() {
                 currentPlayList = DataBaseUtils.querySongListWithSongsBySongListId(
                     get("songListId") as Long
                 ).songs.toMutableList()
-
                 currentSongList =
                     DataBaseUtils.querySongListById(get("songListId") as Long)
                 withContext(Dispatchers.Main) {

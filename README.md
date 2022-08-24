@@ -1,5 +1,5 @@
 <p align="center"> 
-	<img src="app/src/main/new_icon-playstore.png " width=160 height=160>
+	<img src="assert/icon.png " width=160 height=160>
 </p>
 <h1 align="center">
 	Lark
@@ -9,6 +9,7 @@
 </p>
 <p align="center">
 </p>
+
 
 ## ScreenShot
 
@@ -28,7 +29,7 @@
 
 - MAD: UI and logic written with pure Kotlin. Single activity, no fragments, only composable destinations.
 
-## What's Net
+## What's Next
 
 - UI development
 - Fetch songs from Netease Cloud Music to play
@@ -41,7 +42,7 @@ Please download apk from [releases](https://github.com/mumu12641/Lark/releases)
 
 Some code is borrowed from [Seal](https://github.com/JunkFood02/Seal),and UI design inspired by [RetroMusicPlayer](https://github.com/RetroMusicPlayer/RetroMusicPlayer) and [Howl](https://github.com/Iamlooker/Howl).
 
-API service from [NeteaseCloudMusicApi](https://github.com/mumu12641/NeteaseCloudMusicApi).
+API service from [NeteaseCloudMusicApi](https://github.com/Binaryify/NeteaseCloudMusicApi).
 
 
 Material design from [material color utilities](https://github.com/material-foundation/material-color-utilities).

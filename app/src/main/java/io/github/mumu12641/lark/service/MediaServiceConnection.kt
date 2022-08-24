@@ -92,17 +92,8 @@ class MediaServiceConnection(context: Context, componentName: ComponentName) {
             _playMetadata.value = metadata ?: NOTHING_PLAYING
 
             applicationScope.launch(Dispatchers.IO) {
-
-//                val id: Long = if (metadata?.getLong(MediaMetadataCompat.METADATA_KEY_DISC_NUMBER) == 0L) {
-//                    metadata.getString(MediaMetadataCompat.METADATA_KEY_MEDIA_URI)
-//                        ?.let { DataBaseUtils.querySongIdByMediaUri(it) }!!
-//                }else {
-//                    metadata?.getLong(MediaMetadataCompat.METADATA_KEY_DISC_NUMBER)
-//                        ?.let { DataBaseUtils.querySongIdByNeteaseId(it) }!!
-//                }
                 val id = metadata?.getString(MediaMetadataCompat.METADATA_KEY_MEDIA_ID)?.toLong()
                 Log.d(TAG, "onMetadataChanged: $id")
-//                val song = id?.let { DataBaseUtils.querySongById(it) }
                 val song = DataBaseUtils.querySongById(id!!)
                 song.let {
                     try {

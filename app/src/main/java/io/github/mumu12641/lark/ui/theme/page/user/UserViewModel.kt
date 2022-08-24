@@ -1,7 +1,6 @@
 package io.github.mumu12641.lark.ui.theme.page.user
 
 import android.util.Log
-import android.widget.Toast
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
