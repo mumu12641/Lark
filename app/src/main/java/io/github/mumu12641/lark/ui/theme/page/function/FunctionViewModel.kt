@@ -35,8 +35,8 @@ class FunctionViewModel @Inject constructor() : ViewModel() {
 
     val historySongList =
         DataBaseUtils.querySongListWithSongsBySongListIdFlow(HistorySongListId).map {
-            it.songs.sortedByDescending {
-                    song -> song.recentPlay
+            it.songs.sortedByDescending { song ->
+                song.recentPlay
             }
         }
 
@@ -80,13 +80,13 @@ class FunctionViewModel @Inject constructor() : ViewModel() {
                         )
                         if (allMediaFileUri.isEmpty() || !allMediaFileUri.contains(song.mediaFileUri)) {
                             id = DataBaseUtils.insertSong(song)
-                            DataBaseUtils.insertRef(PlaylistSongCrossRef(LocalSongListId, id))
+                            if (!DataBaseUtils.isRefExist(LocalSongListId, id)) {
+                                DataBaseUtils.insertRef(PlaylistSongCrossRef(LocalSongListId, id))
+                            }
                         } else {
-                            if (!allRef.contains(
-                                    PlaylistSongCrossRef(
-                                        LocalSongListId,
-                                        DataBaseUtils.querySongIdByMediaUri(song.mediaFileUri)
-                                    )
+                            if (!DataBaseUtils.isRefExist(
+                                    LocalSongListId,
+                                    DataBaseUtils.querySongIdByMediaUri(song.mediaFileUri)
                                 )
                             ) {
                                 DataBaseUtils.insertRef(

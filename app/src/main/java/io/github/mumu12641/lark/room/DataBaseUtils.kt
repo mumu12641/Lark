@@ -59,7 +59,7 @@ class DataBaseUtils {
             return musicDao.querySongListsByType(type)
         }
 
-        fun queryAllRef(): List<PlaylistSongCrossRef> {
+        suspend fun queryAllRef(): List<PlaylistSongCrossRef> {
             return musicDao.queryAllRef()
         }
 

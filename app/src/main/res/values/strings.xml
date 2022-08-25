@@ -62,4 +62,8 @@
     <string name="search_text">Search</string>
     <string name="hot_search_text">Hot search</string>
     <string name="suggestion_text">Suggestion</string>
+    <string name="user_guide_text">User guide</string>
+    <string name="welcome_music_des_text">You can fetch and play local and network songs.</string>
+    <string name="welcome_play_des_text">Simple and beautiful playback interface, no ads and no other redundant functions, bringing you the most comfortable and purest experience.</string>
+    <string name="welcome_cloud_des_text">Log in to your NetEase Cloud account to get personal playlists and personalized recommendations.</string>
 </resources>

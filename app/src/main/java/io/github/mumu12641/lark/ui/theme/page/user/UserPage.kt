@@ -1,10 +1,17 @@
 package io.github.mumu12641.lark.ui.theme.page.user
 
 import android.annotation.SuppressLint
+import android.app.Activity
+import android.content.Intent
 import android.net.Uri
+import android.os.Build
+import android.provider.MediaStore
+import android.util.Log
 import android.widget.Toast
+import androidx.activity.ComponentActivity
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.annotation.RequiresApi
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -29,6 +36,7 @@ import androidx.navigation.NavController
 import com.skydoves.landscapist.glide.GlideImage
 import io.github.mumu12641.lark.BaseApplication.Companion.context
 import io.github.mumu12641.lark.BaseApplication.Companion.kv
+import io.github.mumu12641.lark.MainActivity
 import io.github.mumu12641.lark.R
 import io.github.mumu12641.lark.entity.LoadState
 import io.github.mumu12641.lark.ui.theme.component.LarkAlertDialog
@@ -195,16 +203,28 @@ fun UserContent(
     val user by viewModel.userState.collectAsState(initial = INIT_USER)
     val loadState by viewModel.loadState.collectAsState(initial = LoadState.None())
 
-    val launcherBackground = rememberLauncherForActivityResult(
-        contract =
-        ActivityResultContracts.GetContent()
-    ) { uri: Uri? ->
-        uri?.let {
-            viewModel.changeBackgroundValue(uri.toString())
-        } ?: INIT_USER.backgroundImageUri?.let {
-            viewModel.changeBackgroundValue(it)
+//    val pickMultipleMedia =rememberLauncherForActivityResult(
+//            ActivityResultContracts.StartActivityForResult()
+//        ) {
+//            if (it.resultCode != Activity.RESULT_OK) {
+//                Log.d("TAG", "UserContent: null")
+//            } else {
+//                val uris = it.data?.clipData
+//                Log.d("Photo picker", "UserContent: $uris")
+//            }
+//        }
+    val launcherBackground =
+        rememberLauncherForActivityResult(
+            contract =
+            ActivityResultContracts.GetContent()
+        ) { uri: Uri? ->
+            uri?.let {
+                viewModel.changeBackgroundValue(uri.toString())
+            } ?: INIT_USER.backgroundImageUri?.let {
+                viewModel.changeBackgroundValue(it)
+            }
         }
-    }
+
     val launcherIcon = rememberLauncherForActivityResult(
         contract =
         ActivityResultContracts.GetContent()
@@ -229,7 +249,7 @@ fun UserContent(
                     .height(200.dp)
                     .clip(RoundedCornerShape(50.dp))
                     .clickable {
-                        launcherBackground.launch("image/*")
+                            launcherBackground.launch("image/*")
                     },
                 loading = {
                     Box(modifier = Modifier.matchParentSize()) {

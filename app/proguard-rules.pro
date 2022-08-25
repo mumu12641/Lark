@@ -32,3 +32,4 @@
 
 # Gson
 -keep class io.github.mumu12641.lark.entity.network.**{*;} # 自定义数据模型的bean目录
+

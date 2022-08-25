@@ -1,22 +1,21 @@
 package io.github.mumu12641.lark.ui.theme.page.home
 
 import android.Manifest
-import android.Manifest.permission.FOREGROUND_SERVICE
-import android.content.pm.PackageManager
+import android.annotation.SuppressLint
 import android.os.Build
 import android.support.v4.media.MediaMetadataCompat
 import android.support.v4.media.session.PlaybackStateCompat
+import android.util.Log
 import android.widget.Toast
-import androidx.activity.ComponentActivity
-import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
 import androidx.compose.material.icons.rounded.*
@@ -27,25 +26,21 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.util.lerp
-import androidx.core.content.ContextCompat
 import androidx.navigation.NavController
 import com.google.accompanist.pager.ExperimentalPagerApi
 import com.google.accompanist.pager.HorizontalPager
 import com.google.accompanist.pager.calculateCurrentOffsetForPage
 import com.google.accompanist.pager.rememberPagerState
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
-import com.google.accompanist.permissions.isGranted
-import com.google.accompanist.permissions.rememberPermissionState
-import com.hjq.permissions.Permission
-import com.hjq.permissions.XXPermissions
+import com.google.accompanist.permissions.rememberMultiplePermissionsState
 import com.skydoves.landscapist.glide.GlideImage
 import com.tencent.mmkv.MMKV
 import io.github.mumu12641.lark.BaseApplication.Companion.applicationScope
 import io.github.mumu12641.lark.MainActivity.Companion.context
-import io.github.mumu12641.lark.MainActivity
 import io.github.mumu12641.lark.R
 import io.github.mumu12641.lark.entity.*
 import io.github.mumu12641.lark.entity.network.BannerX
@@ -134,6 +129,7 @@ fun HomeScreen(
 
 }
 
+@SuppressLint("PermissionLaunchedDuringComposition")
 @RequiresApi(Build.VERSION_CODES.Q)
 @OptIn(ExperimentalPermissionsApi::class)
 @Composable
@@ -150,15 +146,20 @@ fun HomeSetup(
     var showDialog by remember {
         mutableStateOf(true)
     }
-    var request by remember {
-        mutableStateOf(false)
-    }
-    val permissionState = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-        rememberPermissionState(permission = Manifest.permission.READ_MEDIA_AUDIO)
-    }else{
-        rememberPermissionState(permission = Manifest.permission.READ_EXTERNAL_STORAGE)
-    }
-    if (permissionState.status.isGranted) {
+    val permissionState =
+        if (Build.VERSION.SDK_INT >= 33) {
+            rememberMultiplePermissionsState(
+                permissions = listOf(
+                    Manifest.permission.POST_NOTIFICATIONS,
+                    Manifest.permission.FOREGROUND_SERVICE,
+                    Manifest.permission.READ_MEDIA_IMAGES,
+                    Manifest.permission.READ_MEDIA_AUDIO,
+                )
+            )
+        } else {
+            rememberMultiplePermissionsState(permissions = listOf(Manifest.permission.READ_EXTERNAL_STORAGE))
+        }
+    if (permissionState.allPermissionsGranted) {
         showDialog = false
         HomeContent(
             modifier,
@@ -170,52 +171,56 @@ fun HomeSetup(
             addBannerSongToList
         )
     } else {
-        if (showDialog) {
-            LarkAlertDialog(
-                {},
-                stringResource(id = R.string.get_media_permission_text),
-                Icons.Filled.Notifications,
-                { Text(text = stringResource(id = R.string.request_permission_message_text)) },
-                {
-                    showDialog = false
-                    request = true
-                },
-                stringResource(id = R.string.confirm_text),
-                {
-                    TextButton(onClick = {
-                        showDialog = false
-                        request = true
-                    }) { Text(stringResource(id = R.string.cancel_text)) }
-                },
-            )
-        }
-        val permissionList: List<String> =
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-                listOf(
-                    Permission.POST_NOTIFICATIONS,
-                    FOREGROUND_SERVICE,
-                    Permission.READ_MEDIA_IMAGES,
-                    Permission.READ_MEDIA_AUDIO,
-                )
-            } else {
-                listOf(Permission.READ_EXTERNAL_STORAGE)
-            }
-
-        if (request) {
-            XXPermissions.with(context)
-                .permission(
-                    permissionList
-                )
-                .request { _, all ->
-                    if (all) {
-                        reFreshLocalMusicList()
-                    }
-                }
-        }
+        showDialog = true
     }
-
-
+    if (showDialog) {
+        LarkAlertDialog(
+            onDismissRequest = {},
+            title = stringResource(id = R.string.welcome_text),
+            text = {
+                Column(modifier = Modifier.verticalScroll(rememberScrollState())) {
+                    IconDescription(
+                        icon = Icons.Filled.MusicNote,
+                        description = "您可以获取并且播放本地以及网络歌曲。"
+                    )
+                    IconDescription(
+                        icon = Icons.Filled.Backup,
+                        description = "登录您的网易云账号，获取个人歌单以及个性化推荐。"
+                    )
+                    IconDescription(
+                        icon = Icons.Filled.PlayArrow,
+                        description = "简洁美观的播放界面，无广告无其他冗余功能，带给你最舒适、最纯粹的体验"
+                    )
+                }
+            },
+            confirmOnClick = {
+                showDialog = false
+                permissionState.launchMultiplePermissionRequest()
+            },
+            confirmText = stringResource(id = R.string.confirm_text)
+        )
+    }
 }
+
+
+@Composable
+fun IconDescription(modifier: Modifier = Modifier, icon: ImageVector, description: String) {
+    Row(
+        modifier = modifier.padding(top = 12.dp, bottom = 9.dp),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        Icon(
+            modifier = Modifier.size(24.dp),
+            imageVector = icon,
+            contentDescription = null
+        )
+        Text(
+            modifier = Modifier.padding(start = 12.dp),
+            text = description,
+        )
+    }
+}
+
 
 @Composable
 fun HomeContent(
@@ -229,20 +234,37 @@ fun HomeContent(
 ) {
 
 
-    LazyColumn(
-        modifier = modifier.padding(horizontal = 10.dp, vertical = 10.dp)
+//    LazyColumn(
+//        modifier = modifier.padding(horizontal = 10.dp, vertical = 10.dp)
+//    ) {
+//        item { WelcomeUser(navController) }
+//        item { Banner(banner, addBannerSongToList) }
+//        item { FunctionTab(navController) }
+//        item {
+//            SongListRow(
+//                list,
+//                addSongList
+//            ) { navController.navigate(Route.ROUTE_SONG_LIST_DETAILS + it.toString()) }
+//        }
+//        item { ArtistRow(navController, artistSongList) }
+//    }
+    Column(
+        modifier = modifier
+            .padding(horizontal = 10.dp, vertical = 10.dp)
+            .verticalScroll(rememberScrollState())
     ) {
-        item { WelcomeUser(navController) }
-        item { Banner(banner, addBannerSongToList) }
-        item { FunctionTab(navController) }
-        item {
-            SongListRow(
-                list,
-                addSongList
-            ) { navController.navigate(Route.ROUTE_SONG_LIST_DETAILS + it.toString()) }
-        }
-        item { ArtistRow(navController, artistSongList) }
+
+        WelcomeUser(navController)
+        Banner(banner, addBannerSongToList)
+        FunctionTab(navController)
+        SongListRow(
+            list,
+            addSongList
+        ) { navController.navigate(Route.ROUTE_SONG_LIST_DETAILS + it.toString()) }
+
+        ArtistRow(navController, artistSongList)
     }
+
 }
 
 @OptIn(ExperimentalPagerApi::class, ExperimentalMaterial3Api::class)
@@ -500,42 +522,6 @@ private fun FunctionTab(
             .padding(vertical = 10.dp),
         horizontalArrangement = Arrangement.SpaceBetween
     ) {
-//        OutlinedButton(onClick = { navController.navigate(Route.ROUTE_HISTORY) }) {
-//            Row(
-//                horizontalArrangement = Arrangement.Center,
-//                verticalAlignment = Alignment.CenterVertically,
-//                modifier = Modifier.width((BaseApplication.deviceScreen[0] / 2 - 70).dp)
-//            ) {
-//                Icon(
-//                    modifier = Modifier.size(25.dp),
-//                    painter = painterResource(id = R.drawable.history),
-//                    contentDescription = "history"
-//                )
-//                Text(
-//                    text = stringResource(id = R.string.history_text),
-//                    modifier = Modifier.padding(start = 20.dp, end = 20.dp)
-//                )
-//            }
-//        }
-//        OutlinedButton(onClick = { navController.navigate(Route.ROUTE_LOCAL) }) {
-//            Row(
-//                horizontalArrangement = Arrangement.Center,
-//                verticalAlignment = Alignment.CenterVertically,
-//                modifier = Modifier.width((BaseApplication.deviceScreen[0] / 2 - 70).dp)
-//            ) {
-//                Icon(
-//                    modifier = Modifier.size(25.dp),
-//                    painter = painterResource(id = R.drawable.file_icon),
-//                    contentDescription = "local"
-//                )
-//                Text(
-//                    text = stringResource(id = R.string.local_text),
-//                    modifier = Modifier.padding(start = 20.dp, end = 20.dp)
-//                )
-//            }
-//        }
-
-
         CardIcon(
             Icons.Rounded.InsertInvitation,
             contentDescription = stringResource(id = R.string.suggestion_text)
