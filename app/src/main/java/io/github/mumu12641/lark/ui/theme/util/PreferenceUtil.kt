@@ -26,14 +26,16 @@ object PreferenceUtil {
     const val OFF = 2
 
     private const val DARK_MODE = "dark mode value"
-    private const val SEED_COLOR = "seed color value"
+    const val SEED_COLOR = "seed color value"
     private const val DYNAMIC_COLOR = "dynamic color preference"
+    private const val FOLLOW_ALBUM_COLOR_SWITCH = "FOLLOW_ALBUM_COLOR_SWITCH"
 
     private val _disaplayPreferenceFlow = MutableStateFlow(
         DisplayPreference(
             kv.decodeInt(DARK_MODE, FOLLOW_SYSTEM),
             kv.decodeInt(SEED_COLOR, DEFAULT_SEED_COLOR),
-            DynamicPreference(dynamicColorSwitch = kv.decodeInt(DYNAMIC_COLOR, OFF))
+            DynamicPreference(dynamicColorSwitch = kv.decodeInt(DYNAMIC_COLOR, OFF)),
+            followAlbumSwitch = kv.decodeInt(FOLLOW_ALBUM_COLOR_SWITCH, ON)
         )
     )
     val displayPreferenceFlow = _disaplayPreferenceFlow
@@ -41,7 +43,9 @@ object PreferenceUtil {
     data class DisplayPreference(
         val darkModePreference: Int = FOLLOW_SYSTEM,
         val seedColor: Int = DEFAULT_SEED_COLOR,
-        val dynamicPreference: DynamicPreference = DynamicPreference()
+        val dynamicPreference: DynamicPreference = DynamicPreference(),
+        val currentAlbumColor:Int = DEFAULT_SEED_COLOR,
+        val followAlbumSwitch :Int = ON
     )
 
     data class DynamicPreference(
@@ -56,6 +60,14 @@ object PreferenceUtil {
                 it.copy(darkModePreference = mode)
             }
             kv.encode(DARK_MODE,mode)
+        }
+    }
+
+    fun changeCurrentAlbumColor(color: Int){
+        applicationScope.launch(Dispatchers.IO) {
+            _disaplayPreferenceFlow.update {
+                it.copy(currentAlbumColor = color)
+            }
         }
     }
 
@@ -76,5 +88,15 @@ object PreferenceUtil {
             kv.encode(DYNAMIC_COLOR,mode)
         }
     }
+
+    fun switchFollowAlbum(mode: Int){
+        applicationScope.launch(Dispatchers.IO) {
+            _disaplayPreferenceFlow.update {
+                it.copy(followAlbumSwitch = mode)
+            }
+            kv.encode(FOLLOW_ALBUM_COLOR_SWITCH,mode)
+        }
+    }
+
     private const val TAG = "PreferenceUtil"
 }

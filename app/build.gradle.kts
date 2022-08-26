@@ -91,6 +91,7 @@ dependencies {
     kapt ("com.google.dagger:hilt-android-compiler:$hiltVersion")
     implementation("androidx.navigation:navigation-compose:$navVersion")
 
+    implementation ("com.android.support:palette-v7:33.0.0")
     implementation("io.coil-kt:coil-compose:2.2.0")
     implementation("com.github.skydoves:landscapist-glide:1.5.3")
     implementation("me.onebone:toolbar-compose:2.3.4")

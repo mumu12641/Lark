@@ -70,6 +70,7 @@ fun MainScreen(
                 navController = navController, route = Route.ROUTE_LOCAL,
                 viewModel = functionViewModel,
                 playMedia = playMedia,
+                refreshArtist = { mainViewModel.refreshArtist() }
             )
         }
         AnimationComposable(

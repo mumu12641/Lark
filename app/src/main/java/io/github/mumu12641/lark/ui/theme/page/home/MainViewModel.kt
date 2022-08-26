@@ -40,6 +40,7 @@ class MainViewModel @Inject constructor() : ViewModel() {
 
     val currentSongList by lazy { mediaServiceConnection.currentSongList }
 
+
     private val _loadState = MutableStateFlow(Load.NONE)
     val loadLocal: StateFlow<Int> = _loadState
 

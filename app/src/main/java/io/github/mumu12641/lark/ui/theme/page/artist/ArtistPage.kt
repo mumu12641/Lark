@@ -51,8 +51,6 @@ fun ArtistPage(
             FloatingActionButton(onClick = refreshArtist) {
                 Icon(Icons.Filled.Refresh, contentDescription = "Refresh")
             }
-
-
         }
     )
 }

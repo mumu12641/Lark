@@ -66,4 +66,6 @@
     <string name="welcome_music_des_text">您可以获取并且播放本地以及网络歌曲。</string>
     <string name="welcome_play_des_text">简洁美观的播放界面，无广告无其他冗余功能，带给你最舒适、最纯粹的体验。</string>
     <string name="welcome_cloud_des_text">登录您的网易云账号，获取个人歌单以及个性化推荐。</string>
+    <string name="adaptive_color_text">自适应颜色</string>
+    <string name="adaptive_color_des_text">播放界面的背景以及空间颜色随专辑封面变化</string>
 </resources>

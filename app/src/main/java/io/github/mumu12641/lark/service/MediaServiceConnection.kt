@@ -16,6 +16,7 @@ import android.support.v4.media.session.PlaybackStateCompat
 import android.util.Log
 import android.widget.RemoteViews
 import androidx.annotation.RequiresApi
+import androidx.palette.graphics.Palette
 import com.bumptech.glide.Glide
 import io.github.mumu12641.lark.BaseApplication.Companion.applicationScope
 import io.github.mumu12641.lark.BaseApplication.Companion.context
@@ -24,12 +25,12 @@ import io.github.mumu12641.lark.MainActivity
 import io.github.mumu12641.lark.R
 import io.github.mumu12641.lark.entity.*
 import io.github.mumu12641.lark.room.DataBaseUtils
+import io.github.mumu12641.lark.ui.theme.color.scheme.ColorScheme.getLightColorScheme
+import io.github.mumu12641.lark.ui.theme.util.PreferenceUtil
+import io.github.mumu12641.lark.ui.theme.util.PreferenceUtil.SEED_COLOR
 import io.github.mumu12641.lark.widget.LarkWidgetProvider
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.Job
+import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.launch
 import java.util.*
 
 class MediaServiceConnection(context: Context, componentName: ComponentName) {
@@ -52,6 +53,7 @@ class MediaServiceConnection(context: Context, componentName: ComponentName) {
 
     private val _currentSongList = MutableStateFlow(INIT_SONG_LIST)
     val currentSongList = _currentSongList
+
 
     val transportControls: MediaControllerCompat.TransportControls
         get() = mediaController.transportControls
@@ -91,22 +93,39 @@ class MediaServiceConnection(context: Context, componentName: ComponentName) {
         override fun onMetadataChanged(metadata: MediaMetadataCompat?) {
             _playMetadata.value = metadata ?: NOTHING_PLAYING
 
-            applicationScope.launch(Dispatchers.IO) {
+            applicationScope.launch(Dispatchers.IO + CoroutineExceptionHandler { _, _ -> {} }) {
                 val id = metadata?.getString(MediaMetadataCompat.METADATA_KEY_MEDIA_ID)?.toLong()
                 Log.d(TAG, "onMetadataChanged: $id")
                 val song = DataBaseUtils.querySongById(id!!)
+                val async = async {
+                    DataBaseUtils.querySongById(id)
+                }
+                async.await()
                 song.let {
-                    try {
-                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                            DataBaseUtils.updateSong(it.copy(recentPlay = Date()))
-                            if (!DataBaseUtils.isRefExist(HistorySongListId,id)){
-                                DataBaseUtils.insertRef(PlaylistSongCrossRef(HistorySongListId,id))
-                            }
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                        DataBaseUtils.updateSong(it.copy(recentPlay = Date()))
+                        if (!DataBaseUtils.isRefExist(HistorySongListId, id)) {
+                            DataBaseUtils.insertRef(PlaylistSongCrossRef(HistorySongListId, id))
                         }
-                    }catch (e:Exception){
-                        Log.d(TAG, "onMetadataChanged: " + e.message)
                     }
-
+                }
+                val bitmap: Bitmap = Glide
+                    .with(MainActivity.context)
+                    .asBitmap()
+                    .load(song.songAlbumFileUri)
+                    .error(R.drawable.music_note)
+                    .submit()
+                    .get()
+                Palette.from(bitmap).generate {
+                    it?.getDominantColor(
+                        kv.decodeInt(
+                            SEED_COLOR
+                        )
+                    )?.let { it1 ->
+                        PreferenceUtil.changeCurrentAlbumColor(
+                            it1
+                        )
+                    }
                 }
             }
             updateWidgetMetadata(metadata)

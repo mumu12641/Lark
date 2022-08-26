@@ -11,9 +11,7 @@ import androidx.compose.foundation.selection.selectableGroup
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowBack
-import androidx.compose.material.icons.filled.Brightness6
-import androidx.compose.material.icons.filled.Check
+import androidx.compose.material.icons.filled.*
 import androidx.compose.material.icons.sharp.Bedtime
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -30,9 +28,7 @@ import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
-import io.github.mumu12641.lark.DynamicColorSwitch
-import io.github.mumu12641.lark.LocalDarkTheme
-import io.github.mumu12641.lark.LocalSeedColor
+import io.github.mumu12641.lark.*
 import io.github.mumu12641.lark.R
 import io.github.mumu12641.lark.ui.theme.color.palettes.CorePalette
 import io.github.mumu12641.lark.ui.theme.component.LarkAlertDialog
@@ -174,6 +170,21 @@ fun DisplayPageContent(modifier: Modifier) {
                 isChecked = DynamicColorSwitch.current.dynamicColorSwitch == ON,
                 switchChange = switchDynamicColor,
                 enable = DynamicColorSwitch.current.enable
+            ) {
+
+            }
+        }
+        item {
+            SettingSwitchItem(
+                title = stringResource(id = R.string.adaptive_color_text),
+                description = stringResource(id = R.string.adaptive_color_des_text),
+                icon = Icons.Filled.Colorize,
+                isChecked = FollowAlbumSwitch.current == ON,
+                switchChange = {
+                    if (it) PreferenceUtil.switchFollowAlbum(ON) else PreferenceUtil.switchFollowAlbum(
+                        OFF
+                    )
+                }
             ) {
 
             }

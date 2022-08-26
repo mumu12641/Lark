@@ -79,6 +79,4 @@ class ArtistViewModel @Inject constructor() : ViewModel() {
             }
         }
     }
-
-
 }

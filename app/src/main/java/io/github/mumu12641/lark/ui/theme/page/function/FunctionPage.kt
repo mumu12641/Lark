@@ -58,6 +58,7 @@ fun FunctionPage(
     navController: NavController,
     route: String,
     viewModel: FunctionViewModel,
+    refreshArtist: (() -> Unit)? = null,
     playMedia: (Long, Long) -> Unit,
 ) {
     val localMusicList by viewModel.localMusicList.collectAsState(initial = emptyList())
@@ -156,14 +157,16 @@ fun FunctionPage(
                             loadState = Load.NONE,
                             playMedia = playMedia
                         )
-//                        Box(modifier = Modifier.padding(it), contentAlignment = Alignment.Center) {
-//                            Text(text = stringResource(id = R.string.coming_soon_text))
-//                        }
                     }
                 }
                 else -> {
                     {
-                        Box(modifier = Modifier.padding(it).fillMaxSize(), contentAlignment = Alignment.Center) {
+                        Box(
+                            modifier = Modifier
+                                .padding(it)
+                                .fillMaxSize(),
+                            contentAlignment = Alignment.Center
+                        ) {
                             Text(text = stringResource(id = R.string.coming_soon_text))
                         }
                     }
@@ -175,6 +178,7 @@ fun FunctionPage(
                     Route.ROUTE_LOCAL -> {
                         FloatingActionButton(onClick = {
                             viewModel.reFreshLocalMusicList()
+                            refreshArtist?.let { it() }
                         }) {
                             Icon(Icons.Filled.Refresh, contentDescription = "Refresh")
                         }
@@ -189,7 +193,7 @@ fun FunctionPage(
                             Icon(Icons.Filled.PlayArrow, contentDescription = "play")
                         }
                     }
-                    else  -> {
+                    else -> {
                         FloatingActionButton(onClick = { /*TODO*/ }) {
 
                         }
@@ -251,11 +255,6 @@ fun LocalContent(
 
 @Composable
 fun LoadAnimation(modifier: Modifier) {
-    val composition by rememberLottieComposition(LottieCompositionSpec.RawRes(R.raw.loading))
-    val progress by animateLottieCompositionAsState(
-        composition,
-        iterations = LottieConstants.IterateForever
-    )
     Box(
         modifier = modifier.fillMaxSize(),
         contentAlignment = Alignment.Center

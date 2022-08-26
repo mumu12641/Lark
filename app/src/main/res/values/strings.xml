@@ -66,4 +66,6 @@
     <string name="welcome_music_des_text">You can fetch and play local and network songs.</string>
     <string name="welcome_play_des_text">Simple and beautiful playback interface, no ads and no other redundant functions, bringing you the most comfortable and purest experience.</string>
     <string name="welcome_cloud_des_text">Log in to your NetEase Cloud account to get personal playlists and personalized recommendations.</string>
+    <string name="adaptive_color_text">Adaptive color</string>
+    <string name="adaptive_color_des_text">The background and space color of the playback interface change with the album cover</string>
 </resources>

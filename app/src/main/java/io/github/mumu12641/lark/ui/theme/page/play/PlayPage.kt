@@ -22,11 +22,12 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
-import io.github.mumu12641.lark.BaseApplication
+import io.github.mumu12641.lark.*
 import io.github.mumu12641.lark.R
 import io.github.mumu12641.lark.entity.INIT_SONG_LIST
 import io.github.mumu12641.lark.service.MediaServiceConnection.Companion.EMPTY_PLAYBACK_STATE
 import io.github.mumu12641.lark.service.MediaServiceConnection.Companion.NOTHING_PLAYING
+import io.github.mumu12641.lark.ui.theme.PlayPageTheme
 import io.github.mumu12641.lark.ui.theme.component.AsyncImage
 import io.github.mumu12641.lark.ui.theme.component.WavySeekbar
 import io.github.mumu12641.lark.ui.theme.page.details.ShowSongs
@@ -47,54 +48,61 @@ fun PlayPage(
     val bottomSheetScaffoldState = rememberBottomSheetScaffoldState(
         bottomSheetState = BottomSheetState(BottomSheetValue.Collapsed)
     )
-
-    Box(
-        modifier = Modifier
-            .fillMaxSize()
-            .background(MaterialTheme.colorScheme.background)
+    PlayPageTheme(
+        followAlbumSwitch = FollowAlbumSwitch.current,
+        currentAlbumColor = CurrentAlbumColor.current,
+        seedColor = LocalSeedColor.current,
+        darkTheme = LocalDarkTheme.current,
+        dynamicColorEnable = DynamicColorSwitch.current.enable,
+        dynamicColor = DynamicColorSwitch.current.dynamicColorSwitch
     ) {
-        BottomSheetScaffold(
-            backgroundColor = MaterialTheme.colorScheme.background,
+        Box(
             modifier = Modifier
-                .padding(
-                    WindowInsets
-                        .statusBars
-                        .only(
-                            WindowInsetsSides.Horizontal
-                                    + WindowInsetsSides.Top
-                        )
-                        .asPaddingValues()
-                ),
-            scaffoldState = bottomSheetScaffoldState,
-            sheetContent = {
-                ShowSongs(
-                    songs = currentPlaySongs,
-                    modifier = Modifier,
-                    top = 0,
-                    seekToSong = { songId: Long -> mainViewModel.seekToSong(songId) },
-                    songList = currentSongList
-                )
-            },
-            sheetPeekHeight = (BaseApplication.deviceScreen[1] - 615).dp,
-            sheetBackgroundColor = MaterialTheme.colorScheme.secondaryContainer,
+                .fillMaxSize()
+                .background(MaterialTheme.colorScheme.background)
+        ) {
+            BottomSheetScaffold(
+                backgroundColor = MaterialTheme.colorScheme.background,
+                modifier = Modifier
+                    .padding(
+                        WindowInsets
+                            .statusBars
+                            .only(
+                                WindowInsetsSides.Horizontal
+                                        + WindowInsetsSides.Top
+                            )
+                            .asPaddingValues()
+                    ),
+                scaffoldState = bottomSheetScaffoldState,
+                sheetContent = {
+                    ShowSongs(
+                        songs = currentPlaySongs,
+                        modifier = Modifier,
+                        top = 0,
+                        seekToSong = { songId: Long -> mainViewModel.seekToSong(songId) },
+                        songList = currentSongList
+                    )
+                },
+                sheetPeekHeight = (BaseApplication.deviceScreen[1] - 615).dp,
+                sheetBackgroundColor = MaterialTheme.colorScheme.secondaryContainer,
 
-            sheetShape = RoundedCornerShape(topStart = 20.dp, topEnd = 20.dp),
-            content = { paddingValues ->
-                PlayPageContent(
-                    modifier = Modifier
-                        .padding(paddingValues)
-                        .fillMaxSize()
-                        .background(MaterialTheme.colorScheme.background),
-                    currentMetadata.value,
-                    currentPlayState.value,
-                    onClickNext = { mainViewModel.onSkipToNext() },
-                    onClickPause = { mainViewModel.onPause() },
-                    onClickPlay = { mainViewModel.onPlay() },
-                    onClickPrevious = { mainViewModel.onSkipToPrevious() },
-                    onSeekTo = { mainViewModel.onSeekTo(it) }
-                )
-            }
-        )
+                sheetShape = RoundedCornerShape(topStart = 20.dp, topEnd = 20.dp),
+                content = { paddingValues ->
+                    PlayPageContent(
+                        modifier = Modifier
+                            .padding(paddingValues)
+                            .fillMaxSize()
+                            .background(MaterialTheme.colorScheme.background),
+                        currentMetadata.value,
+                        currentPlayState.value,
+                        onClickNext = { mainViewModel.onSkipToNext() },
+                        onClickPause = { mainViewModel.onPause() },
+                        onClickPlay = { mainViewModel.onPlay() },
+                        onClickPrevious = { mainViewModel.onSkipToPrevious() }
+                    ) { mainViewModel.onSeekTo(it) }
+                }
+            )
+        }
     }
 }
 
@@ -230,7 +238,7 @@ fun PlayPageContent(
                     },
                     valueRange = 0f..currentMetadata.getLong(MediaMetadataCompat.METADATA_KEY_DURATION)
                         .toFloat(),
-                    colors = androidx.compose.material.SliderDefaults.colors(
+                    colors = SliderDefaults.colors(
                         activeTrackColor = MaterialTheme.colorScheme.primaryContainer,
                         thumbColor = MaterialTheme.colorScheme.primary
                     )
