@@ -8,6 +8,8 @@ import android.support.v4.media.session.PlaybackStateCompat
 import android.util.Log
 import android.widget.Toast
 import androidx.annotation.RequiresApi
+import androidx.compose.animation.AnimatedContent
+import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyRow
@@ -30,6 +32,7 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.util.lerp
+import androidx.compose.ui.window.Dialog
 import androidx.navigation.NavController
 import com.google.accompanist.pager.ExperimentalPagerApi
 import com.google.accompanist.pager.HorizontalPager
@@ -43,11 +46,13 @@ import io.github.mumu12641.lark.BaseApplication.Companion.applicationScope
 import io.github.mumu12641.lark.MainActivity.Companion.context
 import io.github.mumu12641.lark.R
 import io.github.mumu12641.lark.entity.*
-import io.github.mumu12641.lark.entity.network.BannerX
+import io.github.mumu12641.lark.entity.network.Banner.BannerX
 import io.github.mumu12641.lark.room.DataBaseUtils
 import io.github.mumu12641.lark.service.MediaServiceConnection.Companion.EMPTY_PLAYBACK_STATE
 import io.github.mumu12641.lark.service.MediaServiceConnection.Companion.NOTHING_PLAYING
 import io.github.mumu12641.lark.ui.theme.component.*
+import io.github.mumu12641.lark.ui.theme.page.function.LoadAnimation
+import io.github.mumu12641.lark.ui.theme.util.StringUtil
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.Flow
@@ -103,6 +108,7 @@ fun HomeScreen(
             content = { paddingValues ->
                 HomeSetup(
                     modifier = Modifier.padding(paddingValues),
+                    mainViewModel,
                     allSongList,
                     artistSongList,
                     navController,
@@ -110,7 +116,7 @@ fun HomeScreen(
                     reFreshLocalMusicList,
                     addSongList,
                     addBannerSongToList
-                )
+                ) { mainViewModel.getNeteaseSongList(it) }
             },
             floatingActionButton = {
                 FloatingPlayMediaButton(
@@ -135,6 +141,7 @@ fun HomeScreen(
 @Composable
 fun HomeSetup(
     modifier: Modifier,
+    mainViewModel: MainViewModel,
     list: List<SongList>,
     artistSongList: List<SongList>,
     navController: NavController,
@@ -142,6 +149,7 @@ fun HomeSetup(
     reFreshLocalMusicList: () -> Unit,
     addSongList: (SongList) -> Unit,
     addBannerSongToList: (Long) -> Unit,
+    getNeteaseSongList: (Long) -> Unit
 ) {
     var showDialog by remember {
         mutableStateOf(true)
@@ -163,13 +171,14 @@ fun HomeSetup(
         showDialog = false
         HomeContent(
             modifier,
+            mainViewModel,
             list,
             artistSongList,
             navController,
             banner,
             addSongList,
             addBannerSongToList
-        )
+        ) { getNeteaseSongList(it) }
     } else {
         showDialog = true
     }
@@ -222,49 +231,40 @@ fun IconDescription(modifier: Modifier = Modifier, icon: ImageVector, descriptio
 }
 
 
+@OptIn(ExperimentalAnimationApi::class)
 @Composable
 fun HomeContent(
     modifier: Modifier,
+    mainViewModel: MainViewModel,
     list: List<SongList>,
     artistSongList: List<SongList>,
     navController: NavController,
     banner: List<BannerX>,
     addSongList: (SongList) -> Unit,
     addBannerSongToList: (Long) -> Unit,
+    getNeteaseSongList: (Long) -> Unit
 ) {
-
-
-//    LazyColumn(
-//        modifier = modifier.padding(horizontal = 10.dp, vertical = 10.dp)
-//    ) {
-//        item { WelcomeUser(navController) }
-//        item { Banner(banner, addBannerSongToList) }
-//        item { FunctionTab(navController) }
-//        item {
-//            SongListRow(
-//                list,
-//                addSongList
-//            ) { navController.navigate(Route.ROUTE_SONG_LIST_DETAILS + it.toString()) }
-//        }
-//        item { ArtistRow(navController, artistSongList) }
-//    }
+    val loadState by mainViewModel.loadState.collectAsState()
     Column(
         modifier = modifier
             .padding(horizontal = 10.dp, vertical = 10.dp)
             .verticalScroll(rememberScrollState())
     ) {
-
         WelcomeUser(navController)
         Banner(banner, addBannerSongToList)
         FunctionTab(navController)
         SongListRow(
             list,
-            addSongList
+            addSongList,
+            { getNeteaseSongList(it) }
         ) { navController.navigate(Route.ROUTE_SONG_LIST_DETAILS + it.toString()) }
-
         ArtistRow(navController, artistSongList)
     }
-
+    if (loadState == Load.LOADING){
+        Dialog(onDismissRequest = {  }) {
+            CircularProgressIndicator()
+        }
+    }
 }
 
 @OptIn(ExperimentalPagerApi::class, ExperimentalMaterial3Api::class)
@@ -438,41 +438,60 @@ private fun ArtistRow(navController: NavController, list: List<SongList>) {
 private fun SongListRow(
     list: List<SongList>,
     addSongList: (SongList) -> Unit,
+    getNeteaseSongList: (Long) -> Unit,
     navigationToDetails: (Long) -> Unit
 ) {
 
-    var showDialog by remember {
-        mutableStateOf(false)
-    }
-
-    var text by remember {
-        mutableStateOf("")
-    }
+    var showDialog by remember { mutableStateOf(false) }
+    var text by remember { mutableStateOf("") }
+    var confirmText by remember { mutableStateOf(value = context.getString(R.string.confirm_text)) }
+    var import by remember { mutableStateOf(false) }
 
     if (showDialog) {
         TextFieldDialog(
             onDismissRequest = { showDialog = false },
             title = stringResource(id = R.string.add_songlist_text),
             icon = Icons.Filled.Add,
+            trailingIcon = Icons.Filled.ContentPaste,
             confirmOnClick = {
-                addSongList(
-                    SongList(
-                        0L,
-                        text,
-                        "2022/7/22",
-                        0,
-                        context.getString(R.string.no_description_text),
-                        "null",
-                        CREATE_SONGLIST_TYPE
+                if (!import) {
+                    addSongList(
+                        SongList(
+                            0L,
+                            text,
+                            "2022/7/22",
+                            0,
+                            context.getString(R.string.no_description_text),
+                            "null",
+                            CREATE_SONGLIST_TYPE
+                        )
                     )
-                )
+                } else {
+                    StringUtil.getNeteaseSongListId()?.toLong()?.let { getNeteaseSongList(it) }
+                    import = false
+                    confirmText = context.getString(R.string.confirm_text)
+                }
                 showDialog = false
                 text = ""
             },
+            confirmString = confirmText,
             dismissOnClick = { showDialog = false },
             content = text,
             onValueChange = {
                 text = it
+            },
+            trailingIconOnClick = {
+                if (StringUtil.getHttpUrl() != null) {
+                    text = StringUtil.getHttpUrl()!!
+                    confirmText = context.getString(R.string.import_text)
+                    import = true
+                } else {
+                    Toast.makeText(
+                        context,
+                        context.getString(R.string.not_match_text),
+                        Toast.LENGTH_LONG
+                    ).show()
+                }
             }
         )
     }

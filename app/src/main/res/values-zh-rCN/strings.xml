@@ -67,5 +67,7 @@
     <string name="welcome_play_des_text">简洁美观的播放界面，无广告无其他冗余功能，带给你最舒适、最纯粹的体验。</string>
     <string name="welcome_cloud_des_text">登录您的网易云账号，获取个人歌单以及个性化推荐。</string>
     <string name="adaptive_color_text">自适应颜色</string>
-    <string name="adaptive_color_des_text">播放界面的背景以及空间颜色随专辑封面变化</string>
+    <string name="adaptive_color_des_text">播放界面的背景以及控件颜色随专辑封面变化</string>
+    <string name="import_text">导入</string>
+    <string name="not_match_text">未在剪切板中匹配到歌单链接</string>
 </resources>

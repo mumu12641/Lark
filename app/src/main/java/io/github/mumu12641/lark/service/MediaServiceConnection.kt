@@ -93,14 +93,12 @@ class MediaServiceConnection(context: Context, componentName: ComponentName) {
         override fun onMetadataChanged(metadata: MediaMetadataCompat?) {
             _playMetadata.value = metadata ?: NOTHING_PLAYING
 
+            updateCurrentAlbumColor(metadata)
             applicationScope.launch(Dispatchers.IO + CoroutineExceptionHandler { _, _ -> {} }) {
                 val id = metadata?.getString(MediaMetadataCompat.METADATA_KEY_MEDIA_ID)?.toLong()
                 Log.d(TAG, "onMetadataChanged: $id")
                 val song = DataBaseUtils.querySongById(id!!)
-                val async = async {
-                    DataBaseUtils.querySongById(id)
-                }
-                async.await()
+                DataBaseUtils.querySongById(id)
                 song.let {
                     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
                         DataBaseUtils.updateSong(it.copy(recentPlay = Date()))
@@ -109,24 +107,7 @@ class MediaServiceConnection(context: Context, componentName: ComponentName) {
                         }
                     }
                 }
-                val bitmap: Bitmap = Glide
-                    .with(MainActivity.context)
-                    .asBitmap()
-                    .load(song.songAlbumFileUri)
-                    .error(R.drawable.music_note)
-                    .submit()
-                    .get()
-                Palette.from(bitmap).generate {
-                    it?.getDominantColor(
-                        kv.decodeInt(
-                            SEED_COLOR
-                        )
-                    )?.let { it1 ->
-                        PreferenceUtil.changeCurrentAlbumColor(
-                            it1
-                        )
-                    }
-                }
+
             }
             updateWidgetMetadata(metadata)
         }
@@ -148,6 +129,32 @@ class MediaServiceConnection(context: Context, componentName: ComponentName) {
                     kv.decodeLong("lastPlaySongList")
                 )
                 transportControls.play()
+            }
+        }
+    }
+
+    private fun updateCurrentAlbumColor(metadata: MediaMetadataCompat?) {
+        applicationScope.launch(Dispatchers.IO + CoroutineExceptionHandler { _, _ -> {} }) {
+            val id = metadata?.getString(MediaMetadataCompat.METADATA_KEY_MEDIA_ID)?.toLong()
+            Log.d(TAG, "onMetadataChanged: $id")
+            val song = DataBaseUtils.querySongById(id!!)
+            val bitmap: Bitmap = Glide
+                .with(MainActivity.context)
+                .asBitmap()
+                .load(song.songAlbumFileUri)
+                .error(R.drawable.music_note)
+                .submit()
+                .get()
+            Palette.from(bitmap).generate {
+                it?.getDominantColor(
+                    kv.decodeInt(
+                        SEED_COLOR
+                    )
+                )?.let { it1 ->
+                    PreferenceUtil.changeCurrentAlbumColor(
+                        it1
+                    )
+                }
             }
         }
     }

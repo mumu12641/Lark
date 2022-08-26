@@ -10,6 +10,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.stringResource
+import io.github.mumu12641.lark.BaseApplication.Companion.context
 import io.github.mumu12641.lark.R
 
 @Composable
@@ -18,10 +19,13 @@ fun TextFieldDialog(
     title: String,
     placeholder: String? = null,
     icon: ImageVector,
+    trailingIcon: ImageVector = Icons.Filled.Close,
+    confirmString:String = context.getString(R.string.confirm_text),
     confirmOnClick: () -> Unit,
     dismissOnClick: () -> Unit,
     content: String,
-    onValueChange: (String) -> Unit
+    onValueChange: (String) -> Unit,
+    trailingIconOnClick: () -> Unit = { onValueChange("") }
 ) {
     AlertDialog(
         onDismissRequest = onDismissRequest,
@@ -37,14 +41,15 @@ fun TextFieldDialog(
                 modifier = Modifier.background(Color.Transparent),
                 value = content,
                 onValueChange = onValueChange,
+                maxLines = 4,
                 placeholder = {
                     placeholder?.let {
                         Text(text = placeholder)
                     }
                 },
                 trailingIcon = {
-                    IconButton(onClick = { onValueChange("") }) {
-                        Icon(Icons.Filled.Close, contentDescription = "close")
+                    IconButton(onClick = { trailingIconOnClick() }) {
+                        Icon(trailingIcon, contentDescription = "close")
                     }
                 },
                 colors = textFieldColors(
@@ -56,7 +61,7 @@ fun TextFieldDialog(
             TextButton(
                 onClick = confirmOnClick,
             ) {
-                Text(stringResource(id = R.string.confirm_text))
+                Text(confirmString)
             }
         },
         dismissButton = {

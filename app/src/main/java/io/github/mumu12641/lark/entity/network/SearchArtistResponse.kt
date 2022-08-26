@@ -16,8 +16,6 @@ data class SearchArtistResponse(val code: Int, val result: SearchResult){
 
 }
 
-
-
 data class ArtistDetailsResponse(val code: Int,val data: ArtistDetailsData){
     data class ArtistDetailsData(
         val artist: Artist,

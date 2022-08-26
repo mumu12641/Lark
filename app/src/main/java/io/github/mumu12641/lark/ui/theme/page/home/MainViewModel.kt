@@ -11,7 +11,7 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import io.github.mumu12641.lark.BaseApplication.Companion.context
 import io.github.mumu12641.lark.R
 import io.github.mumu12641.lark.entity.*
-import io.github.mumu12641.lark.entity.network.BannerX
+import io.github.mumu12641.lark.entity.network.Banner
 import io.github.mumu12641.lark.network.NetworkCreator.networkService
 import io.github.mumu12641.lark.room.DataBaseUtils
 import io.github.mumu12641.lark.service.MediaPlaybackService
@@ -19,6 +19,7 @@ import io.github.mumu12641.lark.service.MediaServiceConnection
 import io.github.mumu12641.lark.service.MediaServiceConnection.Companion.EMPTY_PLAYBACK_STATE
 import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.map
@@ -42,9 +43,9 @@ class MainViewModel @Inject constructor() : ViewModel() {
 
 
     private val _loadState = MutableStateFlow(Load.NONE)
-    val loadLocal: StateFlow<Int> = _loadState
+    val loadState: StateFlow<Int> = _loadState
 
-    private val _bannerState = MutableStateFlow<List<BannerX>>(emptyList())
+    private val _bannerState = MutableStateFlow<List<Banner.BannerX>>(emptyList())
     val bannerState = _bannerState
 
     val allSongList = DataBaseUtils.queryAllSongList().map {
@@ -144,6 +145,19 @@ class MainViewModel @Inject constructor() : ViewModel() {
         }
     }
 
+    fun getNeteaseSongList(id: Long) {
+        viewModelScope.launch(Dispatchers.IO + CoroutineExceptionHandler { _, _ ->
+            _loadState.value = Load.ERROR
+        }
+        ) {
+            _loadState.value = Load.LOADING
+            val list = networkService.getNeteaseSongList(id)
+            Log.d(TAG, "getNeteaseSongList: $list")
+            delay(1000)
+            _loadState.value = Load.SUCCESS
+        }
+    }
+
 
     fun playMedia(songListId: Long, songId: Long) {
         Log.d("TAG", "playMedia: $songListId + $songId")
@@ -155,20 +169,20 @@ class MainViewModel @Inject constructor() : ViewModel() {
         mediaServiceConnection.transportControls.sendCustomAction(CHANGE_PLAY_LIST, bundle)
     }
 
-    fun addSongToCurrentList(songId: Long){
+    fun addSongToCurrentList(songId: Long) {
         val bundle = Bundle()
         bundle.apply {
             putLong("songId", songId)
         }
-        mediaServiceConnection.transportControls.sendCustomAction(ADD_SONG_TO_LIST,bundle)
+        mediaServiceConnection.transportControls.sendCustomAction(ADD_SONG_TO_LIST, bundle)
     }
 
-    fun seekToSong(songId: Long){
+    fun seekToSong(songId: Long) {
         val bundle = Bundle()
         bundle.apply {
             putLong("songId", songId)
         }
-        mediaServiceConnection.transportControls.sendCustomAction(SEEK_TO_SONG,bundle)
+        mediaServiceConnection.transportControls.sendCustomAction(SEEK_TO_SONG, bundle)
     }
 
 

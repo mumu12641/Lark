@@ -36,4 +36,7 @@ interface NetworkService {
 
     @GET("song/detail")
     suspend fun getSongDetail(@Query("ids") ids: String): SongDetail
+
+    @GET("/playlist/detail")
+    suspend fun getNeteaseSongList(@Query("id") id: Long): NeteaseSongList
 }
