@@ -170,7 +170,11 @@ fun SongListDetailsContent(
             text = songList!!.songListTitle,
             style = MaterialTheme.typography.displaySmall,
             color = MaterialTheme.colorScheme.primary,
-            modifier = Modifier.padding(start = 20.dp)
+            softWrap = false,
+            overflow = TextOverflow.Ellipsis,
+
+            modifier = Modifier.padding(start = 20.dp),
+            maxLines = 1
         )
         Text(
             text = songList.description,
@@ -178,7 +182,10 @@ fun SongListDetailsContent(
             color = MaterialTheme.colorScheme.primary,
             modifier = Modifier
                 .padding(start = 20.dp)
-                .clickable { showDialog = true }
+                .clickable { showDialog = true },
+            softWrap = false,
+            overflow = TextOverflow.Ellipsis,
+            maxLines = 1
         )
         PlayButton(playMedia, songList, songs)
         if (showDialog) {

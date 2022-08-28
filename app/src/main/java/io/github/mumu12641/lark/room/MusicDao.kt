@@ -14,7 +14,7 @@ interface MusicDao {
     suspend fun insertSong(song: Song):Long
 
     @Insert
-    suspend fun insertSongList(songList: SongList)
+    suspend fun insertSongList(songList: SongList):Long
 
     @Insert
     suspend fun insertRef(playlistSongCrossRef: PlaylistSongCrossRef)

@@ -146,14 +146,50 @@ class MainViewModel @Inject constructor() : ViewModel() {
     }
 
     fun getNeteaseSongList(id: Long) {
-        viewModelScope.launch(Dispatchers.IO + CoroutineExceptionHandler { _, _ ->
+        viewModelScope.launch(Dispatchers.IO + CoroutineExceptionHandler { _, e ->
             _loadState.value = Load.ERROR
+            Log.d(TAG, "getNeteaseSongList: " + e.message)
         }
         ) {
             _loadState.value = Load.LOADING
             val list = networkService.getNeteaseSongList(id)
+            val tracks = networkService.getNeteaseSongListTracks(id)
             Log.d(TAG, "getNeteaseSongList: $list")
-            delay(1000)
+            Log.d(TAG, "getNeteaseSongList: $tracks")
+            val songlist = SongList(
+                0L,
+                list.playlist.name,
+                list.playlist.createTime.toString(),
+                list.playlist.trackCount,
+                list.playlist.description.toString(),
+                list.playlist.coverImgUrl,
+                CREATE_SONGLIST_TYPE
+            )
+            val listId: Long = DataBaseUtils.insertSongList(
+                songlist
+            )
+            Log.d(TAG, "getNeteaseSongList: $listId")
+            for (i in tracks.songs) {
+                val song = Song(
+                    0L,
+                    i.name,
+                    i.ar.joinToString(",") { it.name },
+                    i.al.picUrl,
+                    EMPTY_URI + i.al.picUrl,
+                    i.dt,
+                    neteaseId = i.id.toLong(),
+                    isBuffered = NOT_BUFFERED
+                )
+                Log.d(TAG, "getNeteaseSongList: $song")
+                if (!DataBaseUtils.isNeteaseIdExist(i.id.toLong())) {
+                    DataBaseUtils.insertSong(song)
+                }
+                val songId = DataBaseUtils.querySongIdByNeteaseId(i.id.toLong())
+                if (!DataBaseUtils.isRefExist(listId, songId)) {
+                    DataBaseUtils.insertRef(PlaylistSongCrossRef(listId, songId))
+                }
+            }
+
             _loadState.value = Load.SUCCESS
         }
     }

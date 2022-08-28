@@ -92,9 +92,8 @@ class MediaServiceConnection(context: Context, componentName: ComponentName) {
         @RequiresApi(Build.VERSION_CODES.M)
         override fun onMetadataChanged(metadata: MediaMetadataCompat?) {
             _playMetadata.value = metadata ?: NOTHING_PLAYING
-
             updateCurrentAlbumColor(metadata)
-            applicationScope.launch(Dispatchers.IO + CoroutineExceptionHandler { _, _ -> {} }) {
+            applicationScope.launch(Dispatchers.IO + CoroutineExceptionHandler { _, _ ->  }) {
                 val id = metadata?.getString(MediaMetadataCompat.METADATA_KEY_MEDIA_ID)?.toLong()
                 Log.d(TAG, "onMetadataChanged: $id")
                 val song = DataBaseUtils.querySongById(id!!)
@@ -136,7 +135,6 @@ class MediaServiceConnection(context: Context, componentName: ComponentName) {
     private fun updateCurrentAlbumColor(metadata: MediaMetadataCompat?) {
         applicationScope.launch(Dispatchers.IO + CoroutineExceptionHandler { _, _ -> {} }) {
             val id = metadata?.getString(MediaMetadataCompat.METADATA_KEY_MEDIA_ID)?.toLong()
-            Log.d(TAG, "onMetadataChanged: $id")
             val song = DataBaseUtils.querySongById(id!!)
             val bitmap: Bitmap = Glide
                 .with(MainActivity.context)
@@ -260,6 +258,7 @@ class MediaServiceConnection(context: Context, componentName: ComponentName) {
                 .with(context)
                 .asBitmap()
                 .load(metadata?.getString(MediaMetadataCompat.METADATA_KEY_ALBUM_ART_URI))
+                .override(480, 342)
                 .centerCrop()
                 .submit()
                 .get()
@@ -269,6 +268,7 @@ class MediaServiceConnection(context: Context, componentName: ComponentName) {
                 .with(context)
                 .asBitmap()
                 .load(R.drawable.userbackground)
+                .override(480, 342)
                 .centerCrop()
                 .submit()
                 .get()
@@ -352,6 +352,14 @@ class MediaServiceConnection(context: Context, componentName: ComponentName) {
             .putString(MediaMetadataCompat.METADATA_KEY_TITLE, "暂无歌曲播放")
             .putLong(MediaMetadataCompat.METADATA_KEY_DURATION, 0)
             .putString(METADATA_KEY_ARTIST, "未知艺术家")
+            .build()
+
+        val BUFFERING_METADATA:MediaMetadataCompat = MediaMetadataCompat.Builder()
+            .putString(MediaMetadataCompat.METADATA_KEY_MEDIA_ID, "")
+            .putString(MediaMetadataCompat.METADATA_KEY_ALBUM_ART_URI, "qqq")
+            .putString(MediaMetadataCompat.METADATA_KEY_TITLE, "歌曲缓冲中")
+            .putLong(MediaMetadataCompat.METADATA_KEY_DURATION, 0)
+            .putString(METADATA_KEY_ARTIST, "")
             .build()
     }
 

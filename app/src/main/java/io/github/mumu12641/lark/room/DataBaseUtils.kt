@@ -46,8 +46,8 @@ class DataBaseUtils {
             return musicDao.querySongListById(songListId)
         }
 
-        suspend fun insertSongList(songList: SongList) {
-            musicDao.insertSongList(songList)
+        suspend fun insertSongList(songList: SongList):Long {
+            return musicDao.insertSongList(songList)
         }
         suspend fun isSongListExist(title:String,type:Int):Boolean{
             return musicDao.isSongListExist(title ,type)

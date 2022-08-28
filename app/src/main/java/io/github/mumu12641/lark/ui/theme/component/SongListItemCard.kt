@@ -39,12 +39,15 @@ fun SongListItemCard(
             Text(
                 text = songList.songListTitle,
                 style = MaterialTheme.typography.bodyLarge,
+                modifier = Modifier.width(130.dp),
+                softWrap = false,
+                overflow = TextOverflow.Ellipsis,
             )
-            Text(
-                modifier = Modifier.padding(start = 3.dp),
-                text = songList.songNumber.toString() + stringResource(id = R.string.songs_text),
-                style = MaterialTheme.typography.bodySmall
-            )
+//            Text(
+//                modifier = Modifier.padding(start = 3.dp),
+//                text = songList.songNumber.toString() + stringResource(id = R.string.songs_text),
+//                style = MaterialTheme.typography.bodySmall
+//            )
         }
     }
 }

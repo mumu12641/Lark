@@ -33,6 +33,7 @@ import io.github.mumu12641.lark.R
 import io.github.mumu12641.lark.entity.*
 import io.github.mumu12641.lark.network.NetworkCreator.networkService
 import io.github.mumu12641.lark.room.DataBaseUtils
+import io.github.mumu12641.lark.service.MediaServiceConnection.Companion.BUFFERING_METADATA
 import kotlinx.coroutines.*
 
 
@@ -236,8 +237,9 @@ class MediaPlaybackService : MediaBrowserServiceCompat() {
                     }
                     else -> {
                         currentPlaySong = song
-                        updatePlayBackState(PlaybackStateCompat.STATE_PLAYING)
+                        Log.d(TAG, "onMediaItemTransition: else updateMetadata")
                         updateMetadata(createMetadataFromSong(song))
+                        updatePlayBackState(PlaybackStateCompat.STATE_PLAYING)
                         createNotification(
                             PlaybackStateCompat.STATE_PLAYING,
                             song
@@ -257,6 +259,7 @@ class MediaPlaybackService : MediaBrowserServiceCompat() {
         }) {
             withContext(Dispatchers.Main) {
                 updatePlayBackState(PlaybackStateCompat.STATE_BUFFERING)
+                updateMetadata(BUFFERING_METADATA)
             }
             val searchSong = networkService.getSongUrl(song1.neteaseId)
             val detail = networkService.getSongDetail(song1.neteaseId.toString())
@@ -273,6 +276,7 @@ class MediaPlaybackService : MediaBrowserServiceCompat() {
                     currentPlaySong = song1
                     updateQueue(currentPlayList,song1)
                     updateMetadata(createMetadataFromSong(song1))
+                    Log.d(TAG, "bufferSong: updateMetadata")
                     updatePlayBackState(PlaybackStateCompat.STATE_PLAYING)
                 }
             } else {
@@ -299,6 +303,7 @@ class MediaPlaybackService : MediaBrowserServiceCompat() {
                     mExoPlayer.play()
                     updatePlayBackState(PlaybackStateCompat.STATE_PLAYING)
                     updateMetadata(createMetadataFromSong(currentPlayList[mExoPlayer.currentMediaItemIndex]))
+                    Log.d(TAG, "onPlay: updateMetadata")
                     createNotification(
                         PlaybackStateCompat.STATE_PLAYING,
                         currentPlayList[mExoPlayer.currentMediaItemIndex]
@@ -408,19 +413,19 @@ class MediaPlaybackService : MediaBrowserServiceCompat() {
                 }
             }
             extras?.apply {
+                currentPlayList = DataBaseUtils.querySongListWithSongsBySongListId(
+                    getLong("songListId")
+                ).songs.toMutableList()
                 currentPlaySong = if (songId != CHANGE_PLAT_LIST_SHUFFLE) {
                     DataBaseUtils.querySongById(getLong("songId"))
                 } else {
                     currentPlayList.shuffle()
                     currentPlayList[0]
                 }
-                currentPlayList = DataBaseUtils.querySongListWithSongsBySongListId(
-                    getLong("songListId")
-                ).songs.toMutableList()
                 currentSongList =
                     DataBaseUtils.querySongListById(getLong("songListId"))
                 withContext(Dispatchers.Main) {
-                    updateQueue(currentPlayList)
+                    updateQueue(currentPlayList,currentPlaySong)
                 }
             }
         }
@@ -536,6 +541,7 @@ class MediaPlaybackService : MediaBrowserServiceCompat() {
                     .with(context)
                     .asBitmap()
                     .load(song.songAlbumFileUri)
+                    .override(480, 342)
                     .submit()
                     .get()
                 notificationBuilder.setLargeIcon(bitmap)

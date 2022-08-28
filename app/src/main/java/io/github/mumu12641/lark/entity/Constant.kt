@@ -52,10 +52,10 @@ const val ACTION_PLAY = "PLAY"
 
 // song buffer
 const val NOT_NEED_BUFFER = 0
+const val NEED_BUFFER = 1
 const val NOT_BUFFERED = 1
 const val BUFFERED = 2
 const val EMPTY_URI = "not buffered yet"
-
 
 const val PREFILL_SONGLIST_TYPE = 1
 const val CREATE_SONGLIST_TYPE = 2
