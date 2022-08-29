@@ -8,7 +8,7 @@ data class NeteaseSongList(
         val coverImgUrl: String,
         val createTime: Long,
         val creator: Creator,
-        val description: Any?,
+        val description: String?,
         val id: Long,
         val name: String,
         val trackCount: Int,

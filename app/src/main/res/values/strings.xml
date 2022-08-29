@@ -70,4 +70,10 @@
     <string name="adaptive_color_des_text">The background of the playback interface and the color of the controls change with the album cover</string>
     <string name="import_text">Import</string>
     <string name="not_match_text">Playlist link not matched in clipboard</string>
+    <string name="import_playlist_text">Import playlist</string>
+    <string name="share_text">Import from NetEase cloud playlist sharing link</string>
+    <string name="build_own_text">Build your own playlist</string>
+    <string name="sry_no_netease_text">Sorry, the NetEase cloud playlist information could not be obtained</string>
+    <string name="sry_no_url_text">Sorry, failed to get url info from clipboard</string>
+    <string name="see_all_text">See all</string>
 </resources>

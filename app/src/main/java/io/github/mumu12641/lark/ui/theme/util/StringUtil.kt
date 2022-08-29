@@ -38,8 +38,7 @@ object StringUtil {
         return null
     }
 
-    fun getNeteaseSongListId(): String? {
-        val s = getPaste()
+    fun getNeteaseSongListId(s:String): String? {
         val r = Regex("[a-zA-z]+://[^\\s]*")
         r.find(s)?.let {
             return it.value.substringAfter("playlist?id=").substringBefore("&userid")

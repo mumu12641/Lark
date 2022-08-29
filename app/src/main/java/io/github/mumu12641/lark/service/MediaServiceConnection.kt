@@ -25,7 +25,6 @@ import io.github.mumu12641.lark.MainActivity
 import io.github.mumu12641.lark.R
 import io.github.mumu12641.lark.entity.*
 import io.github.mumu12641.lark.room.DataBaseUtils
-import io.github.mumu12641.lark.ui.theme.color.scheme.ColorScheme.getLightColorScheme
 import io.github.mumu12641.lark.ui.theme.util.PreferenceUtil
 import io.github.mumu12641.lark.ui.theme.util.PreferenceUtil.SEED_COLOR
 import io.github.mumu12641.lark.widget.LarkWidgetProvider
@@ -219,31 +218,33 @@ class MediaServiceConnection(context: Context, componentName: ComponentName) {
     @RequiresApi(Build.VERSION_CODES.M)
     fun updateWidgetMetadata(metadata: MediaMetadataCompat?) {
         RemoteViews(context.packageName, R.layout.lark_widget).apply {
-            this.setTextViewText(
-                R.id.title,
-                metadata?.getString(MediaMetadataCompat.METADATA_KEY_TITLE)
-            )
-            this.setTextViewText(
-                R.id.artist,
-                metadata?.getString(MediaMetadataCompat.METADATA_KEY_ARTIST)
-            )
-            this.setOnClickPendingIntent(
-                R.id.previous, PendingIntent.getBroadcast(
-                    MainActivity.context,
-                    0,
-                    Intent(ACTION_PREVIOUS),
-                    PendingIntent.FLAG_IMMUTABLE
-                )
-            )
-            this.setOnClickPendingIntent(
-                R.id.next, PendingIntent.getBroadcast(
-                    MainActivity.context,
-                    0,
-                    Intent(ACTION_NEXT),
-                    PendingIntent.FLAG_IMMUTABLE
-                )
-            )
             scope.launch(Dispatchers.IO) {
+                withContext(Dispatchers.Main) {
+                    this@apply.setTextViewText(
+                        R.id.title,
+                        metadata?.getString(MediaMetadataCompat.METADATA_KEY_TITLE)
+                    )
+                    this@apply.setTextViewText(
+                        R.id.artist,
+                        metadata?.getString(MediaMetadataCompat.METADATA_KEY_ARTIST)
+                    )
+                    this@apply.setOnClickPendingIntent(
+                        R.id.previous, PendingIntent.getBroadcast(
+                            MainActivity.context,
+                            0,
+                            Intent(ACTION_PREVIOUS),
+                            PendingIntent.FLAG_IMMUTABLE
+                        )
+                    )
+                    this@apply.setOnClickPendingIntent(
+                        R.id.next, PendingIntent.getBroadcast(
+                            MainActivity.context,
+                            0,
+                            Intent(ACTION_NEXT),
+                            PendingIntent.FLAG_IMMUTABLE
+                        )
+                    )
+                }
                 setImageBitmap(metadata)
                 val manager = AppWidgetManager.getInstance(context)
                 val component = ComponentName(context, LarkWidgetProvider::class.java)

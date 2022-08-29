@@ -9,7 +9,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.compose.ui.res.stringResource
 import io.github.mumu12641.lark.BaseApplication.Companion.context
 import io.github.mumu12641.lark.R
 
@@ -21,6 +20,7 @@ fun TextFieldDialog(
     icon: ImageVector,
     trailingIcon: ImageVector = Icons.Filled.Close,
     confirmString:String = context.getString(R.string.confirm_text),
+    dismissString:String = context.getString(R.string.cancel_text),
     confirmOnClick: () -> Unit,
     dismissOnClick: () -> Unit,
     content: String,
@@ -68,7 +68,7 @@ fun TextFieldDialog(
             TextButton(
                 onClick = dismissOnClick
             ) {
-                Text(stringResource(id = R.string.cancel_text))
+                Text(dismissString)
             }
         }
     )

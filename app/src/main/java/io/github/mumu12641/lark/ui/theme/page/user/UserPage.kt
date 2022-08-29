@@ -1,17 +1,10 @@
 package io.github.mumu12641.lark.ui.theme.page.user
 
 import android.annotation.SuppressLint
-import android.app.Activity
-import android.content.Intent
 import android.net.Uri
-import android.os.Build
-import android.provider.MediaStore
-import android.util.Log
 import android.widget.Toast
-import androidx.activity.ComponentActivity
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.annotation.RequiresApi
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -36,7 +29,6 @@ import androidx.navigation.NavController
 import com.skydoves.landscapist.glide.GlideImage
 import io.github.mumu12641.lark.BaseApplication.Companion.context
 import io.github.mumu12641.lark.BaseApplication.Companion.kv
-import io.github.mumu12641.lark.MainActivity
 import io.github.mumu12641.lark.R
 import io.github.mumu12641.lark.entity.LoadState
 import io.github.mumu12641.lark.ui.theme.component.LarkAlertDialog

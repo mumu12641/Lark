@@ -57,7 +57,6 @@ class FunctionViewModel @Inject constructor() : ViewModel() {
         viewModelScope.launch(Dispatchers.IO) {
             _loadState.value = Load.LOADING
             Log.d(TAG, "reFreshLocalMusicList: $loadLocal")
-            val allRef: List<PlaylistSongCrossRef> = DataBaseUtils.queryAllRef()
             val allMediaFileUri = DataBaseUtils.queryAllMediaFileUri()
             val cursor: Cursor? = context.contentResolver.query(
                 MediaStore.Audio.Media.EXTERNAL_CONTENT_URI,
@@ -108,7 +107,7 @@ class FunctionViewModel @Inject constructor() : ViewModel() {
                     ).songs.size
                 )
             )
-            refreshArtist()
+//            refreshArtist()
             delay(2000)
             _loadState.value = Load.SUCCESS
         }

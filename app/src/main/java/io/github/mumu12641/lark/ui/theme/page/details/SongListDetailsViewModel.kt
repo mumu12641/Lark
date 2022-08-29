@@ -1,6 +1,5 @@
 package io.github.mumu12641.lark.ui.theme.page.details
 
-import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -27,7 +26,6 @@ class SongListDetailsViewModel @Inject constructor() : ViewModel() {
 
     fun refreshId(id: Long) {
         currentSongListId = id
-        Log.d(TAG, "refreshId: $currentSongListId")
         songList = DataBaseUtils.querySongListFlowById(id)
         songs = DataBaseUtils.querySongListWithSongsBySongListIdFlow(id).map {
             it.songs
@@ -49,6 +47,5 @@ class SongListDetailsViewModel @Inject constructor() : ViewModel() {
             }
         }
     }
-    private  val TAG = "SongListDetailsViewMode"
 
 }

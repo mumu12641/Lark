@@ -70,4 +70,10 @@
     <string name="adaptive_color_des_text">播放界面的背景以及控件颜色随专辑封面变化</string>
     <string name="import_text">导入</string>
     <string name="not_match_text">未在剪切板中匹配到歌单链接</string>
+    <string name="import_playlist_text">导入歌单</string>
+    <string name="share_text">网易云歌单分享链接导入</string>
+    <string name="build_own_text">自建歌单</string>
+    <string name="sry_no_netease_text">抱歉，未能获取到网易云歌单信息</string>
+    <string name="sry_no_url_text">抱歉，未能从剪切板获取网址信息</string>
+    <string name="see_all_text">更多</string>
 </resources>

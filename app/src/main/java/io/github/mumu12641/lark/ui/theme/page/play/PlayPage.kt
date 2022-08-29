@@ -15,6 +15,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -23,8 +24,12 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import io.github.mumu12641.lark.*
+import io.github.mumu12641.lark.BaseApplication.Companion.applicationScope
 import io.github.mumu12641.lark.R
+import io.github.mumu12641.lark.entity.ARTIST_SONGLIST_TYPE
 import io.github.mumu12641.lark.entity.INIT_SONG_LIST
+import io.github.mumu12641.lark.entity.Route
+import io.github.mumu12641.lark.room.DataBaseUtils
 import io.github.mumu12641.lark.service.MediaServiceConnection.Companion.EMPTY_PLAYBACK_STATE
 import io.github.mumu12641.lark.service.MediaServiceConnection.Companion.NOTHING_PLAYING
 import io.github.mumu12641.lark.ui.theme.PlayPageTheme
@@ -32,6 +37,9 @@ import io.github.mumu12641.lark.ui.theme.component.AsyncImage
 import io.github.mumu12641.lark.ui.theme.component.WavySeekbar
 import io.github.mumu12641.lark.ui.theme.page.details.ShowSongs
 import io.github.mumu12641.lark.ui.theme.page.home.MainViewModel
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
@@ -93,6 +101,7 @@ fun PlayPage(
                             .padding(paddingValues)
                             .fillMaxSize()
                             .background(MaterialTheme.colorScheme.background),
+                        navController,
                         currentMetadata.value,
                         currentPlayState.value,
                         onClickNext = { mainViewModel.onSkipToNext() },
@@ -109,6 +118,7 @@ fun PlayPage(
 @Composable
 fun PlayPageContent(
     modifier: Modifier,
+    navController: NavController,
     currentMetadata: MediaMetadataCompat,
     currentPlayState: PlaybackStateCompat,
     onClickPrevious: () -> Unit,
@@ -166,7 +176,20 @@ fun PlayPageContent(
                     softWrap = false,
                     overflow = TextOverflow.Ellipsis,
                     style = MaterialTheme.typography.titleSmall,
-                    modifier = Modifier.padding(top = 15.dp),
+                    modifier = Modifier
+                        .padding(top = 15.dp)
+                        .clickable {
+                            applicationScope.launch(Dispatchers.IO) {
+                                val songListId = DataBaseUtils.querySongListId(
+                                    currentMetadata.getString(MediaMetadataCompat.METADATA_KEY_ARTIST),
+                                    ARTIST_SONGLIST_TYPE
+                                )
+                                withContext(Dispatchers.Main) {
+                                    navController.navigate(Route.ROUTE_ARTIST_DETAIL_PAGE + songListId)
+                                }
+                            }
+
+                        },
                     color = MaterialTheme.colorScheme.onBackground
                 )
             }

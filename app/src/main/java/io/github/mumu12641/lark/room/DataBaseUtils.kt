@@ -1,5 +1,7 @@
 package io.github.mumu12641.lark.room
 
+import io.github.mumu12641.lark.BaseApplication
+import io.github.mumu12641.lark.R
 import io.github.mumu12641.lark.entity.*
 import kotlinx.coroutines.flow.Flow
 
@@ -21,16 +23,37 @@ class DataBaseUtils {
             return musicDao.querySongIdByMediaUri(mediaFileUri)
         }
 
-        suspend fun querySongIdByNeteaseId(neteaseId:Long):Long{
+        suspend fun querySongIdByNeteaseId(neteaseId: Long): Long {
             return musicDao.querySongIdByNeteaseId(neteaseId)
         }
 
-        suspend fun isNeteaseIdExist(neteaseId: Long) : Boolean{
+        suspend fun isNeteaseIdExist(neteaseId: Long): Boolean {
             return musicDao.isNeteaseIdExist(neteaseId)
         }
 
         suspend fun insertSong(song: Song): Long {
-            return musicDao.insertSong(song)
+            val id = musicDao.insertSong(song)
+            if (!isSongListExist(song.songSinger, ARTIST_SONGLIST_TYPE)) {
+                insertSongList(
+                    SongList(
+                        0L, song.songSinger, "xxx", 0, BaseApplication.context.getString(
+                            R.string.no_description_text
+                        ), "111", ARTIST_SONGLIST_TYPE
+                    )
+                )
+            }
+            val songListId = querySongListId(
+                song.songSinger,
+                ARTIST_SONGLIST_TYPE
+            )
+            if (!isRefExist(songListId, id)) {
+                insertRef(
+                    PlaylistSongCrossRef(
+                        songListId, id
+                    )
+                )
+            }
+            return id
         }
 
 
@@ -46,16 +69,19 @@ class DataBaseUtils {
             return musicDao.querySongListById(songListId)
         }
 
-        suspend fun insertSongList(songList: SongList):Long {
+        suspend fun insertSongList(songList: SongList): Long {
             return musicDao.insertSongList(songList)
         }
-        suspend fun isSongListExist(title:String,type:Int):Boolean{
-            return musicDao.isSongListExist(title ,type)
+
+        suspend fun isSongListExist(title: String, type: Int): Boolean {
+            return musicDao.isSongListExist(title, type)
         }
-        suspend fun querySongListId(title:String,type:Int):Long{
-            return musicDao.querySongListId(title,type)
+
+        suspend fun querySongListId(title: String, type: Int): Long {
+            return musicDao.querySongListId(title, type)
         }
-        suspend fun querySongListsByType(type: Int):List<SongList>{
+
+        suspend fun querySongListsByType(type: Int): List<SongList> {
             return musicDao.querySongListsByType(type)
         }
 
@@ -102,9 +128,14 @@ class DataBaseUtils {
             musicDao.updateSongList(songList)
         }
 
-        suspend fun updateSong(song: Song){
+        suspend fun updateSong(song: Song) {
             musicDao.updateSong(song)
         }
+
+//        suspend fun insertSongToArtist(song: Song) {
+//
+//
+//        }
 
     }
 

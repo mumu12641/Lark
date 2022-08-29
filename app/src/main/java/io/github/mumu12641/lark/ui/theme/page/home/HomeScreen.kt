@@ -5,11 +5,8 @@ import android.annotation.SuppressLint
 import android.os.Build
 import android.support.v4.media.MediaMetadataCompat
 import android.support.v4.media.session.PlaybackStateCompat
-import android.util.Log
 import android.widget.Toast
 import androidx.annotation.RequiresApi
-import androidx.compose.animation.AnimatedContent
-import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyRow
@@ -51,7 +48,6 @@ import io.github.mumu12641.lark.room.DataBaseUtils
 import io.github.mumu12641.lark.service.MediaServiceConnection.Companion.EMPTY_PLAYBACK_STATE
 import io.github.mumu12641.lark.service.MediaServiceConnection.Companion.NOTHING_PLAYING
 import io.github.mumu12641.lark.ui.theme.component.*
-import io.github.mumu12641.lark.ui.theme.page.function.LoadAnimation
 import io.github.mumu12641.lark.ui.theme.util.StringUtil
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
@@ -85,17 +81,6 @@ fun HomeScreen(
     ) {
         Scaffold(
             topBar = {
-//                LarkTopBar(
-//                    title = stringResource(id = R.string.app_name),
-//                    Icons.Filled.Search,
-//                    actions = {
-//                        IconButton(onClick = { navController.navigate(Route.ROUTE_SETTING) }) {
-//                            Icon(Icons.Filled.Settings, contentDescription = "Setting")
-//                        }
-//                    }
-//                ) {
-//                    navController.navigate(Route.ROUTE_SEARCH)
-//                }
                 LarkSmallTopBar(
                     title = stringResource(id = R.string.app_name),
                     navIcon = Icons.Filled.Search,
@@ -231,7 +216,6 @@ fun IconDescription(modifier: Modifier = Modifier, icon: ImageVector, descriptio
 }
 
 
-@OptIn(ExperimentalAnimationApi::class)
 @Composable
 fun HomeContent(
     modifier: Modifier,
@@ -260,8 +244,8 @@ fun HomeContent(
         ) { navController.navigate(Route.ROUTE_SONG_LIST_DETAILS + it.toString()) }
         ArtistRow(navController, artistSongList)
     }
-    if (loadState == Load.LOADING){
-        Dialog(onDismissRequest = {  }) {
+    if (loadState == Load.LOADING) {
+        Dialog(onDismissRequest = {}) {
             CircularProgressIndicator()
         }
     }
@@ -382,16 +366,30 @@ private fun Banner(
     }
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun ArtistRow(navController: NavController, list: List<SongList>) {
     Column(
         modifier = Modifier.fillMaxWidth()
     ) {
-        Text(
-            text = stringResource(id = R.string.singer_text),
-            style = MaterialTheme.typography.titleLarge
-        )
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.Center,
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Text(
+                text = stringResource(id = R.string.singer_text),
+                style = MaterialTheme.typography.titleLarge
+            )
+            Spacer(modifier = Modifier.weight(1f))
+            Text(
+                text = stringResource(id = R.string.see_all_text),
+                style = MaterialTheme.typography.titleSmall,
+                color = MaterialTheme.colorScheme.secondary,
+                modifier = Modifier.clickable {
+                    navController.navigate(Route.ROUTE_ARTIST_PAGE)
+                }
+            )
+        }
         LazyRow(
             contentPadding = PaddingValues(5.dp)
         ) {
@@ -402,36 +400,10 @@ private fun ArtistRow(navController: NavController, list: List<SongList>) {
                     navController.navigate(Route.ROUTE_ARTIST_DETAIL_PAGE + it.songListId)
                 }
             }
-//            if (list.size == 5 ) {
-            item {
-                Column(
-                    verticalArrangement = Arrangement.Center,
-                    horizontalAlignment = Alignment.CenterHorizontally
-                ) {
-                    Card(
-                        shape = CircleShape,
-                        modifier = Modifier
-                            .size(150.dp)
-                            .padding(5.dp)
-
-                    ) {
-                        Icon(
-                            Icons.Filled.MoreVert,
-                            contentDescription = "more",
-                            modifier = Modifier
-                                .size(150.dp)
-                                .clickable(onClick = {
-                                    navController.navigate(Route.ROUTE_ARTIST_PAGE)
-                                })
-                                .padding(25.dp),
-                        )
-                    }
-//                    }
-                }
-            }
         }
     }
 }
+
 
 
 @Composable
@@ -443,56 +415,82 @@ private fun SongListRow(
 ) {
 
     var showDialog by remember { mutableStateOf(false) }
+    var showNeteaseDialog by remember { mutableStateOf(false) }
     var text by remember { mutableStateOf("") }
     var confirmText by remember { mutableStateOf(value = context.getString(R.string.confirm_text)) }
-    var import by remember { mutableStateOf(false) }
 
     if (showDialog) {
-        TextFieldDialog(
+        AddSongListDialog(
+            text = text,
+            confirmText = confirmText,
+            dismissText = stringResource(id = R.string.import_playlist_text),
             onDismissRequest = { showDialog = false },
-            title = stringResource(id = R.string.add_songlist_text),
-            icon = Icons.Filled.Add,
-            trailingIcon = Icons.Filled.ContentPaste,
-            confirmOnClick = {
-                if (!import) {
-                    addSongList(
-                        SongList(
-                            0L,
-                            text,
-                            "2022/7/22",
-                            0,
-                            context.getString(R.string.no_description_text),
-                            "null",
-                            CREATE_SONGLIST_TYPE
-                        )
-                    )
-                } else {
-                    StringUtil.getNeteaseSongListId()?.toLong()?.let { getNeteaseSongList(it) }
-                    import = false
-                    confirmText = context.getString(R.string.confirm_text)
-                }
+            dismissOnClick = {
                 showDialog = false
+                showNeteaseDialog = true
                 text = ""
+                confirmText = context.getString(R.string.import_text)
             },
-            confirmString = confirmText,
-            dismissOnClick = { showDialog = false },
-            content = text,
+            confirmOnClick = {
+                addSongList(
+                    SongList(
+                        0L,
+                        text,
+                        "2022/7/22",
+                        0,
+                        context.getString(R.string.no_description_text),
+                        "null",
+                        CREATE_SONGLIST_TYPE
+                    )
+                )
+            },
+            trailingIconOnClick = { text = "" },
             onValueChange = {
                 text = it
+            }
+        )
+    }
+    if (showNeteaseDialog) {
+        AddSongListDialog(
+            icon = Icons.Filled.Link,
+            title = stringResource(id = R.string.share_text),
+            text = text,
+            confirmText = confirmText,
+            dismissText = stringResource(id = R.string.build_own_text),
+            onDismissRequest = {
+                showNeteaseDialog = false
+                confirmText = context.getString(R.string.confirm_text)
+            },
+            dismissOnClick = {
+                showDialog = true
+                showNeteaseDialog = false
+                confirmText = context.getString(R.string.confirm_text)
+            },
+            confirmOnClick = {
+                if (StringUtil.getNeteaseSongListId(text) != text) {
+                    confirmText = context.getString(R.string.confirm_text)
+                    getNeteaseSongList(StringUtil.getNeteaseSongListId(text)!!.toLong())
+                } else {
+                    Toast.makeText(
+                        context,
+                        context.getString(R.string.sry_no_netease_text),
+                        Toast.LENGTH_LONG
+                    ).show()
+                }
             },
             trailingIconOnClick = {
                 if (StringUtil.getHttpUrl() != null) {
                     text = StringUtil.getHttpUrl()!!
-                    confirmText = context.getString(R.string.import_text)
-                    import = true
                 } else {
                     Toast.makeText(
                         context,
-                        context.getString(R.string.not_match_text),
+                        context.getString(R.string.sry_no_url_text),
                         Toast.LENGTH_LONG
                     ).show()
                 }
-            }
+            },
+            onValueChange = { text = it },
+            trailingIcon = Icons.Filled.ContentPaste
         )
     }
 
@@ -527,6 +525,37 @@ private fun SongListRow(
         }
 
     }
+}
+
+@Composable
+private fun AddSongListDialog(
+    title: String = context.getString(R.string.add_songlist_text),
+    icon: ImageVector = Icons.Filled.Add,
+    text: String,
+    confirmText: String,
+    dismissText: String,
+    onDismissRequest: () -> Unit,
+    trailingIcon: ImageVector = Icons.Filled.Close,
+    dismissOnClick: () -> Unit,
+    confirmOnClick: () -> Unit,
+    trailingIconOnClick: () -> Unit,
+    onValueChange: (String) -> Unit
+) {
+    TextFieldDialog(
+        onDismissRequest = { onDismissRequest() },
+        title = title,
+        icon = icon,
+        trailingIcon = trailingIcon,
+        dismissString = dismissText,
+        confirmOnClick = { confirmOnClick() },
+        confirmString = confirmText,
+        dismissOnClick = { dismissOnClick() },
+        content = text,
+        onValueChange = { onValueChange(it) },
+        trailingIconOnClick = {
+            trailingIconOnClick()
+        }
+    )
 }
 
 

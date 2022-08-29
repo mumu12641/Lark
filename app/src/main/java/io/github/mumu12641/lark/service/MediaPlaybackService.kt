@@ -217,7 +217,6 @@ class MediaPlaybackService : MediaBrowserServiceCompat() {
             @RequiresApi(Build.VERSION_CODES.M)
             override fun onPlayerError(error: PlaybackException) {
                 super.onPlayerError(error)
-                Toast.makeText(context,"重新加载中",Toast.LENGTH_LONG).show()
                 val index = mExoPlayer.currentMediaItemIndex
                 if (currentPlayList[index].isBuffered >= NOT_BUFFERED) {
                     bufferSong(currentPlayList[index],index)
@@ -541,7 +540,6 @@ class MediaPlaybackService : MediaBrowserServiceCompat() {
                     .with(context)
                     .asBitmap()
                     .load(song.songAlbumFileUri)
-                    .override(480, 342)
                     .submit()
                     .get()
                 notificationBuilder.setLargeIcon(bitmap)

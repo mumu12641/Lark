@@ -19,7 +19,6 @@ import io.github.mumu12641.lark.service.MediaServiceConnection
 import io.github.mumu12641.lark.service.MediaServiceConnection.Companion.EMPTY_PLAYBACK_STATE
 import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.map
@@ -154,21 +153,18 @@ class MainViewModel @Inject constructor() : ViewModel() {
             _loadState.value = Load.LOADING
             val list = networkService.getNeteaseSongList(id)
             val tracks = networkService.getNeteaseSongListTracks(id)
-            Log.d(TAG, "getNeteaseSongList: $list")
-            Log.d(TAG, "getNeteaseSongList: $tracks")
             val songlist = SongList(
                 0L,
                 list.playlist.name,
                 list.playlist.createTime.toString(),
                 list.playlist.trackCount,
-                list.playlist.description.toString(),
+                description = list.playlist.description?: context.getString(R.string.no_description_text),
                 list.playlist.coverImgUrl,
                 CREATE_SONGLIST_TYPE
             )
             val listId: Long = DataBaseUtils.insertSongList(
                 songlist
             )
-            Log.d(TAG, "getNeteaseSongList: $listId")
             for (i in tracks.songs) {
                 val song = Song(
                     0L,
@@ -180,7 +176,6 @@ class MainViewModel @Inject constructor() : ViewModel() {
                     neteaseId = i.id.toLong(),
                     isBuffered = NOT_BUFFERED
                 )
-                Log.d(TAG, "getNeteaseSongList: $song")
                 if (!DataBaseUtils.isNeteaseIdExist(i.id.toLong())) {
                     DataBaseUtils.insertSong(song)
                 }
