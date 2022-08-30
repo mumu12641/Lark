@@ -1,9 +1,14 @@
 package io.github.mumu12641.lark.room
 
 import io.github.mumu12641.lark.BaseApplication
+import io.github.mumu12641.lark.BaseApplication.Companion.applicationScope
 import io.github.mumu12641.lark.R
 import io.github.mumu12641.lark.entity.*
+import io.github.mumu12641.lark.network.NetworkCreator
+import kotlinx.coroutines.CoroutineExceptionHandler
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.launch
 
 class DataBaseUtils {
     companion object {
@@ -70,7 +75,22 @@ class DataBaseUtils {
         }
 
         suspend fun insertSongList(songList: SongList): Long {
-            return musicDao.insertSongList(songList)
+            val id = musicDao.insertSongList(songList)
+            if (songList.type == ARTIST_SONGLIST_TYPE) {
+                applicationScope.launch(Dispatchers.IO + CoroutineExceptionHandler { _, _ -> }) {
+                    NetworkCreator.networkService.getSearchArtistResponse(songList.songListTitle).result.artists[0].artistId?.let {
+                        val artistDetails =
+                            NetworkCreator.networkService.getArtistDetail(it).data.artist
+                        updateSongList(
+                            querySongListById(id).copy(
+                                imageFileUri = artistDetails.cover,
+                                description = artistDetails.briefDesc
+                            )
+                        )
+                    }
+                }
+            }
+            return id
         }
 
         suspend fun isSongListExist(title: String, type: Int): Boolean {

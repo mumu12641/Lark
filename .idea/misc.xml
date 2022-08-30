@@ -28,6 +28,8 @@
         <entry key="..\:/code/Lark/app/src/main/res/drawable/new_icon_foreground.xml" value="0.165" />
         <entry key="..\:/code/Lark/app/src/main/res/drawable/shadow_down_strong.xml" value="0.168" />
         <entry key="..\:/code/Lark/app/src/main/res/drawable/shadow_up_strong.xml" value="0.168" />
+        <entry key="..\:/code/Lark/app/src/main/res/drawable/theme_lark.xml" value="0.168" />
+        <entry key="..\:/code/Lark/app/src/main/res/drawable/themed_icon.xml" value="0.168" />
         <entry key="..\:/code/Lark/app/src/main/res/drawable/widget_background.xml" value="0.173" />
         <entry key="..\:/code/Lark/app/src/main/res/drawable/widget_selector_dark.xml" value="0.168" />
         <entry key="..\:/code/Lark/app/src/main/res/layout/lark_widget.xml" value="0.234375" />

@@ -405,7 +405,6 @@ private fun ArtistRow(navController: NavController, list: List<SongList>) {
 }
 
 
-
 @Composable
 private fun SongListRow(
     list: List<SongList>,

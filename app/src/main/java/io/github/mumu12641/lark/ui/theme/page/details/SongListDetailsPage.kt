@@ -285,7 +285,9 @@ fun ShowSongs(
             }
         } else {
             LazyColumn {
-                items(songs) { item ->
+                items(songs,key = {
+                    it.songId
+                }) { item ->
                     SongItemRow(
                         item, null, onClick = {
                             Log.d("TAG", "ShowSongs: $item")

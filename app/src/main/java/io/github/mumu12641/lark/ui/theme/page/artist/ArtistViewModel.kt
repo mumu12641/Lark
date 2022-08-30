@@ -21,7 +21,7 @@ import javax.inject.Inject
 @HiltViewModel
 class ArtistViewModel @Inject constructor() : ViewModel() {
 
-    private  val TAG = "ArtistViewModel"
+    private val TAG = "ArtistViewModel"
 
     val artistSongList = DataBaseUtils.queryAllSongList().map {
         it.filter { songList ->
@@ -30,24 +30,21 @@ class ArtistViewModel @Inject constructor() : ViewModel() {
     }
 
     var currentSongListId = 1L
-    var songList: Flow<SongList> = DataBaseUtils.querySongListFlowById(currentSongListId)
-    var songs: Flow<List<Song>> =
-        DataBaseUtils.querySongListWithSongsBySongListIdFlow(currentSongListId).map {
-            it.songs
-        }
+    val songList get() = DataBaseUtils.querySongListFlowById(currentSongListId)
+    val songs
+        get() =
+            DataBaseUtils.querySongListWithSongsBySongListIdFlow(currentSongListId).map {
+                it.songs
+            }
 
     fun refreshId(id: Long) {
         currentSongListId = id
-        songList = DataBaseUtils.querySongListFlowById(id)
-        songs = DataBaseUtils.querySongListWithSongsBySongListIdFlow(id).map {
-            it.songs
-        }
     }
 
     private val _loadState = MutableStateFlow<LoadState>(LoadState.None())
     val loadState = _loadState
 
-    fun setStateToNone(){
+    fun setStateToNone() {
         _loadState.value = LoadState.None()
     }
 
@@ -57,24 +54,20 @@ class ArtistViewModel @Inject constructor() : ViewModel() {
             Log.d(TAG, "updateArtistDetail: " + e.message)
         }) {
             _loadState.value = LoadState.Loading()
-            Log.d(TAG, "updateArtistDetail: loading")
             val artistId =
                 NetworkCreator.networkService.getSearchArtistResponse(keywords).result.artists[0].artistId
             artistId?.let {
                 val artistDetails =
-                    NetworkCreator.networkService.getArtistDetail(artistId).data.artist
-                Log.d(TAG, "updateArtistDetail: success")
-                _loadState.value = LoadState.Success()
-                songList.collect {
-                    DataBaseUtils.updateSongList(
-                        it.copy(
-                            imageFileUri = artistDetails.cover,
-                            description = artistDetails.briefDesc
-                        )
+                    NetworkCreator.networkService.getArtistDetail(it).data.artist
+                DataBaseUtils.updateSongList(
+                    DataBaseUtils.querySongListById(currentSongListId).copy(
+                        imageFileUri = artistDetails.cover,
+                        description = artistDetails.briefDesc
                     )
-                }
+                )
+                _loadState.value = LoadState.Success()
             }
-            if (artistId == null){
+            if (artistId == null) {
                 _loadState.value = LoadState.Fail("artistId == null")
             }
         }

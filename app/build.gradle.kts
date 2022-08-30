@@ -21,8 +21,8 @@ android {
         applicationId = "io.github.mumu12641.lark"
         minSdk = 21
         targetSdk = 33
-        versionCode = 2
-        versionName = "0.2.0-alpha"
+        versionCode = 3
+        versionName = "0.3.0-alpha"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables {

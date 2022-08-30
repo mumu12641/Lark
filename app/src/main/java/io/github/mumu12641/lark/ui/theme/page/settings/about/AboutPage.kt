@@ -131,7 +131,9 @@ fun AboutContent(modifier: Modifier) {
             },
             text = {
                 LazyColumn {
-                    items(uris) {
+                    items(uris,key = {
+                        it.first
+                    }) {
                         Text(text = it.first, modifier = Modifier.fillMaxWidth().clip(
                             RoundedCornerShape(5.dp)).padding(5.dp).clickable { uriHandler.openUri(it.second) })
                     }

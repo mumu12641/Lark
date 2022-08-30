@@ -109,10 +109,10 @@ fun ArtistDetailContent(
             .fillMaxSize()
             .background(MaterialTheme.colorScheme.background),
         targetState = loadState,
-        transitionSpec = {
-            slideInVertically { height -> height } + fadeIn() with
-                    slideOutVertically { height -> -height } + fadeOut()
-        }
+//        transitionSpec = {
+//            slideInVertically { height -> height } + fadeIn() with
+//                    slideOutVertically { height -> -height } + fadeOut()
+//        }
     ) { targetState ->
         when (targetState) {
             is LoadState.Loading -> {

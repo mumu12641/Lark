@@ -41,6 +41,7 @@ class MediaPlaybackService : MediaBrowserServiceCompat() {
 
     companion object {
         const val MEDIA_ROOT_ID = "Lark"
+        const val NOTIFICATION_ID = 125
     }
 
     private val TAG = "MediaPlaybackService"
@@ -60,7 +61,7 @@ class MediaPlaybackService : MediaBrowserServiceCompat() {
     private var currentSongList: SongList? = null
     private var currentPlaySong: Song? = null
 
-    private val scope = CoroutineScope(Job() + Dispatchers.IO)
+    private val scope = CoroutineScope(Job() + Dispatchers.IO + CoroutineExceptionHandler { _, _ ->  })
 
     override fun onCreate() {
         super.onCreate()
@@ -206,9 +207,7 @@ class MediaPlaybackService : MediaBrowserServiceCompat() {
         mExoPlayer.prepare()
         song?.let {
             mExoPlayer.seekTo(currentPlayList.indexOf(it), 0L)
-            return@updateQueue
         }
-        mExoPlayer.seekTo(currentPlayList.indexOf(currentPlaySong), 0L)
     }
 
 
@@ -232,7 +231,12 @@ class MediaPlaybackService : MediaBrowserServiceCompat() {
 
                 when (song.isBuffered) {
                     NOT_BUFFERED -> {
+                        Log.d(TAG, "onMediaItemTransition: else buffer")
                         bufferSong(song, index)
+                        createNotification(
+                            PlaybackStateCompat.STATE_BUFFERING,
+                            song
+                        )
                     }
                     else -> {
                         currentPlaySong = song
@@ -249,6 +253,8 @@ class MediaPlaybackService : MediaBrowserServiceCompat() {
             }
         }
 
+
+
     @RequiresApi(Build.VERSION_CODES.M)
     private fun bufferSong(song: Song, index: Int) {
         var song1 = song
@@ -258,7 +264,7 @@ class MediaPlaybackService : MediaBrowserServiceCompat() {
         }) {
             withContext(Dispatchers.Main) {
                 updatePlayBackState(PlaybackStateCompat.STATE_BUFFERING)
-                updateMetadata(BUFFERING_METADATA)
+                updateMetadata(createMetadataFromSong(song))
             }
             val searchSong = networkService.getSongUrl(song1.neteaseId)
             val detail = networkService.getSongDetail(song1.neteaseId.toString())
@@ -303,6 +309,7 @@ class MediaPlaybackService : MediaBrowserServiceCompat() {
                     updatePlayBackState(PlaybackStateCompat.STATE_PLAYING)
                     updateMetadata(createMetadataFromSong(currentPlayList[mExoPlayer.currentMediaItemIndex]))
                     Log.d(TAG, "onPlay: updateMetadata")
+                    Log.d(TAG, "onPlay: " + currentPlayList[mExoPlayer.currentMediaItemIndex])
                     createNotification(
                         PlaybackStateCompat.STATE_PLAYING,
                         currentPlayList[mExoPlayer.currentMediaItemIndex]
@@ -471,7 +478,6 @@ class MediaPlaybackService : MediaBrowserServiceCompat() {
             setVibrate(LongArray(1) { 0 })
             setSilent(true)
 
-
             addAction(
                 NotificationCompat.Action(
                     R.drawable.ic_baseline_skip_previous_24,
@@ -534,15 +540,19 @@ class MediaPlaybackService : MediaBrowserServiceCompat() {
                     .setShowActionsInCompactView(0, 1, 2)
             )
         }
-        Thread {
+        scope.launch {
             try {
                 val bitmap: Bitmap = Glide
                     .with(context)
                     .asBitmap()
                     .load(song.songAlbumFileUri)
+                    .centerCrop()
                     .submit()
                     .get()
                 notificationBuilder.setLargeIcon(bitmap)
+                notificationBuilder.setProgress(0, 0, false)
+                notification = notificationBuilder.build()
+                startForeground(NOTIFICATION_ID, notification)
             } catch (e: Exception) {
                 val bitmap: Bitmap = Glide
                     .with(context)
@@ -551,10 +561,10 @@ class MediaPlaybackService : MediaBrowserServiceCompat() {
                     .submit()
                     .get()
                 notificationBuilder.setLargeIcon(bitmap)
+                notificationBuilder.setProgress(0, 0, false)
+                notification = notificationBuilder.build()
+                startForeground(NOTIFICATION_ID, notification)
             }
-            notificationBuilder.setProgress(0, 0, false)
-            notification = notificationBuilder.build()
-            startForeground(1, notification)
-        }.start()
+        }
     }
 }

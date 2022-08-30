@@ -105,10 +105,10 @@ fun DisplayPageContent(modifier: Modifier) {
                     .padding(20.dp)
                     .fillMaxWidth(), contentAlignment = Alignment.Center
             ) {
-                Card(
+                ElevatedCard(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .height(280.dp)
+                        .height(300.dp)
                         .clip(RoundedCornerShape(20.dp))
                         .clickable {},
                     shape = MaterialTheme.shapes.small,
@@ -120,9 +120,8 @@ fun DisplayPageContent(modifier: Modifier) {
                         horizontalAlignment = Alignment.CenterHorizontally
                     ) {
                         Image(
-                            painter = painterResource(id = R.drawable.album),
-                            contentDescription = "failure",
-                            modifier = Modifier.size(200.dp)
+                            painter = painterResource(id = R.drawable.sample),
+                            contentDescription = "failure"
                         )
                     }
 
@@ -268,11 +267,10 @@ private fun ColorCard(color: Color) {
     val darkColor = corePalette.a2.tone(60)
     val showColor =
         if (LocalDarkTheme.current == ON || (LocalDarkTheme.current == FOLLOW_SYSTEM && isSystemInDarkTheme())) darkColor else lightColor
-    Card(
+    ElevatedCard(
         modifier = Modifier
-            .padding(end = 10.dp, bottom = 5.dp)
-            .size(72.dp)
-            .clip(RoundedCornerShape(5.dp)),
+            .padding(end = 10.dp)
+            .size(72.dp),
         onClick = {
             PreferenceUtil.changeSeedColor(color.toArgb())
             PreferenceUtil.switchDynamicColor(OFF)
@@ -309,11 +307,4 @@ private fun ColorCard(color: Color) {
             }
         }
     }
-}
-
-
-@Preview(showBackground = true)
-@Composable
-fun PreviewDisplayContent() {
-    DisplayPageContent(modifier = Modifier)
 }

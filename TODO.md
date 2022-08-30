@@ -60,11 +60,19 @@ code 重构
 
 导入网易云歌单 
 
-导入歌单的对话框
+导入歌单的对话框			done
 
 导入歌单之后的艺术家歌单要更改一下逻辑
 
 控件的更新
+
+通知代码重构
+
+
+
+断网时候retrofit处理
+
+
 
 [UI]: https://dribbble.com/shots/16033507-Streamy-Podcast-App-Concept
 
