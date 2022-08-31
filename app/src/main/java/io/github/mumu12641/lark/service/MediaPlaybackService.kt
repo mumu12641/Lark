@@ -39,7 +39,7 @@ class MediaPlaybackService : MediaBrowserServiceCompat() {
 
     companion object {
         const val MEDIA_ROOT_ID = "Lark"
-        const val NOTIFICATION_ID = 125
+        const val NOTIFICATION_ID = 111
     }
 
     private val TAG = "MediaPlaybackService"
@@ -202,6 +202,7 @@ class MediaPlaybackService : MediaBrowserServiceCompat() {
         )
     }
 
+    @RequiresApi(Build.VERSION_CODES.M)
     private fun updateQueue(songList: List<Song>, song: Song? = null) {
         mExoPlayer.clearMediaItems()
         songList.apply {
@@ -217,6 +218,7 @@ class MediaPlaybackService : MediaBrowserServiceCompat() {
             mExoPlayer.seekTo(currentPlayList.indexOf(it), 0L)
             updateMetadata(createMetadataFromSong(song))
             updatePlayBackState(PlaybackStateCompat.STATE_PLAYING)
+            createNotification(PlaybackStateCompat.STATE_PLAYING, it)
         }
 
     }
@@ -243,10 +245,10 @@ class MediaPlaybackService : MediaBrowserServiceCompat() {
                 when (song.isBuffered) {
                     NOT_BUFFERED -> {
                         bufferSong(song, index)
-                        createNotification(
-                            PlaybackStateCompat.STATE_BUFFERING,
-                            song
-                        )
+//                        createNotification(
+//                            PlaybackStateCompat.STATE_BUFFERING,
+//                            song
+//                        )
                     }
                     else -> {
                         currentPlaySong = song
@@ -399,7 +401,7 @@ class MediaPlaybackService : MediaBrowserServiceCompat() {
         }
 
 
-
+    @RequiresApi(Build.VERSION_CODES.M)
     private fun changePlayList(extras: Bundle?) {
         scope.launch {
             val songId = extras?.getLong("songId")
@@ -463,7 +465,7 @@ class MediaPlaybackService : MediaBrowserServiceCompat() {
             setContentText(description.subtitle)
             setSubText(description.description)
             setContentIntent(clickPendingIntent)
-            setSmallIcon(R.drawable.lark)
+            setSmallIcon(R.drawable.ic_stat_notification_icon)
             setVisibility(NotificationCompat.VISIBILITY_PUBLIC)
             setSound(null)
             setVibrate(LongArray(1) { 0 })
@@ -508,7 +510,6 @@ class MediaPlaybackService : MediaBrowserServiceCompat() {
                             PendingIntent.FLAG_IMMUTABLE
                         )
                     )
-
                 )
             }
             addAction(
@@ -523,6 +524,7 @@ class MediaPlaybackService : MediaBrowserServiceCompat() {
                     )
                 )
             )
+
 
 
             setStyle(

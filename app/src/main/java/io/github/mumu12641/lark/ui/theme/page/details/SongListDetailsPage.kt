@@ -251,7 +251,8 @@ fun ShowSongs(
     top: Int,
     playMedia: ((Long, Long) -> Unit)? = null,
     seekToSong: ((Long) -> Unit)? = null,
-    songList: SongList
+    songList: SongList,
+    key:(Song) -> Long = {it.songId}
 ) {
     val onClick: (Song) -> Unit = if (playMedia != null) { song: Song ->
         playMedia(songList.songListId, song.songId)
@@ -284,12 +285,9 @@ fun ShowSongs(
             }
         } else {
             LazyColumn {
-                items(songs, key = {
-                    it.songId
-                }) { item ->
+                items(songs, key = key) { item ->
                     SongItemRow(
                         item, null, onClick = {
-                            Log.d("TAG", "ShowSongs: $item")
                             onClick(item)
                         }
                     )

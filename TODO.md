@@ -40,7 +40,13 @@ banner中的网络歌曲播放	fixed
 
 playbackService bugs  fixed
 
+导入网易云歌单 			done
 
+导入歌单的对话框			done
+
+控件的更新	done
+
+通知代码重构	done
 
 homescreen ui improment wip
 
@@ -58,17 +64,7 @@ code 重构
 
 搜索！
 
-导入网易云歌单 
-
-导入歌单的对话框			done
-
 导入歌单之后的艺术家歌单要更改一下逻辑
-
-控件的更新
-
-通知代码重构
-
-
 
 断网时候retrofit处理
 

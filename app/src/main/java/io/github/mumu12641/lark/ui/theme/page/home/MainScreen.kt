@@ -167,7 +167,7 @@ fun MainScreen(
             AboutPage(navController = navController)
         }
         AnimationComposable(Route.ROUTE_SEARCH) {
-            SearchPage(navController = navController, searchViewModel)
+            SearchPage(navController = navController, searchViewModel,addBannerSongToList = { mainViewModel.addSongToCurrentList(it) })
         }
     }
 }
