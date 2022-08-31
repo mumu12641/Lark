@@ -118,7 +118,7 @@ fun SongListDetailsContent(
         mutableStateOf(false)
     }
     var textDescription by remember {
-        mutableStateOf("")
+        mutableStateOf(songList?.description)
     }
 
     Column(
@@ -195,12 +195,12 @@ fun SongListDetailsContent(
                 icon = Icons.Filled.Edit,
                 confirmOnClick = {
                     if (textDescription != "") {
-                        updateDescription(textDescription)
+                        textDescription?.let { updateDescription(it) }
                     }
                     showDialog = false
                 },
                 dismissOnClick = { showDialog = false },
-                content = textDescription,
+                content = textDescription!!,
                 onValueChange = { textDescription = it }
             )
         }

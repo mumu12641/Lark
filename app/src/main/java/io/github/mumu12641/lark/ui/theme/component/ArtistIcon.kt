@@ -4,6 +4,7 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.Card
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -19,7 +20,12 @@ import io.github.mumu12641.lark.entity.SongList
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun ArtistIcon(modifier: Modifier = Modifier,padding:Int = 0, artist: SongList, imageClick: () -> Unit) {
+fun ArtistIcon(
+    modifier: Modifier = Modifier,
+    padding: Int = 0,
+    artist: SongList,
+    imageClick: () -> Unit
+) {
     Column(
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally
@@ -37,9 +43,10 @@ fun ArtistIcon(modifier: Modifier = Modifier,padding:Int = 0, artist: SongList, 
 
         }
         Text(
-            modifier = Modifier.padding(bottom = 10.dp),
+            modifier = Modifier.width(60.dp).padding(bottom = 10.dp),
             text = artist.songListTitle, softWrap = false,
-            overflow = TextOverflow.Ellipsis, style = MaterialTheme.typography.bodyLarge
+            overflow = TextOverflow.Ellipsis,
+            style = MaterialTheme.typography.bodyLarge
         )
     }
 

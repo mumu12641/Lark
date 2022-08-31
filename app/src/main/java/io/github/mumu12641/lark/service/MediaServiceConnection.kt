@@ -66,7 +66,6 @@ class MediaServiceConnection(context: Context, componentName: ComponentName) {
 
     private val mediaBrowserConnectionCallback = object : MediaBrowserCompat.ConnectionCallback() {
         override fun onConnected() {
-            Log.d("TAG", "onConnected")
             _isConnected.value = true
             mediaController = MediaControllerCompat(context, mediaBrowser.sessionToken).apply {
                 registerCallback(controllerCallback)
@@ -92,11 +91,11 @@ class MediaServiceConnection(context: Context, componentName: ComponentName) {
         @RequiresApi(Build.VERSION_CODES.M)
         override fun onMetadataChanged(metadata: MediaMetadataCompat?) {
             _playMetadata.value = metadata ?: NOTHING_PLAYING
+            Log.d(TAG, "onMetadataChanged: " + metadata?.getString(MediaMetadataCompat.METADATA_KEY_TITLE))
             updateCurrentAlbumColor(metadata)
             updateWidgetMetadata(metadata)
             applicationScope.launch(Dispatchers.IO + CoroutineExceptionHandler { _, _ ->  }) {
                 val id = metadata?.getString(MediaMetadataCompat.METADATA_KEY_MEDIA_ID)?.toLong()
-                Log.d(TAG, "onMetadataChanged: $id")
                 val song = DataBaseUtils.querySongById(id!!)
                 DataBaseUtils.querySongById(id)
                 song.let {
@@ -123,7 +122,6 @@ class MediaServiceConnection(context: Context, componentName: ComponentName) {
                 _playList.value = queue?.map {
                     DataBaseUtils.querySongById(it.queueId)
                 } ?: emptyList()
-                Log.d(TAG, "onQueueChanged: " + _playList.value.toString())
                 _currentSongList.value = DataBaseUtils.querySongListById(
                     kv.decodeLong("lastPlaySongList")
                 )
@@ -219,7 +217,6 @@ class MediaServiceConnection(context: Context, componentName: ComponentName) {
     @RequiresApi(Build.VERSION_CODES.M)
     fun updateWidgetMetadata(metadata: MediaMetadataCompat?) {
         RemoteViews(context.packageName, R.layout.lark_widget).apply {
-            Log.d(TAG, "updateWidgetMetadata: " + metadata?.getString(MediaMetadataCompat.METADATA_KEY_TITLE))
             scope.launch(Dispatchers.IO) {
                 withContext(Dispatchers.Main) {
                     this@apply.setTextViewText(
