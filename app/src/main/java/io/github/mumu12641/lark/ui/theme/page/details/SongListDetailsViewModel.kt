@@ -3,13 +3,8 @@ package io.github.mumu12641.lark.ui.theme.page.details
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
-import io.github.mumu12641.lark.entity.LoadState
-import io.github.mumu12641.lark.entity.Song
-import io.github.mumu12641.lark.entity.SongList
 import io.github.mumu12641.lark.room.DataBaseUtils
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -19,6 +14,7 @@ class SongListDetailsViewModel @Inject constructor() : ViewModel() {
 
     private var currentSongListId = 1L
     val songList get() = DataBaseUtils.querySongListFlowById(currentSongListId)
+
     val songs get() = DataBaseUtils.querySongListWithSongsBySongListIdFlow(currentSongListId).map {
                 it.songs
             }

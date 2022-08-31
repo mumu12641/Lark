@@ -43,11 +43,6 @@ fun SongListItemCard(
                 softWrap = false,
                 overflow = TextOverflow.Ellipsis,
             )
-//            Text(
-//                modifier = Modifier.padding(start = 3.dp),
-//                text = songList.songNumber.toString() + stringResource(id = R.string.songs_text),
-//                style = MaterialTheme.typography.bodySmall
-//            )
         }
     }
 }
@@ -60,7 +55,7 @@ fun SongListAlbumCard(
 ) {
     Box(
         modifier = Modifier
-            .padding(top = 20.dp)
+            .padding(top = 10.dp)
             .height(150.dp)
             .clip(RoundedCornerShape(20.dp))
             .background(MaterialTheme.colorScheme.secondaryContainer)

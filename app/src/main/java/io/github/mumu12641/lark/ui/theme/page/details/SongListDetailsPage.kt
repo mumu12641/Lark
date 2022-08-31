@@ -5,11 +5,15 @@ import android.net.Uri
 import android.util.Log
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.animation.core.CubicBezierEasing
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
@@ -46,10 +50,7 @@ fun SongListDetailsPage(
     viewModel: SongListDetailsViewModel,
     playMedia: (Long, Long) -> Unit
 ) {
-    val state by viewModel.songList.collectAsState(
-        initial = INIT_SONG_LIST
-    )
-
+    val state by viewModel.songList.collectAsState(initial = INIT_SONG_LIST)
     val songs by viewModel.songs.collectAsState(initial = emptyList())
     val bottomSheetScaffoldState = rememberBottomSheetScaffoldState(
         bottomSheetState = BottomSheetState(BottomSheetValue.Collapsed)
@@ -111,18 +112,16 @@ fun SongListDetailsContent(
         ActivityResultContracts.GetContent()
     ) { uri: Uri? ->
         uri?.let {
-            changeSongListImage(uri.toString())
+            changeSongListImage(it.toString())
         }
     }
-    var showDialog by remember {
-        mutableStateOf(false)
-    }
-    var textDescription by remember {
-        mutableStateOf(songList?.description)
-    }
+    var showDialog by remember { mutableStateOf(false) }
+    var textDescription by remember { mutableStateOf(value = songList?.description) }
+
+    val scrollState = rememberScrollState()
 
     Column(
-        modifier = modifier.padding(top = 10.dp)
+        modifier = modifier
     ) {
         Row(
             modifier = Modifier.fillMaxWidth(),
@@ -131,7 +130,7 @@ fun SongListDetailsContent(
             Box(
                 modifier = Modifier
                     .size(350.dp)
-                    .padding(10.dp)
+                    .padding(5.dp)
                     .clip(RectangleShape)
                     .clip(RoundedCornerShape(30.dp))
                     .background(MaterialTheme.colorScheme.secondaryContainer)
@@ -168,20 +167,20 @@ fun SongListDetailsContent(
         }
         Text(
             text = songList!!.songListTitle,
-            style = MaterialTheme.typography.displaySmall,
+            style = MaterialTheme.typography.titleLarge,
             color = MaterialTheme.colorScheme.primary,
             softWrap = false,
             overflow = TextOverflow.Ellipsis,
-
-            modifier = Modifier.padding(start = 20.dp),
+            modifier = Modifier
+                .padding(start = 20.dp, bottom = 20.dp),
             maxLines = 1
         )
         Text(
             text = songList.description,
-            style = MaterialTheme.typography.titleLarge,
+            style = MaterialTheme.typography.titleMedium,
             color = MaterialTheme.colorScheme.primary,
             modifier = Modifier
-                .padding(start = 20.dp)
+                .padding(start = 20.dp, bottom = 20.dp)
                 .clickable { showDialog = true },
             softWrap = false,
             overflow = TextOverflow.Ellipsis,
@@ -285,7 +284,7 @@ fun ShowSongs(
             }
         } else {
             LazyColumn {
-                items(songs,key = {
+                items(songs, key = {
                     it.songId
                 }) { item ->
                     SongItemRow(

@@ -2,7 +2,8 @@ package io.github.mumu12641.lark.ui.theme.page.artist
 
 import android.util.Log
 import android.widget.Toast
-import androidx.compose.animation.*
+import androidx.compose.animation.AnimatedContent
+import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
@@ -109,10 +110,6 @@ fun ArtistDetailContent(
             .fillMaxSize()
             .background(MaterialTheme.colorScheme.background),
         targetState = loadState,
-//        transitionSpec = {
-//            slideInVertically { height -> height } + fadeIn() with
-//                    slideOutVertically { height -> -height } + fadeOut()
-//        }
     ) { targetState ->
         when (targetState) {
             is LoadState.Loading -> {

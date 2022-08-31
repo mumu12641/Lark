@@ -63,4 +63,4 @@ const val ARTIST_SONGLIST_TYPE = 3
 
 val INIT_SONG = Song(0L, "最伟大的作品", "周杰伦", "11", "11", 100)
 val EMPTY_SONG = Song(0L, "empty", "empty", "", "", 0)
-val INIT_SONG_LIST = SongList(0L, "12", "12", 0, "12", "12", 2)
+val INIT_SONG_LIST = SongList(0L, "", "", 0, "", "", 2)

@@ -12,8 +12,6 @@ import androidx.compose.foundation.interaction.Interaction
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.interaction.PressInteraction
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.MutatePriority
-import androidx.compose.foundation.MutatorMutex
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.SliderColors
 import androidx.compose.material.SliderDefaults
@@ -317,7 +315,7 @@ private fun Modifier.sliderTapModifier(
                     },
                     onTap = {
                         scope.launch {
-                            draggableState.drag(MutatePriority.UserInput) {
+                            draggableState.drag(androidx.compose.foundation.MutatePriority.UserInput) {
                                 dragBy(0f)
                             }
                             gestureEndAction.value.invoke(0f)
@@ -375,10 +373,10 @@ private class SliderDraggableState(
         override fun dragBy(pixels: Float): Unit = onDelta(pixels)
     }
 
-    private val scrollMutex = MutatorMutex()
+    private val scrollMutex = androidx.compose.foundation.MutatorMutex()
 
     override suspend fun drag(
-        dragPriority: MutatePriority,
+        dragPriority: androidx.compose.foundation.MutatePriority,
         block: suspend DragScope.() -> Unit
     ): Unit = coroutineScope {
         isDragging = true

@@ -336,6 +336,7 @@ private fun Banner(
                     Row {
                         Spacer(modifier = Modifier.weight(1f))
                         Card(
+                            shape = CircleShape,
                             modifier = Modifier
                                 .size(60.dp)
                                 .padding(10.dp)
@@ -344,8 +345,7 @@ private fun Banner(
                                     Toast
                                         .makeText(context, "成功添加到播放列表", Toast.LENGTH_LONG)
                                         .show()
-                                }),
-                            shape = CircleShape
+                                })
                         ) {
                             Row(
                                 modifier.fillMaxSize(),
@@ -416,19 +416,17 @@ private fun SongListRow(
     var showDialog by remember { mutableStateOf(false) }
     var showNeteaseDialog by remember { mutableStateOf(false) }
     var text by remember { mutableStateOf("") }
-    var confirmText by remember { mutableStateOf(value = context.getString(R.string.confirm_text)) }
 
     if (showDialog) {
         AddSongListDialog(
             text = text,
-            confirmText = confirmText,
+            confirmText = stringResource(id = R.string.confirm_text),
             dismissText = stringResource(id = R.string.import_playlist_text),
             onDismissRequest = { showDialog = false },
             dismissOnClick = {
                 showDialog = false
                 showNeteaseDialog = true
                 text = ""
-                confirmText = context.getString(R.string.import_text)
             },
             confirmOnClick = {
                 addSongList(
@@ -454,20 +452,17 @@ private fun SongListRow(
             icon = Icons.Filled.Link,
             title = stringResource(id = R.string.share_text),
             text = text,
-            confirmText = confirmText,
+            confirmText = stringResource(id = R.string.import_text),
             dismissText = stringResource(id = R.string.build_own_text),
             onDismissRequest = {
                 showNeteaseDialog = false
-                confirmText = context.getString(R.string.confirm_text)
             },
             dismissOnClick = {
                 showDialog = true
                 showNeteaseDialog = false
-                confirmText = context.getString(R.string.confirm_text)
             },
             confirmOnClick = {
                 if (StringUtil.getNeteaseSongListId(text) != text) {
-                    confirmText = context.getString(R.string.confirm_text)
                     getNeteaseSongList(StringUtil.getNeteaseSongListId(text)!!.toLong())
                 } else {
                     Toast.makeText(
