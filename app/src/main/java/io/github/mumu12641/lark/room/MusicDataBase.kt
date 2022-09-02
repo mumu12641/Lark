@@ -14,7 +14,7 @@ import io.github.mumu12641.lark.entity.SongList
 
 @Database(
     entities = [SongList::class, Song::class, PlaylistSongCrossRef::class],
-    version = 16,
+    version = 19,
     exportSchema = true
 )
 @TypeConverters(Converters::class)

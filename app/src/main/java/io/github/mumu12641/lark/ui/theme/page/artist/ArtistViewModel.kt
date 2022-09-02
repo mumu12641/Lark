@@ -23,7 +23,7 @@ class ArtistViewModel @Inject constructor() : ViewModel() {
     val artistSongList = DataBaseUtils.queryAllSongList().map {
         it.filter { songList ->
             songList.type == ARTIST_SONGLIST_TYPE
-        }.sortedBy { list ->
+        }.sortedByDescending { list ->
             list.songNumber
         }
     }

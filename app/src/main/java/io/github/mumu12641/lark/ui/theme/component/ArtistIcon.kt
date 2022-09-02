@@ -13,6 +13,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import io.github.mumu12641.lark.R
@@ -43,10 +44,11 @@ fun ArtistIcon(
 
         }
         Text(
-            modifier = Modifier.width(60.dp).padding(bottom = 10.dp),
+            modifier = Modifier.width(100.dp).padding(bottom = 10.dp),
             text = artist.songListTitle, softWrap = false,
             overflow = TextOverflow.Ellipsis,
-            style = MaterialTheme.typography.bodyLarge
+            style = MaterialTheme.typography.bodyLarge,
+            textAlign = TextAlign.Center
         )
     }
 

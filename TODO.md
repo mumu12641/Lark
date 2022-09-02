@@ -48,25 +48,27 @@ playbackService bugs  fixed
 
 通知代码重构	done
 
+
+
 homescreen ui improment wip
 
 网易云音乐的登录 done  but some bugs
 
 搜索多重匹配
 
-
-
 协程的一些错误处理
-
-
 
 code 重构
 
 搜索！
 
-导入歌单之后的艺术家歌单要更改一下逻辑
+导入歌单之后的艺术家歌单要更改一下逻辑	done
 
 断网时候retrofit处理
+
+Youtube API
+
+状态后移
 
 
 

@@ -2,6 +2,7 @@ package io.github.mumu12641.lark.ui.theme.page.play
 
 import android.support.v4.media.MediaMetadataCompat
 import android.support.v4.media.session.PlaybackStateCompat
+import androidx.activity.compose.BackHandler
 import androidx.compose.animation.core.animateIntAsState
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -15,6 +16,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -55,6 +57,17 @@ fun PlayPage(
     val bottomSheetScaffoldState = rememberBottomSheetScaffoldState(
         bottomSheetState = BottomSheetState(BottomSheetValue.Collapsed)
     )
+    val scope = rememberCoroutineScope()
+    BackHandler {
+        if (!bottomSheetScaffoldState.bottomSheetState.isCollapsed) {
+            scope.launch {
+                bottomSheetScaffoldState.bottomSheetState.collapse()
+            }
+        } else {
+            navController.popBackStack()
+        }
+    }
+
     PlayPageTheme(
         followAlbumSwitch = FollowAlbumSwitch.current,
         currentAlbumColor = CurrentAlbumColor.current,
@@ -180,14 +193,13 @@ fun PlayPageContent(
                         .clickable {
                             applicationScope.launch(Dispatchers.IO) {
                                 val songListId = DataBaseUtils.querySongListId(
-                                    currentMetadata.getString(MediaMetadataCompat.METADATA_KEY_ARTIST),
+                                    currentMetadata.getString(MediaMetadataCompat.METADATA_KEY_ARTIST).split(",")[0],
                                     ARTIST_SONGLIST_TYPE
                                 )
                                 withContext(Dispatchers.Main) {
                                     navController.navigate(Route.ROUTE_ARTIST_DETAIL_PAGE + songListId)
                                 }
                             }
-
                         },
                     color = MaterialTheme.colorScheme.onBackground
                 )

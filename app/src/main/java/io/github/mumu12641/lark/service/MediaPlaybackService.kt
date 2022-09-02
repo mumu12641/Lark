@@ -15,6 +15,7 @@ import android.support.v4.media.MediaBrowserCompat
 import android.support.v4.media.MediaMetadataCompat
 import android.support.v4.media.session.MediaSessionCompat
 import android.support.v4.media.session.PlaybackStateCompat
+import android.util.Log
 import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.core.app.NotificationCompat
@@ -58,6 +59,8 @@ class MediaPlaybackService : MediaBrowserServiceCompat() {
     private var currentPlayList = mutableListOf<Song>()
     private var currentSongList: SongList? = null
     private var currentPlaySong: Song? = null
+
+    private var isBuffering = false
 
     private val scope =
         CoroutineScope(Job() + Dispatchers.IO + CoroutineExceptionHandler { _, _ -> })
@@ -239,6 +242,8 @@ class MediaPlaybackService : MediaBrowserServiceCompat() {
             override fun onMediaItemTransition(mediaItem: MediaItem?, reason: Int) {
                 super.onMediaItemTransition(mediaItem, reason)
 
+                Log.d(TAG, "onMediaItemTransition")
+
                 val song = currentPlayList[mExoPlayer.currentMediaItemIndex]
                 val index = mExoPlayer.currentMediaItemIndex
 
@@ -251,7 +256,12 @@ class MediaPlaybackService : MediaBrowserServiceCompat() {
 //                        )
                     }
                     else -> {
+
                         currentPlaySong = song
+                        if (!isBuffering){
+                            Log.d(TAG, "onMediaItemTransition: $song")
+                            updateAllData()
+                        }
                     }
                 }
 
@@ -267,6 +277,7 @@ class MediaPlaybackService : MediaBrowserServiceCompat() {
             mExoPlayer.seekToNextMediaItem()
         }) {
             withContext(Dispatchers.Main) {
+                isBuffering = true
                 updatePlayBackState(PlaybackStateCompat.STATE_BUFFERING)
                 updateMetadata(createMetadataFromSong(song))
             }
@@ -284,6 +295,7 @@ class MediaPlaybackService : MediaBrowserServiceCompat() {
                     currentPlayList[index] = song1
                     currentPlaySong = song1
                     updateQueue(currentPlayList, song1)
+                    isBuffering = false
                 }
             } else {
                 withContext(Dispatchers.Main) {
@@ -335,7 +347,7 @@ class MediaPlaybackService : MediaBrowserServiceCompat() {
                 super.onSkipToNext()
                 mExoPlayer.seekToNextMediaItem()
                 mExoPlayer.play()
-                updateAllData()
+//                updateAllData()
             }
 
             @RequiresApi(Build.VERSION_CODES.M)
@@ -343,7 +355,7 @@ class MediaPlaybackService : MediaBrowserServiceCompat() {
                 super.onSkipToPrevious()
                 mExoPlayer.seekToPreviousMediaItem()
                 mExoPlayer.play()
-                updateAllData()
+//                updateAllData()
             }
 
             @RequiresApi(Build.VERSION_CODES.M)

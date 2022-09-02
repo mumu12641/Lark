@@ -43,9 +43,10 @@ class SearchViewModel @Inject constructor() : ViewModel() {
                     it.ar.joinToString(",") { ar -> ar.name },
                     it.al.picUrl,
                     EMPTY_URI + it.al.picUrl,
-                    it.dt,
+                    duration = if (it.privilege.fee == 1) 30000 else it.dt,
                     neteaseId = it.id.toLong(),
-                    isBuffered = NOT_BUFFERED
+                    isBuffered = NOT_BUFFERED,
+                    vip = it.privilege.fee == 1
                 )
             }
             _loadState.value = LoadState.Success()

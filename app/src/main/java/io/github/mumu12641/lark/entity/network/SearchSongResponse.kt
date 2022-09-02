@@ -16,6 +16,7 @@ data class SearchSongResponse(
         val dt: Int,
         val mv: Int,
         val name: String,
+        val privilege: Privilege
     )
 
     data class Al(
@@ -27,5 +28,9 @@ data class SearchSongResponse(
     data class Ar(
         val id: Int,
         val name: String,
+    )
+
+    data class Privilege(
+        val fee:Int
     )
 }

@@ -5,12 +5,12 @@ import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.runtime.Composable
-import com.google.accompanist.navigation.animation.AnimatedNavHost
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.composable
 import com.google.accompanist.navigation.animation.rememberAnimatedNavController
 import io.github.mumu12641.lark.BaseApplication.Companion.context
 import io.github.mumu12641.lark.R
 import io.github.mumu12641.lark.entity.Route
-import io.github.mumu12641.lark.ui.theme.component.AnimationComposable
 import io.github.mumu12641.lark.ui.theme.page.artist.ArtistDetailPage
 import io.github.mumu12641.lark.ui.theme.page.artist.ArtistPage
 import io.github.mumu12641.lark.ui.theme.page.artist.ArtistViewModel
@@ -44,11 +44,11 @@ fun MainScreen(
         mainViewModel.playMedia(songListId, songId)
     }
 
-    AnimatedNavHost(
+    NavHost(
         navController = navController,
         startDestination = Route.ROUTE_HOME
     ) {
-        AnimationComposable(
+        composable(
             route = Route.ROUTE_HOME
         ) {
             HomeScreen(
@@ -63,7 +63,7 @@ fun MainScreen(
                 mainViewModel.addSongList(it)
             }
         }
-        AnimationComposable(
+        composable(
             Route.ROUTE_LOCAL
         ) {
             FunctionPage(
@@ -73,7 +73,7 @@ fun MainScreen(
                 refreshArtist = { mainViewModel.refreshArtist() }
             )
         }
-        AnimationComposable(
+        composable(
             Route.ROUTE_HISTORY
         ) {
             FunctionPage(
@@ -82,7 +82,7 @@ fun MainScreen(
                 playMedia = playMedia
             )
         }
-        AnimationComposable(
+        composable(
             Route.ROUTE_DOWNLOAD
         ) {
             FunctionPage(
@@ -91,7 +91,7 @@ fun MainScreen(
                 playMedia = playMedia,
             )
         }
-        AnimationComposable(
+        composable(
             Route.ROUTE_CLOUD
         ) {
             FunctionPage(
@@ -100,7 +100,7 @@ fun MainScreen(
                 playMedia = playMedia
             )
         }
-        AnimationComposable(
+        composable(
             Route.ROUTE_SUGGESTION
         ) {
             FunctionPage(
@@ -109,12 +109,12 @@ fun MainScreen(
                 playMedia = playMedia
             )
         }
-        AnimationComposable(
+        composable(
             Route.ROUTE_USER
         ) {
             UserPage(navController = navController, userViewModel)
         }
-        AnimationComposable(
+        composable(
             Route.ROUTE_SONG_LIST_DETAILS + "{songListId}"
         ) { backStackEntry ->
             backStackEntry.arguments?.getString("songListId")
@@ -126,12 +126,12 @@ fun MainScreen(
                     )
                 }
         }
-        AnimationComposable(
+        composable(
             Route.ROUTE_PLAY_PAGE
         ) {
             PlayPage(navController = navController, mainViewModel = mainViewModel)
         }
-        AnimationComposable(
+        composable(
             Route.ROUTE_ARTIST_PAGE
         ) {
             ArtistPage(
@@ -148,7 +148,7 @@ fun MainScreen(
                 navController.navigate(Route.ROUTE_ARTIST_DETAIL_PAGE + it.toString())
             }
         }
-        AnimationComposable(
+        composable(
             Route.ROUTE_ARTIST_DETAIL_PAGE + "{songListId}"
         ) { backStackEntry ->
             backStackEntry.arguments?.getString("songListId")?.let {
@@ -157,16 +157,16 @@ fun MainScreen(
             }
 
         }
-        AnimationComposable(Route.ROUTE_SETTING) {
+        composable(Route.ROUTE_SETTING) {
             SettingPage(navController = navController)
         }
-        AnimationComposable(Route.ROUTE_DISPLAY) {
+        composable(Route.ROUTE_DISPLAY) {
             DisplayPage(navController = navController)
         }
-        AnimationComposable(Route.ROUTE_ABOUT) {
+        composable(Route.ROUTE_ABOUT) {
             AboutPage(navController = navController)
         }
-        AnimationComposable(Route.ROUTE_SEARCH) {
+        composable(Route.ROUTE_SEARCH) {
             SearchPage(navController = navController, searchViewModel,addBannerSongToList = { mainViewModel.addSongToCurrentList(it) })
         }
     }

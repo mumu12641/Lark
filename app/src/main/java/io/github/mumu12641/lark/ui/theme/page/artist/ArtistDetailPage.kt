@@ -11,6 +11,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.Scaffold
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
@@ -53,7 +54,6 @@ fun ArtistDetailPage(
     var showResetArtistDialog by remember {
         mutableStateOf(false)
     }
-
     val scrollBehavior = pinnedScrollBehavior(rememberTopAppBarScrollState())
     Scaffold(
         modifier = Modifier
@@ -62,6 +62,7 @@ fun ArtistDetailPage(
             LarkSmallTopBar(
                 title = "",
                 scrollBehavior = scrollBehavior,
+                actionIcon = Icons.Filled.Refresh,
                 navIconClick = { navController.popBackStack() }) {
                 showResetArtistDialog = true
             }

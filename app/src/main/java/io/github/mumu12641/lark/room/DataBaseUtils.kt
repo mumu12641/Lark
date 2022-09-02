@@ -38,25 +38,28 @@ class DataBaseUtils {
 
         suspend fun insertSong(song: Song): Long {
             val id = musicDao.insertSong(song)
-            if (!isSongListExist(song.songSinger, ARTIST_SONGLIST_TYPE)) {
-                insertSongList(
-                    SongList(
-                        0L, song.songSinger, "xxx", 0, BaseApplication.context.getString(
-                            R.string.no_description_text
-                        ), "111", ARTIST_SONGLIST_TYPE
+            val singerList = song.songSinger.split(",")
+            for (i in singerList) {
+                if (!isSongListExist(i, ARTIST_SONGLIST_TYPE)) {
+                    insertSongList(
+                        SongList(
+                            0L, i, "", 0, BaseApplication.context.getString(
+                                R.string.no_description_text
+                            ), "", ARTIST_SONGLIST_TYPE
+                        )
                     )
+                }
+                val songListId = querySongListId(
+                    i,
+                    ARTIST_SONGLIST_TYPE
                 )
-            }
-            val songListId = querySongListId(
-                song.songSinger,
-                ARTIST_SONGLIST_TYPE
-            )
-            if (!isRefExist(songListId, id)) {
-                insertRef(
-                    PlaylistSongCrossRef(
-                        songListId, id
+                if (!isRefExist(songListId, id)) {
+                    insertRef(
+                        PlaylistSongCrossRef(
+                            songListId, id
+                        )
                     )
-                )
+                }
             }
             return id
         }

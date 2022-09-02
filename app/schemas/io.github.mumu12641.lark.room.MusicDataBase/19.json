@@ -1,8 +1,8 @@
 {
   "formatVersion": 1,
   "database": {
-    "version": 15,
-    "identityHash": "42a7867fca50461bf70b536613934581",
+    "version": 19,
+    "identityHash": "2bc87daa199cab896dec1ad2e42f9fe6",
     "entities": [
       {
         "tableName": "SongList",
@@ -68,7 +68,7 @@
       },
       {
         "tableName": "Song",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`songId` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `songTitle` TEXT NOT NULL, `songSinger` TEXT NOT NULL, `songAlbumFileUri` TEXT NOT NULL, `mediaFileUri` TEXT NOT NULL, `duration` INTEGER NOT NULL, `recentPlay` INTEGER)",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`songId` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `songTitle` TEXT NOT NULL, `songSinger` TEXT NOT NULL, `songAlbumFileUri` TEXT NOT NULL, `mediaFileUri` TEXT NOT NULL, `duration` INTEGER NOT NULL, `recentPlay` INTEGER, `neteaseId` INTEGER NOT NULL, `isBuffered` INTEGER NOT NULL, `vip` INTEGER NOT NULL)",
         "fields": [
           {
             "fieldPath": "songId",
@@ -111,6 +111,24 @@
             "columnName": "recentPlay",
             "affinity": "INTEGER",
             "notNull": false
+          },
+          {
+            "fieldPath": "neteaseId",
+            "columnName": "neteaseId",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "isBuffered",
+            "columnName": "isBuffered",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "vip",
+            "columnName": "vip",
+            "affinity": "INTEGER",
+            "notNull": true
           }
         ],
         "primaryKey": {
@@ -153,7 +171,7 @@
     "views": [],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '42a7867fca50461bf70b536613934581')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '2bc87daa199cab896dec1ad2e42f9fe6')"
     ]
   }
 }

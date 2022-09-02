@@ -128,7 +128,8 @@ fun DisplayPageContent(modifier: Modifier) {
                         modifier = Modifier
                             .fillMaxWidth()
                             .height(80.dp)
-                            .padding(10.dp)
+                            .padding(10.dp),
+                        verticalArrangement = Arrangement.Center
                     ) {
                         Text(
                             text = "SongList sample text",

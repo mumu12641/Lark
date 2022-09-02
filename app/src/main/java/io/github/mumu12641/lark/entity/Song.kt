@@ -16,6 +16,7 @@ data class Song(
     var recentPlay: Date? = null,
     var neteaseId:Long = 0L,
     var isBuffered:Int = NOT_NEED_BUFFER,
+    var vip:Boolean = false
 ){
     override fun equals(other: Any?): Boolean {
         return (other as Song).songId == this.songId

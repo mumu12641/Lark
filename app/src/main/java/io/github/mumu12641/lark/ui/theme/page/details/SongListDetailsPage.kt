@@ -3,6 +3,7 @@ package io.github.mumu12641.lark.ui.theme.page.details
 import android.annotation.SuppressLint
 import android.net.Uri
 import android.util.Log
+import androidx.activity.compose.BackHandler
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.animation.core.CubicBezierEasing
@@ -41,6 +42,7 @@ import io.github.mumu12641.lark.BaseApplication
 import io.github.mumu12641.lark.R
 import io.github.mumu12641.lark.entity.*
 import io.github.mumu12641.lark.ui.theme.component.*
+import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterialApi::class)
 @SuppressLint("StateFlowValueCalledInComposition")
@@ -55,7 +57,16 @@ fun SongListDetailsPage(
     val bottomSheetScaffoldState = rememberBottomSheetScaffoldState(
         bottomSheetState = BottomSheetState(BottomSheetValue.Collapsed)
     )
-
+    val scope = rememberCoroutineScope()
+    BackHandler {
+        if (!bottomSheetScaffoldState.bottomSheetState.isCollapsed) {
+            scope.launch {
+                bottomSheetScaffoldState.bottomSheetState.collapse()
+            }
+        } else {
+            navController.popBackStack()
+        }
+    }
     Box(
         modifier = Modifier.fillMaxSize()
     ) {
@@ -118,7 +129,6 @@ fun SongListDetailsContent(
     var showDialog by remember { mutableStateOf(false) }
     var textDescription by remember { mutableStateOf(value = songList?.description) }
 
-    val scrollState = rememberScrollState()
 
     Column(
         modifier = modifier
@@ -252,7 +262,7 @@ fun ShowSongs(
     playMedia: ((Long, Long) -> Unit)? = null,
     seekToSong: ((Long) -> Unit)? = null,
     songList: SongList,
-    key:(Song) -> Long = {it.songId}
+    key: (Song) -> Long = { it.songId }
 ) {
     val onClick: (Song) -> Unit = if (playMedia != null) { song: Song ->
         playMedia(songList.songListId, song.songId)
