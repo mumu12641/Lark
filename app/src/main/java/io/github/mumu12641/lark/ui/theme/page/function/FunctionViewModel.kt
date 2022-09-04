@@ -14,6 +14,7 @@ import io.github.mumu12641.lark.entity.*
 import io.github.mumu12641.lark.room.DataBaseUtils
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.map
@@ -23,22 +24,6 @@ import javax.inject.Inject
 @HiltViewModel
 class FunctionViewModel @Inject constructor() : ViewModel() {
 
-    val allSongList = DataBaseUtils.queryAllSongList().map { list ->
-        list.filter {
-            it.type in 1 until ARTIST_SONGLIST_TYPE
-        }
-    }
-
-    val localMusicList = DataBaseUtils.querySongListWithSongsBySongListIdFlow(LocalSongListId).map {
-        it.songs
-    }
-
-    val historySongList =
-        DataBaseUtils.querySongListWithSongsBySongListIdFlow(HistorySongListId).map {
-            it.songs.sortedByDescending { song ->
-                song.recentPlay
-            }
-        }
 
     private val _loadState = MutableStateFlow(Load.NONE)
     val loadLocal: StateFlow<Int> = _loadState
@@ -46,6 +31,42 @@ class FunctionViewModel @Inject constructor() : ViewModel() {
     private val _currentShowSong = MutableStateFlow(INIT_SONG)
     val currentShowSong: StateFlow<Song?> = _currentShowSong
 
+    private val _functionUiState = MutableStateFlow(FunctionUiState())
+    val functionUiState = _functionUiState
+
+    data class FunctionUiState(
+        val allSongList: Flow<List<SongList>> = DataBaseUtils.queryAllSongList().map { list ->
+            list.filter {
+                it.type in 1 until ARTIST_SONGLIST_TYPE
+            }
+        },
+        val localMusicList: Flow<List<Song>> = DataBaseUtils.querySongListWithSongsBySongListIdFlow(
+            LocalSongListId
+        ).map {
+            it.songs
+        },
+        val historySongList: Flow<List<Song>> =
+            DataBaseUtils.querySongListWithSongsBySongListIdFlow(HistorySongListId).map {
+                it.songs.sortedByDescending { song ->
+                    song.recentPlay
+                }
+            }
+    )
+
+//    val allSongList: Flow<List<SongList>> = DataBaseUtils.queryAllSongList().map { list ->
+//        list.filter {
+//            it.type in 1 until ARTIST_SONGLIST_TYPE
+//        }
+//    }
+//    val localMusicList: Flow<List<Song>> = DataBaseUtils.querySongListWithSongsBySongListIdFlow(LocalSongListId).map {
+//        it.songs
+//    }
+//    val historySongList: Flow<List<Song>> =
+//        DataBaseUtils.querySongListWithSongsBySongListIdFlow(HistorySongListId).map {
+//            it.songs.sortedByDescending { song ->
+//                song.recentPlay
+//            }
+//        }
 
     fun changeCurrentShowSong(song: Song) {
         _currentShowSong.value = song

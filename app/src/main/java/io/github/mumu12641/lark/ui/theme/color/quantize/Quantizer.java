@@ -17,5 +17,5 @@
 package io.github.mumu12641.lark.ui.theme.color.quantize;
 
 interface Quantizer {
-  public QuantizerResult quantize(int[] pixels, int maxColors);
+    public QuantizerResult quantize(int[] pixels, int maxColors);
 }

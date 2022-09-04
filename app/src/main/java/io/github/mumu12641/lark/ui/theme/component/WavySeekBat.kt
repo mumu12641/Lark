@@ -415,6 +415,7 @@ fun DrawScope.drawWave(
         )
     }
 }
+
 fun lerp(
     startValue: Float,
     endValue: Float,

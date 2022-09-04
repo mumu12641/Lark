@@ -72,6 +72,9 @@ class DataBaseUtils {
         fun querySongListFlowById(songListId: Long): Flow<SongList> {
             return musicDao.querySongListFlowById(songListId)
         }
+        fun querySongListFlowByIdType(songListId: Long,type: Int):Flow<SongList>{
+            return musicDao.querySongListFlowByIdType(songListId, type)
+        }
 
         suspend fun querySongListById(songListId: Long): SongList {
             return musicDao.querySongListById(songListId)

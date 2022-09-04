@@ -53,15 +53,8 @@ fun MainScreen(
         ) {
             HomeScreen(
                 navController,
-                mainViewModel,
-                metadata = mainViewModel.currentPlayMetadata,
-                playState = mainViewModel.currentPlayState,
-                flow = mainViewModel.allSongList,
-                reFreshLocalMusicList = { functionViewModel.reFreshLocalMusicList() },
-                addBannerSongToList = { mainViewModel.addSongToCurrentList(it) }
-            ) {
-                mainViewModel.addSongList(it)
-            }
+                mainViewModel
+            )
         }
         composable(
             Route.ROUTE_LOCAL
@@ -153,7 +146,7 @@ fun MainScreen(
         ) { backStackEntry ->
             backStackEntry.arguments?.getString("songListId")?.let {
                 artistViewModel.refreshId(it.toLong())
-                ArtistDetailPage(navController, artistViewModel, playMedia)
+                ArtistDetailPage(navController,artistViewModel, playMedia)
             }
 
         }
@@ -167,7 +160,10 @@ fun MainScreen(
             AboutPage(navController = navController)
         }
         composable(Route.ROUTE_SEARCH) {
-            SearchPage(navController = navController, searchViewModel,addBannerSongToList = { mainViewModel.addSongToCurrentList(it) })
+            SearchPage(
+                navController = navController,
+                searchViewModel,
+                addBannerSongToList = { mainViewModel.addSongToCurrentList(it) })
         }
     }
 }

@@ -44,13 +44,13 @@ object PreferenceUtil {
         val darkModePreference: Int = FOLLOW_SYSTEM,
         val seedColor: Int = DEFAULT_SEED_COLOR,
         val dynamicPreference: DynamicPreference = DynamicPreference(),
-        val currentAlbumColor:Int = DEFAULT_SEED_COLOR,
-        val followAlbumSwitch :Int = ON
+        val currentAlbumColor: Int = DEFAULT_SEED_COLOR,
+        val followAlbumSwitch: Int = ON
     )
 
     data class DynamicPreference(
-        val enable:Boolean = Build.VERSION.SDK_INT >= Build.VERSION_CODES.S,
-        val dynamicColorSwitch:Int = OFF
+        val enable: Boolean = Build.VERSION.SDK_INT >= Build.VERSION_CODES.S,
+        val dynamicColorSwitch: Int = OFF
     )
 
     fun switchDarkMode(mode: Int) {
@@ -59,11 +59,11 @@ object PreferenceUtil {
             _disaplayPreferenceFlow.update {
                 it.copy(darkModePreference = mode)
             }
-            kv.encode(DARK_MODE,mode)
+            kv.encode(DARK_MODE, mode)
         }
     }
 
-    fun changeCurrentAlbumColor(color: Int){
+    fun changeCurrentAlbumColor(color: Int) {
         applicationScope.launch(Dispatchers.IO) {
             _disaplayPreferenceFlow.update {
                 it.copy(currentAlbumColor = color)
@@ -71,30 +71,30 @@ object PreferenceUtil {
         }
     }
 
-    fun changeSeedColor(color:Int){
+    fun changeSeedColor(color: Int) {
         applicationScope.launch(Dispatchers.IO) {
             _disaplayPreferenceFlow.update {
                 it.copy(seedColor = color)
             }
-            kv.encode(SEED_COLOR,color)
+            kv.encode(SEED_COLOR, color)
         }
     }
 
-    fun switchDynamicColor(mode: Int){
+    fun switchDynamicColor(mode: Int) {
         applicationScope.launch(Dispatchers.IO) {
             _disaplayPreferenceFlow.update {
                 it.copy(dynamicPreference = DynamicPreference(dynamicColorSwitch = mode))
             }
-            kv.encode(DYNAMIC_COLOR,mode)
+            kv.encode(DYNAMIC_COLOR, mode)
         }
     }
 
-    fun switchFollowAlbum(mode: Int){
+    fun switchFollowAlbum(mode: Int) {
         applicationScope.launch(Dispatchers.IO) {
             _disaplayPreferenceFlow.update {
                 it.copy(followAlbumSwitch = mode)
             }
-            kv.encode(FOLLOW_ALBUM_COLOR_SWITCH,mode)
+            kv.encode(FOLLOW_ALBUM_COLOR_SWITCH, mode)
         }
     }
 

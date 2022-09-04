@@ -3,8 +3,6 @@ package io.github.mumu12641.lark.ui.theme.page.home
 import android.Manifest
 import android.annotation.SuppressLint
 import android.os.Build
-import android.support.v4.media.MediaMetadataCompat
-import android.support.v4.media.session.PlaybackStateCompat
 import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.clickable
@@ -45,13 +43,10 @@ import io.github.mumu12641.lark.R
 import io.github.mumu12641.lark.entity.*
 import io.github.mumu12641.lark.entity.network.Banner.BannerX
 import io.github.mumu12641.lark.room.DataBaseUtils
-import io.github.mumu12641.lark.service.MediaServiceConnection.Companion.EMPTY_PLAYBACK_STATE
-import io.github.mumu12641.lark.service.MediaServiceConnection.Companion.NOTHING_PLAYING
 import io.github.mumu12641.lark.ui.theme.component.*
 import io.github.mumu12641.lark.ui.theme.util.StringUtil
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
-import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.launch
 import kotlin.math.absoluteValue
 
@@ -61,20 +56,7 @@ import kotlin.math.absoluteValue
 fun HomeScreen(
     navController: NavController,
     mainViewModel: MainViewModel,
-    metadata: Flow<MediaMetadataCompat>,
-    playState: Flow<PlaybackStateCompat>,
-    flow: Flow<List<SongList>>,
-    reFreshLocalMusicList: () -> Unit,
-    addBannerSongToList: (Long) -> Unit,
-    addSongList: (SongList) -> Unit
 ) {
-
-    val allSongList by flow.collectAsState(initial = listOf())
-    val currentMetadata by metadata.collectAsState(initial = NOTHING_PLAYING)
-    val currentPlayState by playState.collectAsState(initial = EMPTY_PLAYBACK_STATE)
-    val artistSongList by mainViewModel.artistSongList.collectAsState(initial = listOf())
-
-    val banner by mainViewModel.bannerState.collectAsState(initial = emptyList())
 
     Box(
         modifier = Modifier.fillMaxSize()
@@ -94,25 +76,14 @@ fun HomeScreen(
                 HomeSetup(
                     modifier = Modifier.padding(paddingValues),
                     mainViewModel,
-                    allSongList,
-                    artistSongList,
-                    navController,
-                    banner,
-                    reFreshLocalMusicList,
-                    addSongList,
-                    addBannerSongToList
-                ) { mainViewModel.getNeteaseSongList(it) }
+                    navController
+                )
             },
             floatingActionButton = {
                 FloatingPlayMediaButton(
-                    currentMetadata,
-                    currentPlayState,
-                    onClickNext = { mainViewModel.onSkipToNext() },
-                    onClickPause = { mainViewModel.onPause() },
-                    onClickPlay = { mainViewModel.onPlay() },
-                    onClickPrevious = { mainViewModel.onSkipToPrevious() }) {
-                    navController.navigate(Route.ROUTE_PLAY_PAGE)
-                }
+                    mainViewModel,
+                    navController
+                )
             },
             floatingActionButtonPosition = FabPosition.End
         )
@@ -127,14 +98,7 @@ fun HomeScreen(
 fun HomeSetup(
     modifier: Modifier,
     mainViewModel: MainViewModel,
-    list: List<SongList>,
-    artistSongList: List<SongList>,
-    navController: NavController,
-    banner: List<BannerX>,
-    reFreshLocalMusicList: () -> Unit,
-    addSongList: (SongList) -> Unit,
-    addBannerSongToList: (Long) -> Unit,
-    getNeteaseSongList: (Long) -> Unit
+    navController: NavController
 ) {
     var showDialog by remember {
         mutableStateOf(true)
@@ -157,13 +121,8 @@ fun HomeSetup(
         HomeContent(
             modifier,
             mainViewModel,
-            list,
-            artistSongList,
-            navController,
-            banner,
-            addSongList,
-            addBannerSongToList
-        ) { getNeteaseSongList(it) }
+            navController
+        )
     } else {
         showDialog = true
     }
@@ -220,29 +179,30 @@ fun IconDescription(modifier: Modifier = Modifier, icon: ImageVector, descriptio
 fun HomeContent(
     modifier: Modifier,
     mainViewModel: MainViewModel,
-    list: List<SongList>,
-    artistSongList: List<SongList>,
-    navController: NavController,
-    banner: List<BannerX>,
-    addSongList: (SongList) -> Unit,
-    addBannerSongToList: (Long) -> Unit,
-    getNeteaseSongList: (Long) -> Unit
+    navController: NavController
 ) {
     val loadState by mainViewModel.loadState.collectAsState()
+    val uiState by mainViewModel.homeScreenUiState.collectAsState()
+    val allSongList by uiState.allSongList.collectAsState(initial = emptyList())
+    val artistSongList by uiState.artistSongList.collectAsState(initial = emptyList())
+    val banner by mainViewModel.bannerState.collectAsState(initial = emptyList())
+
     Column(
         modifier = modifier
             .padding(horizontal = 10.dp, vertical = 10.dp)
             .verticalScroll(rememberScrollState())
     ) {
         WelcomeUser(navController)
-        Banner(banner, addBannerSongToList)
+        Banner({ banner }) {
+            mainViewModel.addSongToCurrentList(it)
+        }
         FunctionTab(navController)
         SongListRow(
-            list,
-            addSongList,
-            { getNeteaseSongList(it) }
+            { allSongList },
+            addSongList = { mainViewModel.addSongList(it) },
+            { mainViewModel.getNeteaseSongList(it) }
         ) { navController.navigate(Route.ROUTE_SONG_LIST_DETAILS + it.toString()) }
-        ArtistRow(navController, artistSongList)
+        ArtistRow(navController) { artistSongList }
     }
     if (loadState == Load.LOADING) {
         Dialog(onDismissRequest = {}) {
@@ -254,9 +214,10 @@ fun HomeContent(
 @OptIn(ExperimentalPagerApi::class, ExperimentalMaterial3Api::class)
 @Composable
 private fun Banner(
-    banner: List<BannerX>,
+    bannerProvider: () -> List<BannerX>,
     addBannerSongToList: (Long) -> Unit,
 ) {
+    val banner = bannerProvider()
     val pagerState = rememberPagerState(
         initialPage = 0
     )
@@ -367,7 +328,8 @@ private fun Banner(
 }
 
 @Composable
-private fun ArtistRow(navController: NavController, list: List<SongList>) {
+private fun ArtistRow(navController: NavController, listProvider: () -> List<SongList>) {
+    val list = listProvider()
     Column(
         modifier = Modifier.fillMaxWidth()
     ) {
@@ -407,12 +369,12 @@ private fun ArtistRow(navController: NavController, list: List<SongList>) {
 
 @Composable
 private fun SongListRow(
-    list: List<SongList>,
+    listProvider: () -> List<SongList>,
     addSongList: (SongList) -> Unit,
     getNeteaseSongList: (Long) -> Unit,
     navigationToDetails: (Long) -> Unit
 ) {
-
+    val list = listProvider()
     var showDialog by remember { mutableStateOf(false) }
     var showNeteaseDialog by remember { mutableStateOf(false) }
     var text by remember { mutableStateOf("") }
@@ -440,6 +402,7 @@ private fun SongListRow(
                         CREATE_SONGLIST_TYPE
                     )
                 )
+                showDialog = false
             },
             trailingIconOnClick = { text = "" },
             onValueChange = {
@@ -471,6 +434,8 @@ private fun SongListRow(
                         Toast.LENGTH_LONG
                     ).show()
                 }
+                showNeteaseDialog = false
+                showDialog = false
             },
             trailingIconOnClick = {
                 if (StringUtil.getHttpUrl() != null) {

@@ -64,11 +64,11 @@ fun LarkSmallTopBar(
     title: String,
     scrollBehavior: TopAppBarScrollBehavior? = null,
     colors: TopAppBarColors = TopAppBarDefaults.smallTopAppBarColors(),
-    navIcon:ImageVector = Icons.Filled.ArrowBack,
-    actionIcon:ImageVector = Icons.Filled.MoreVert,
+    navIcon: ImageVector = Icons.Filled.ArrowBack,
+    actionIcon: ImageVector = Icons.Filled.MoreVert,
     navIconClick: () -> Unit,
     actionClick: (() -> Unit)? = null,
-    singleActionClick:(() -> Unit)? = null
+    singleActionClick: (() -> Unit)? = null
 ) {
     var actionMenu by remember {
         mutableStateOf(false)

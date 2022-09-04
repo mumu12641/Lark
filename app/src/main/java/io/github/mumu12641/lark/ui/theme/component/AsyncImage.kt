@@ -12,26 +12,6 @@ fun AsyncImage(
     imageModel: Any?,
     @DrawableRes failure: Int,
 ) {
-//    GlideImage(
-//        imageModel = imageModel,
-//        modifier = modifier,
-//        loading = {
-//            Box(modifier = Modifier.matchParentSize()) {
-//                CircularProgressIndicator(
-//                    modifier = Modifier.align(Alignment.Center)
-//                )
-//            }
-//        },
-////        bitmapPalette = ,
-//        failure = {
-//            Image(
-//                painter = painterResource(id = failure),
-//                contentDescription = "failure",
-//                modifier = modifier
-//            )
-//        }
-//
-//    )
     coil.compose.AsyncImage(
         model = imageModel,
         placeholder = painterResource(failure),

@@ -29,7 +29,7 @@ object StringUtil {
         return data.getItemAt(0).text.toString()
     }
 
-    fun getHttpUrl():String?{
+    fun getHttpUrl(): String? {
         val string = getPaste()
         val r = Regex("[a-zA-z]+://[^\\s]*")
         r.find(string)?.let {
@@ -38,7 +38,7 @@ object StringUtil {
         return null
     }
 
-    fun getNeteaseSongListId(s:String): String? {
+    fun getNeteaseSongListId(s: String): String? {
         val r = Regex("[a-zA-z]+://[^\\s]*")
         r.find(s)?.let {
             return it.value.substringAfter("playlist?id=").substringBefore("&userid")

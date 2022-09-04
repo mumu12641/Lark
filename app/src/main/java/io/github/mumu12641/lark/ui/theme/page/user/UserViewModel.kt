@@ -70,7 +70,7 @@ class UserViewModel @Inject constructor() : ViewModel() {
             saveInformation()
             kv.removeValueForKey("cookie")
             kv.removeValueForKey("neteaseId")
-            Log.d(TAG, "logout: " + kv.decodeStringSet("cookie") )
+            Log.d(TAG, "logout: " + kv.decodeStringSet("cookie"))
             Log.d(TAG, "logout: " + kv.decodeLong("neteaseId"))
             _loadState.value = LoadState.Success()
         }
@@ -79,13 +79,13 @@ class UserViewModel @Inject constructor() : ViewModel() {
     fun loginUser(phoneNumber: String, password: String) {
         viewModelScope.launch(Dispatchers.IO + CoroutineExceptionHandler { _, e ->
             _loadState.value = LoadState.Fail(e.message ?: "Load Fail")
-            kv.encode("neteaseId",416000474L)
+            kv.encode("neteaseId", 416000474L)
             e.message?.let { Log.d(TAG, it) }
         }) {
             _loadState.value = LoadState.Loading()
             val user = networkService.cellphoneLogin(phoneNumber, password)
             Log.d(TAG, "loginUser: $user")
-            kv.encode("neteaseId",user.account.id.toLong())
+            kv.encode("neteaseId", user.account.id.toLong())
             getNeteaseUserDetail()
             _loadState.value = LoadState.Success()
         }

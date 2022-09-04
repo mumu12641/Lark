@@ -31,11 +31,11 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import io.github.mumu12641.lark.BaseApplication
 import io.github.mumu12641.lark.R
-import io.github.mumu12641.lark.entity.*
+import io.github.mumu12641.lark.entity.LoadState
+import io.github.mumu12641.lark.entity.Song
 import io.github.mumu12641.lark.room.DataBaseUtils
 import io.github.mumu12641.lark.ui.theme.component.LarkTopBar
 import io.github.mumu12641.lark.ui.theme.component.SongItemRow
-import io.github.mumu12641.lark.ui.theme.page.details.ShowSongs
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
 import kotlinx.coroutines.launch

@@ -44,7 +44,9 @@ fun ArtistIcon(
 
         }
         Text(
-            modifier = Modifier.width(100.dp).padding(bottom = 10.dp),
+            modifier = Modifier
+                .width(100.dp)
+                .padding(bottom = 10.dp),
             text = artist.songListTitle, softWrap = false,
             overflow = TextOverflow.Ellipsis,
             style = MaterialTheme.typography.bodyLarge,

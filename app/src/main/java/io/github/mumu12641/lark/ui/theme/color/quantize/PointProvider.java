@@ -16,11 +16,13 @@
 
 package io.github.mumu12641.lark.ui.theme.color.quantize;
 
-/** An interface to allow use of different color spaces by quantizers. */
+/**
+ * An interface to allow use of different color spaces by quantizers.
+ */
 public interface PointProvider {
-  public double[] fromInt(int argb);
+    public double[] fromInt(int argb);
 
-  public int toInt(double[] point);
+    public int toInt(double[] point);
 
-  public double distance(double[] a, double[] b);
+    public double distance(double[] a, double[] b);
 }

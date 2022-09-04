@@ -35,6 +35,10 @@ interface MusicDao {
 
     @Query("SELECT * FROM SongList WHERE songListId = :songListId")
     fun querySongListFlowById(songListId: Long):Flow<SongList>
+
+    @Query("SELECT * FROM SongList WHERE songListId = :songListId AND type = :type")
+    fun querySongListFlowByIdType(songListId: Long,type: Int):Flow<SongList>
+
     @Query("SELECT * FROM SongList WHERE songListId = :songListId")
     suspend fun querySongListById(songListId: Long):SongList
     @Query("SELECT EXISTS(SELECT * FROM songlist WHERE songListTitle = :title AND type = :type)")
@@ -53,6 +57,7 @@ interface MusicDao {
     @Transaction
     @Query("SELECT * FROM SongList WHERE songListId = :songListId")
     fun querySongListWithSongsBySongListIdFlow(songListId:Long):Flow<SongListWithSongs>
+    @Transaction
     @Query("SELECT * FROM SongList WHERE songListId = :songListId")
     suspend fun querySongListWithSongsBySongListId(songListId:Long):SongListWithSongs
 

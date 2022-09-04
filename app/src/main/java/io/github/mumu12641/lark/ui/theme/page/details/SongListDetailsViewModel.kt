@@ -15,9 +15,10 @@ class SongListDetailsViewModel @Inject constructor() : ViewModel() {
     private var currentSongListId = 1L
     val songList get() = DataBaseUtils.querySongListFlowById(currentSongListId)
 
-    val songs get() = DataBaseUtils.querySongListWithSongsBySongListIdFlow(currentSongListId).map {
-                it.songs
-            }
+    val songs
+        get() = DataBaseUtils.querySongListWithSongsBySongListIdFlow(currentSongListId).map {
+            it.songs
+        }
 
     fun refreshId(id: Long) {
         currentSongListId = id

@@ -241,7 +241,7 @@ fun UserContent(
                     .height(200.dp)
                     .clip(RoundedCornerShape(50.dp))
                     .clickable {
-                            launcherBackground.launch("image/*")
+                        launcherBackground.launch("image/*")
                     },
                 loading = {
                     Box(modifier = Modifier.matchParentSize()) {

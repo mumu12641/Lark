@@ -66,7 +66,7 @@ fun SettingSwitchItem(
     title: String,
     description: String,
     icon: ImageVector?,
-    enable:Boolean = true,
+    enable: Boolean = true,
     isChecked: Boolean,
     switchChange: (Boolean) -> Unit,
     onClick: () -> Unit

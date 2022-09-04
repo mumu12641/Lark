@@ -6,15 +6,11 @@ import android.util.Log
 import androidx.activity.compose.BackHandler
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.compose.animation.core.CubicBezierEasing
-import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
@@ -75,13 +71,13 @@ fun SongListDetailsPage(
             scaffoldState = bottomSheetScaffoldState,
             sheetContent = {
                 ShowSongs(
-                    songs = songs,
+                    songsProvider = { songs },
                     modifier = Modifier,
                     top = 0,
                     playMedia = { songListId: Long, songId: Long ->
                         playMedia(songListId, songId)
                     },
-                    songList = state
+                    songListProvider = { state }
                 )
             },
             sheetPeekHeight = (BaseApplication.deviceScreen[1] - 570).dp,
@@ -256,14 +252,16 @@ fun PlayButton(
 
 @Composable
 fun ShowSongs(
-    songs: List<Song>,
+    songsProvider: () -> List<Song>,
     modifier: Modifier,
     top: Int,
     playMedia: ((Long, Long) -> Unit)? = null,
     seekToSong: ((Long) -> Unit)? = null,
-    songList: SongList,
+    songListProvider: () -> SongList,
     key: (Song) -> Long = { it.songId }
 ) {
+    val songList = songListProvider()
+    val songs = songsProvider()
     val onClick: (Song) -> Unit = if (playMedia != null) { song: Song ->
         playMedia(songList.songListId, song.songId)
     } else { song: Song ->

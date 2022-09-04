@@ -57,18 +57,17 @@ fun FunctionPage(
     refreshArtist: (() -> Unit)? = null,
     playMedia: (Long, Long) -> Unit,
 ) {
-    val localMusicList by viewModel.localMusicList.collectAsState(initial = emptyList())
-    val allSongList by viewModel.allSongList.collectAsState(initial = emptyList())
-    val historySongList by viewModel.historySongList.collectAsState(initial = emptyList())
-    val loadLocal by viewModel.loadLocal.collectAsState(initial = Load.NONE)
+    val functionUiState by viewModel.functionUiState.collectAsState()
+    val allSongList by functionUiState.allSongList.collectAsState(initial = emptyList())
     val currentShowSong by viewModel.currentShowSong.collectAsState(initial = INIT_SONG)
+    val loadState by viewModel.loadLocal.collectAsState()
+
     val bottomSheetScaffoldState =
         rememberBottomSheetScaffoldState(bottomSheetState = BottomSheetState(BottomSheetValue.Collapsed))
     val coroutineScope = rememberCoroutineScope()
     var showDialog by remember { mutableStateOf(false) }
     var showAddDialog by remember { mutableStateOf(false) }
     var text by remember { mutableStateOf("") }
-
 
     val decayAnimationSpec = rememberSplineBasedDecay<Float>()
     val scrollBehavior = TopAppBarDefaults.exitUntilCollapsedScrollBehavior(
@@ -111,7 +110,7 @@ fun FunctionPage(
                     { paddingValues ->
                         if (showDialog) {
                             AddToSongListDialog(
-                                allSongList,
+                                { allSongList },
                                 coroutineScope,
                                 viewModel,
                                 showAddDialogFunction = { showAddDialog = it },
@@ -128,8 +127,8 @@ fun FunctionPage(
                         LocalContent(
                             modifier = Modifier.padding(paddingValues),
                             LocalSongListId,
-                            localMusicList,
-                            loadLocal,
+                            functionUiState,
+                            { loadState },
                             { song ->
                                 viewModel.changeCurrentShowSong(song)
                                 coroutineScope.launch {
@@ -146,11 +145,11 @@ fun FunctionPage(
                 }
                 Route.ROUTE_HISTORY -> {
                     {
-                        LocalContent(
+                        HistoryContent(
                             modifier = Modifier.padding(it),
                             HistorySongListId,
-                            songs = historySongList,
-                            loadState = Load.NONE,
+                            functionUiState,
+                            { loadState },
                             playMedia = playMedia
                         )
                     }
@@ -207,16 +206,19 @@ fun FunctionPage(
 fun LocalContent(
     modifier: Modifier,
     songListID: Long,
-    songs: List<Song>,
-    loadState: Int,
+    uiState: FunctionViewModel.FunctionUiState,
+    loadStateProvider: () -> Int,
     showBottomSheet: ((Song) -> Unit)? = null,
     playMedia: (Long, Long) -> Unit
 ) {
+
+    val localMusicList by uiState.localMusicList.collectAsState(initial = emptyList())
+    val loadLocal = loadStateProvider()
     AnimatedContent(
         modifier = Modifier
             .fillMaxSize()
             .background(MaterialTheme.colorScheme.background),
-        targetState = loadState,
+        targetState = loadLocal,
         transitionSpec = {
             slideInVertically { height -> height } + fadeIn() with
                     slideOutVertically { height -> -height } + fadeOut()
@@ -229,7 +231,58 @@ fun LocalContent(
             else -> {
                 Box(modifier = modifier) {
                     LazyColumn {
-                        items(items = songs, key = {
+                        items(items = localMusicList, key = {
+                            it.songId
+                        }) { song: Song ->
+                            if (showBottomSheet != null) {
+                                SongItem(song = song, showBottomSheet = showBottomSheet) {
+                                    playMedia(songListID, song.songId)
+                                }
+                            } else {
+                                SongItem(song = song, showBottomSheet = null) {
+                                    playMedia(songListID, song.songId)
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+
+@OptIn(ExperimentalAnimationApi::class)
+@SuppressLint("UnrememberedMutableState", "CoroutineCreationDuringComposition")
+@Composable
+fun HistoryContent(
+    modifier: Modifier,
+    songListID: Long,
+    uiState: FunctionViewModel.FunctionUiState,
+    loadStateProvider: () -> Int,
+    showBottomSheet: ((Song) -> Unit)? = null,
+    playMedia: (Long, Long) -> Unit
+) {
+    val historySongList by uiState.historySongList.collectAsState(initial = emptyList())
+    val loadLocal = loadStateProvider()
+
+    AnimatedContent(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(MaterialTheme.colorScheme.background),
+        targetState = loadLocal,
+        transitionSpec = {
+            slideInVertically { height -> height } + fadeIn() with
+                    slideOutVertically { height -> -height } + fadeOut()
+        }
+    ) { targetState ->
+        when (targetState) {
+            Load.LOADING -> {
+                LoadAnimation(modifier)
+            }
+            else -> {
+                Box(modifier = modifier) {
+                    LazyColumn {
+                        items(items = historySongList, key = {
                             it.songId
                         }) { song: Song ->
                             if (showBottomSheet != null) {
@@ -302,12 +355,13 @@ private fun CreateSongListDialog(
 
 @Composable
 private fun AddToSongListDialog(
-    allSongList: List<SongList>,
+    allSongListProvider: () -> List<SongList>,
     coroutineScope: CoroutineScope,
     viewModel: FunctionViewModel,
     showDialogFunction: (Boolean) -> Unit,
     showAddDialogFunction: (Boolean) -> Unit
 ) {
+    val allSongList = allSongListProvider()
     LarkAlertDialog(
         onDismissRequest = { showDialogFunction(false) },
         title = stringResource(id = R.string.add_to_song_list_text),

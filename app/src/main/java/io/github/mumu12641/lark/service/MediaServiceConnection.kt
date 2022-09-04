@@ -46,7 +46,6 @@ class MediaServiceConnection(context: Context, componentName: ComponentName) {
     private val _playMetadata = MutableStateFlow(NOTHING_PLAYING)
     val playMetadata = _playMetadata
 
-    // 播放列表
     private val _playList = MutableStateFlow(emptyList<Song>())
     val playList = _playList
 
@@ -72,8 +71,9 @@ class MediaServiceConnection(context: Context, componentName: ComponentName) {
             mediaBrowser.unsubscribe(mediaBrowser.root)
             mediaBrowser.subscribe(mediaBrowser.root, mBrowserSubscriptionCallback)
             scope.launch {
-                upProgress()
+                updateProgress()
             }
+
         }
 
         override fun onConnectionSuspended() {
@@ -205,7 +205,7 @@ class MediaServiceConnection(context: Context, componentName: ComponentName) {
         }
     }
 
-    private fun upProgress() {
+    private fun updateProgress() {
         while (job.isActive) {
             if (mediaController.playbackState.state == PlaybackStateCompat.STATE_PLAYING) {
                 _playState.value = mediaController.playbackState

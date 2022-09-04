@@ -19,23 +19,25 @@ package io.github.mumu12641.lark.ui.theme.color.quantize;
 import java.util.HashMap;
 import java.util.Map;
 
-/** Creates a dictionary with keys of colors, and values of count of the color */
+/**
+ * Creates a dictionary with keys of colors, and values of count of the color
+ */
 public final class QuantizerMap implements Quantizer {
-  Map<Integer, Integer> colorToCount;
+    Map<Integer, Integer> colorToCount;
 
-  @Override
-  public QuantizerResult quantize(int[] pixels, int colorCount) {
-    final HashMap<Integer, Integer> pixelByCount = new HashMap<>();
-    for (int pixel : pixels) {
-      final Integer currentPixelCount = pixelByCount.get(pixel);
-      final int newPixelCount = currentPixelCount == null ? 1 : currentPixelCount + 1;
-      pixelByCount.put(pixel, newPixelCount);
+    @Override
+    public QuantizerResult quantize(int[] pixels, int colorCount) {
+        final HashMap<Integer, Integer> pixelByCount = new HashMap<>();
+        for (int pixel : pixels) {
+            final Integer currentPixelCount = pixelByCount.get(pixel);
+            final int newPixelCount = currentPixelCount == null ? 1 : currentPixelCount + 1;
+            pixelByCount.put(pixel, newPixelCount);
+        }
+        colorToCount = pixelByCount;
+        return new QuantizerResult(pixelByCount);
     }
-    colorToCount = pixelByCount;
-    return new QuantizerResult(pixelByCount);
-  }
 
-  public Map<Integer, Integer> getColorToCount() {
-    return colorToCount;
-  }
+    public Map<Integer, Integer> getColorToCount() {
+        return colorToCount;
+    }
 }

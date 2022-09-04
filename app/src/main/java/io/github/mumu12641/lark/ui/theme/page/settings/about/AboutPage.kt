@@ -64,12 +64,15 @@ fun AboutContent(modifier: Modifier) {
         mutableStateOf(false)
     }
     val uris = listOf(
-        Pair("Seal","https://github.com/JunkFood02/Seal"),
-        Pair("material color utilities","https://github.com/material-foundation/material-color-utilities"),
-        Pair("NeteaseCloudMusicApi","https://github.com/Binaryify/NeteaseCloudMusicApi"),
-        Pair("retrofit","https://github.com/square/retrofit"),
-        Pair("RetroMusicPlayer","https://github.com/RetroMusicPlayer/RetroMusicPlayer"),
-        Pair("Howl","https://github.com/Iamlooker/Howl")
+        Pair("Seal", "https://github.com/JunkFood02/Seal"),
+        Pair(
+            "material color utilities",
+            "https://github.com/material-foundation/material-color-utilities"
+        ),
+        Pair("NeteaseCloudMusicApi", "https://github.com/Binaryify/NeteaseCloudMusicApi"),
+        Pair("retrofit", "https://github.com/square/retrofit"),
+        Pair("RetroMusicPlayer", "https://github.com/RetroMusicPlayer/RetroMusicPlayer"),
+        Pair("Howl", "https://github.com/Iamlooker/Howl")
     )
 
     LazyColumn(modifier = modifier) {
@@ -131,11 +134,16 @@ fun AboutContent(modifier: Modifier) {
             },
             text = {
                 LazyColumn {
-                    items(uris,key = {
+                    items(uris, key = {
                         it.first
                     }) {
-                        Text(text = it.first, modifier = Modifier.fillMaxWidth().clip(
-                            RoundedCornerShape(5.dp)).padding(5.dp).clickable { uriHandler.openUri(it.second) })
+                        Text(text = it.first, modifier = Modifier
+                            .fillMaxWidth()
+                            .clip(
+                                RoundedCornerShape(5.dp)
+                            )
+                            .padding(5.dp)
+                            .clickable { uriHandler.openUri(it.second) })
                     }
                 }
             })

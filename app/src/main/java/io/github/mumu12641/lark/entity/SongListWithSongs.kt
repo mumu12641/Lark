@@ -4,9 +4,9 @@ import androidx.room.Embedded
 import androidx.room.Junction
 import androidx.room.Relation
 
-data class SongListWithSongs (
+data class SongListWithSongs(
     @Embedded
-    val songList:SongList,
+    val songList: SongList,
 
     @Relation(
         parentColumn = "songListId", entityColumn = "songId", associateBy = Junction(

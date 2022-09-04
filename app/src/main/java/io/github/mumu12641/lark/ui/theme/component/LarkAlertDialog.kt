@@ -14,7 +14,7 @@ fun LarkAlertDialog(
     icon: ImageVector? = null,
     text: @Composable () -> Unit,
     confirmOnClick: () -> Unit,
-    confirmText:String,
+    confirmText: String,
     dismissButton: @Composable (() -> Unit)? = null,
 ) {
     AlertDialog(

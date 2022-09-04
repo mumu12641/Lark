@@ -3,6 +3,8 @@ package io.github.mumu12641.lark.ui.theme.page.home
 import android.content.ComponentName
 import android.os.Build
 import android.os.Bundle
+import android.support.v4.media.MediaMetadataCompat
+import android.support.v4.media.session.PlaybackStateCompat
 import android.util.Log
 import androidx.annotation.RequiresApi
 import androidx.lifecycle.ViewModel
@@ -19,6 +21,7 @@ import io.github.mumu12641.lark.service.MediaServiceConnection
 import io.github.mumu12641.lark.service.MediaServiceConnection.Companion.EMPTY_PLAYBACK_STATE
 import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.map
@@ -30,40 +33,58 @@ class MainViewModel @Inject constructor() : ViewModel() {
 
     private val TAG = "MainViewModel"
 
-    lateinit var mediaServiceConnection: MediaServiceConnection
-
-    val currentPlayMetadata by lazy { mediaServiceConnection.playMetadata }
+    var mediaServiceConnection: MediaServiceConnection = MediaServiceConnection(
+        context,
+        ComponentName(context, MediaPlaybackService::class.java)
+    )
 
     val currentPlayState by lazy { mediaServiceConnection.playState }
-
-    val currentPlaySongs by lazy { mediaServiceConnection.playList }
-
-    val currentSongList by lazy { mediaServiceConnection.currentSongList }
-
 
     private val _loadState = MutableStateFlow(Load.NONE)
     val loadState: StateFlow<Int> = _loadState
 
+    private val _homeScreenUiState = MutableStateFlow(HomeScreenUiState())
+    val homeScreenUiState = _homeScreenUiState
+
+    private val _playState = MutableStateFlow(PlayState(mediaServiceConnection))
+    val playState = _playState
+
+    data class PlayState(
+        val currentPlayMetadata: Flow<MediaMetadataCompat>,
+        val currentPlayState: Flow<PlaybackStateCompat>,
+        val currentSongList: Flow<SongList>,
+        val currentPlaySongs: Flow<List<Song>>
+    ) {
+        constructor(mediaServiceConnection: MediaServiceConnection) : this(
+            mediaServiceConnection.playMetadata,
+            mediaServiceConnection.playState,
+            mediaServiceConnection.currentSongList,
+            mediaServiceConnection.playList
+        )
+    }
+
+    data class HomeScreenUiState(
+        val allSongList: Flow<List<SongList>> = DataBaseUtils.queryAllSongList().map {
+            it.filter { songList ->
+                songList.type in 1 until ARTIST_SONGLIST_TYPE
+            }
+        },
+        val artistSongList: Flow<List<SongList>> = DataBaseUtils.queryAllSongList().map {
+            val filterList = it.filter { songList ->
+                songList.type == ARTIST_SONGLIST_TYPE
+            }
+            if (filterList.size <= 5) {
+                return@map filterList
+            } else {
+                return@map filterList.sortedByDescending { songList ->
+                    songList.songNumber
+                }.subList(0, 5)
+            }
+        }
+    )
+
     private val _bannerState = MutableStateFlow<List<Banner.BannerX>>(emptyList())
     val bannerState = _bannerState
-
-    val allSongList = DataBaseUtils.queryAllSongList().map {
-        it.filter { songList ->
-            songList.type in 1 until ARTIST_SONGLIST_TYPE
-        }
-    }
-    val artistSongList = DataBaseUtils.queryAllSongList().map { it ->
-        val filterList = it.filter { songList ->
-            songList.type == ARTIST_SONGLIST_TYPE
-        }
-        if (filterList.size <= 5) {
-            return@map filterList
-        } else {
-            return@map filterList.sortedByDescending { songList ->
-                songList.songNumber
-            }.subList(0, 5)
-        }
-    }
 
     fun addSongList(songList: SongList) {
         viewModelScope.launch(Dispatchers.IO) {
@@ -104,11 +125,6 @@ class MainViewModel @Inject constructor() : ViewModel() {
     }
 
     init {
-        Log.d(TAG, "MainViewModel init")
-        mediaServiceConnection = MediaServiceConnection(
-            context,
-            ComponentName(context, MediaPlaybackService::class.java)
-        )
         viewModelScope.launch(Dispatchers.IO + CoroutineExceptionHandler { _, e ->
             e.message?.let { Log.d(TAG, it) }
         }) {
@@ -158,7 +174,8 @@ class MainViewModel @Inject constructor() : ViewModel() {
                 list.playlist.name,
                 list.playlist.createTime.toString(),
                 list.playlist.trackCount,
-                description = list.playlist.description?: context.getString(R.string.no_description_text),
+                description = list.playlist.description
+                    ?: context.getString(R.string.no_description_text),
                 list.playlist.coverImgUrl,
                 CREATE_SONGLIST_TYPE
             )

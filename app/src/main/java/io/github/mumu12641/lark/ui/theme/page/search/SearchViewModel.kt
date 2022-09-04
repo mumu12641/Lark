@@ -7,7 +7,6 @@ import io.github.mumu12641.lark.entity.EMPTY_URI
 import io.github.mumu12641.lark.entity.LoadState
 import io.github.mumu12641.lark.entity.NOT_BUFFERED
 import io.github.mumu12641.lark.entity.Song
-import io.github.mumu12641.lark.entity.network.SearchSongResponse
 import io.github.mumu12641.lark.network.NetworkCreator.networkService
 import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.Dispatchers

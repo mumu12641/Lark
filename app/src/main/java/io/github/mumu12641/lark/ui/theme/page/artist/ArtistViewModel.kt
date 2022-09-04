@@ -29,7 +29,11 @@ class ArtistViewModel @Inject constructor() : ViewModel() {
     }
 
     var currentSongListId = 1L
-    val songList get() = DataBaseUtils.querySongListFlowById(currentSongListId)
+    val songList
+        get() = DataBaseUtils.querySongListFlowByIdType(
+            currentSongListId,
+            ARTIST_SONGLIST_TYPE
+        )
     val songs
         get() =
             DataBaseUtils.querySongListWithSongsBySongListIdFlow(currentSongListId).map {

@@ -48,12 +48,11 @@ fun PlayPage(
     navController: NavController,
     mainViewModel: MainViewModel
 ) {
-    val currentPlaySongs by mainViewModel.currentPlaySongs.collectAsState(initial = emptyList())
-    val currentSongList by mainViewModel.currentSongList.collectAsState(initial = INIT_SONG_LIST)
-    val currentMetadata =
-        mainViewModel.currentPlayMetadata.collectAsState(initial = NOTHING_PLAYING)
-    val currentPlayState =
-        mainViewModel.currentPlayState.collectAsState(initial = EMPTY_PLAYBACK_STATE)
+    val playState by mainViewModel.playState.collectAsState()
+    val currentPlaySongs by playState.currentPlaySongs.collectAsState(initial = emptyList())
+    val currentSongList by playState.currentSongList.collectAsState(initial = INIT_SONG_LIST)
+
+
     val bottomSheetScaffoldState = rememberBottomSheetScaffoldState(
         bottomSheetState = BottomSheetState(BottomSheetValue.Collapsed)
     )
@@ -96,11 +95,11 @@ fun PlayPage(
                 scaffoldState = bottomSheetScaffoldState,
                 sheetContent = {
                     ShowSongs(
-                        songs = currentPlaySongs,
+                        songsProvider = { currentPlaySongs },
                         modifier = Modifier,
                         top = 0,
                         seekToSong = { songId: Long -> mainViewModel.seekToSong(songId) },
-                        songList = currentSongList
+                        songListProvider = { currentSongList }
                     )
                 },
                 sheetPeekHeight = (BaseApplication.deviceScreen[1] - 615).dp,
@@ -114,8 +113,7 @@ fun PlayPage(
                             .fillMaxSize()
                             .background(MaterialTheme.colorScheme.background),
                         navController,
-                        currentMetadata.value,
-                        currentPlayState.value,
+                        mainViewModel,
                         onClickNext = { mainViewModel.onSkipToNext() },
                         onClickPause = { mainViewModel.onPause() },
                         onClickPlay = { mainViewModel.onPlay() },
@@ -131,14 +129,16 @@ fun PlayPage(
 fun PlayPageContent(
     modifier: Modifier,
     navController: NavController,
-    currentMetadata: MediaMetadataCompat,
-    currentPlayState: PlaybackStateCompat,
+    mainViewModel: MainViewModel,
     onClickPrevious: () -> Unit,
     onClickPlay: () -> Unit,
     onClickPause: () -> Unit,
     onClickNext: () -> Unit,
     onSeekTo: (Long) -> Unit
 ) {
+    val playState by mainViewModel.playState.collectAsState()
+    val currentMetadata by playState.currentPlayMetadata.collectAsState(initial = NOTHING_PLAYING)
+    val currentPlayState by playState.currentPlayState.collectAsState(initial = EMPTY_PLAYBACK_STATE)
     val cornerAlbum: Int by animateIntAsState(if (currentPlayState.state == PlaybackStateCompat.STATE_PLAYING) 100 else 50)
     val cornerButton: Int by animateIntAsState(if (currentPlayState.state == PlaybackStateCompat.STATE_PLAYING) 80 else 28)
 
@@ -193,7 +193,9 @@ fun PlayPageContent(
                         .clickable {
                             applicationScope.launch(Dispatchers.IO) {
                                 val songListId = DataBaseUtils.querySongListId(
-                                    currentMetadata.getString(MediaMetadataCompat.METADATA_KEY_ARTIST).split(",")[0],
+                                    currentMetadata
+                                        .getString(MediaMetadataCompat.METADATA_KEY_ARTIST)
+                                        .split(",")[0],
                                     ARTIST_SONGLIST_TYPE
                                 )
                                 withContext(Dispatchers.Main) {

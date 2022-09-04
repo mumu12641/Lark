@@ -18,11 +18,13 @@ package io.github.mumu12641.lark.ui.theme.color.quantize;
 
 import java.util.Map;
 
-/** Represents result of a quantizer run */
+/**
+ * Represents result of a quantizer run
+ */
 public final class QuantizerResult {
-  public final Map<Integer, Integer> colorToCount;
+    public final Map<Integer, Integer> colorToCount;
 
-  QuantizerResult(Map<Integer, Integer> colorToCount) {
-    this.colorToCount = colorToCount;
-  }
+    QuantizerResult(Map<Integer, Integer> colorToCount) {
+        this.colorToCount = colorToCount;
+    }
 }

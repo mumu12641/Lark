@@ -21,20 +21,22 @@ import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavController
 import io.github.mumu12641.lark.R
+import io.github.mumu12641.lark.entity.Route
+import io.github.mumu12641.lark.service.MediaServiceConnection.Companion.EMPTY_PLAYBACK_STATE
+import io.github.mumu12641.lark.service.MediaServiceConnection.Companion.NOTHING_PLAYING
+import io.github.mumu12641.lark.ui.theme.page.home.MainViewModel
 
 @Composable
 fun FloatingPlayMediaButton(
-    currentMetadata: MediaMetadataCompat,
-    currentPlayState: PlaybackStateCompat,
-    onClickPrevious: () -> Unit,
-    onClickPlay: () -> Unit,
-    onClickPause: () -> Unit,
-    onClickNext: () -> Unit,
-    onClickToPlayPage: () -> Unit
+    mainViewModel: MainViewModel,
+    navController: NavController
 ) {
     var extend by remember { mutableStateOf(false) }
-
+    val playState by mainViewModel.playState.collectAsState()
+    val currentMetadata by playState.currentPlayMetadata.collectAsState(initial = NOTHING_PLAYING)
+    val currentPlayState by playState.currentPlayState.collectAsState(initial = EMPTY_PLAYBACK_STATE)
     Row(
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.Center,
@@ -51,18 +53,18 @@ fun FloatingPlayMediaButton(
             exit = slideOutVertically() + shrinkVertically() + fadeOut()
         ) {
             ControlPlayBar(
-                onClickToPlayPage,
                 currentMetadata,
-                onClickPrevious,
                 currentPlayState,
-                onClickPause,
-                onClickPlay,
-                onClickNext
+                { navController.navigate(Route.ROUTE_PLAY_PAGE) },
+                { mainViewModel.onSkipToPrevious() },
+                { mainViewModel.onPause() },
+                { mainViewModel.onPlay() },
+                { mainViewModel.onSkipToNext() }
             )
         }
-        if(currentPlayState.state == PlaybackStateCompat.STATE_BUFFERING){
+        if (currentPlayState.state == PlaybackStateCompat.STATE_BUFFERING) {
             CircularProgressIndicator()
-        }else {
+        } else {
             AsyncImage(
                 modifier = Modifier
                     .size(60.dp)
@@ -101,10 +103,10 @@ private fun infiniteRotation(
 
 @Composable
 private fun ControlPlayBar(
-    onClickToPlayPage: () -> Unit,
     currentMetadata: MediaMetadataCompat,
-    onClickPrevious: () -> Unit,
     currentPlayState: PlaybackStateCompat,
+    onClickToPlayPage: () -> Unit,
+    onClickPrevious: () -> Unit,
     onClickPause: () -> Unit,
     onClickPlay: () -> Unit,
     onClickNext: () -> Unit

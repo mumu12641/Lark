@@ -69,7 +69,7 @@ fun SongListAlbumCard(
                     imageModel = songList.imageFileUri,
                     failure = R.drawable.favorite
                 )
-                SongListPicture (modifier, R.drawable.favorite)
+                SongListPicture(modifier, R.drawable.favorite)
             }
         } else {
             AsyncImage(
@@ -93,7 +93,7 @@ fun SongListPicture(modifier: Modifier, @DrawableRes id: Int) {
 @Composable
 fun SongListItemRow(
     songList: SongList,
-    onClick:() -> Unit
+    onClick: () -> Unit
 ) {
     Row(
         verticalAlignment = Alignment.CenterVertically,
@@ -113,8 +113,8 @@ fun SongListItemRow(
                 .clip(RoundedCornerShape(10.dp)),
             imageModel = songList.imageFileUri,
             failure =
-                if (songList.type == 1) R.drawable.favorite
-                else R.drawable.album
+            if (songList.type == 1) R.drawable.favorite
+            else R.drawable.album
 
         )
         Column(
@@ -128,7 +128,10 @@ fun SongListItemRow(
                 softWrap = false,
                 overflow = TextOverflow.Ellipsis
             )
-            Text(text = songList.songNumber.toString() + stringResource(id = R.string.songs_text), style = MaterialTheme.typography.bodySmall)
+            Text(
+                text = songList.songNumber.toString() + stringResource(id = R.string.songs_text),
+                style = MaterialTheme.typography.bodySmall
+            )
         }
     }
 }
