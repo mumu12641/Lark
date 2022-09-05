@@ -38,6 +38,8 @@ class DataBaseUtils {
 
         suspend fun insertSong(song: Song): Long {
             val id = musicDao.insertSong(song)
+
+            // 更新艺术家歌曲
             val singerList = song.songSinger.split(",")
             for (i in singerList) {
                 if (!isSongListExist(i, ARTIST_SONGLIST_TYPE)) {
@@ -72,7 +74,8 @@ class DataBaseUtils {
         fun querySongListFlowById(songListId: Long): Flow<SongList> {
             return musicDao.querySongListFlowById(songListId)
         }
-        fun querySongListFlowByIdType(songListId: Long,type: Int):Flow<SongList>{
+
+        fun querySongListFlowByIdType(songListId: Long, type: Int): Flow<SongList> {
             return musicDao.querySongListFlowByIdType(songListId, type)
         }
 

@@ -38,10 +38,12 @@ class MainViewModel @Inject constructor() : ViewModel() {
         ComponentName(context, MediaPlaybackService::class.java)
     )
 
-    val currentPlayState by lazy { mediaServiceConnection.playState }
+    private val currentPlayState by lazy { mediaServiceConnection.playState }
 
     private val _loadState = MutableStateFlow(Load.NONE)
     val loadState: StateFlow<Int> = _loadState
+
+    val currentPosition by lazy { mediaServiceConnection.currentPosition }
 
     private val _homeScreenUiState = MutableStateFlow(HomeScreenUiState())
     val homeScreenUiState = _homeScreenUiState
@@ -53,13 +55,15 @@ class MainViewModel @Inject constructor() : ViewModel() {
         val currentPlayMetadata: Flow<MediaMetadataCompat>,
         val currentPlayState: Flow<PlaybackStateCompat>,
         val currentSongList: Flow<SongList>,
-        val currentPlaySongs: Flow<List<Song>>
+        val currentPlaySongs: Flow<List<Song>>,
+        val lyrics: Flow<List<String>>
     ) {
         constructor(mediaServiceConnection: MediaServiceConnection) : this(
             mediaServiceConnection.playMetadata,
             mediaServiceConnection.playState,
             mediaServiceConnection.currentSongList,
-            mediaServiceConnection.playList
+            mediaServiceConnection.playList,
+            mediaServiceConnection.lyrics
         )
     }
 
@@ -183,6 +187,7 @@ class MainViewModel @Inject constructor() : ViewModel() {
                 songlist
             )
             for (i in tracks.songs) {
+                val lyrics = networkService.getLyric(i.id.toLong()).lrc.lyric
                 val song = Song(
                     0L,
                     i.name,
@@ -191,7 +196,8 @@ class MainViewModel @Inject constructor() : ViewModel() {
                     EMPTY_URI + i.al.picUrl,
                     i.dt,
                     neteaseId = i.id.toLong(),
-                    isBuffered = NOT_BUFFERED
+                    isBuffered = NOT_BUFFERED,
+                    lyrics = lyrics
                 )
                 if (!DataBaseUtils.isNeteaseIdExist(i.id.toLong())) {
                     DataBaseUtils.insertSong(song)

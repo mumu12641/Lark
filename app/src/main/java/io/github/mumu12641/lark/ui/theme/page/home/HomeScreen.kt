@@ -42,6 +42,7 @@ import io.github.mumu12641.lark.MainActivity.Companion.context
 import io.github.mumu12641.lark.R
 import io.github.mumu12641.lark.entity.*
 import io.github.mumu12641.lark.entity.network.Banner.BannerX
+import io.github.mumu12641.lark.network.NetworkCreator.networkService
 import io.github.mumu12641.lark.room.DataBaseUtils
 import io.github.mumu12641.lark.ui.theme.component.*
 import io.github.mumu12641.lark.ui.theme.util.StringUtil
@@ -231,6 +232,7 @@ private fun Banner(
 
     val onClick: (page: Int) -> Unit = { page ->
         applicationScope.launch(Dispatchers.IO) {
+            val lyrics = networkService.getLyric(banner[page].song.id.toLong()).lrc.lyric
             val song = Song(
                 0L,
                 banner[page].song.name,
@@ -240,6 +242,7 @@ private fun Banner(
                 duration = 0,
                 isBuffered = NOT_BUFFERED,
                 neteaseId = banner[page].song.id.toLong(),
+                lyrics = lyrics
             )
             val async = async {
                 if (!DataBaseUtils.isNeteaseIdExist(song.neteaseId)) {

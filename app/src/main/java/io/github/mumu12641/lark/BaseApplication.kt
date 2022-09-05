@@ -17,7 +17,7 @@ class BaseApplication : Application() {
     override fun onCreate() {
         super.onCreate()
         context = applicationContext
-        applicationScope  = CoroutineScope(SupervisorJob())
+        applicationScope = CoroutineScope(SupervisorJob())
         MMKV.initialize(this)
         kv = MMKV.defaultMMKV()
         if (kv.decodeInt("first") == 0) {
@@ -25,18 +25,19 @@ class BaseApplication : Application() {
             kv.encode("userName", context.getString(R.string.user))
         }
         deviceScreen = getAndroidScreenProperty()
-        version = packageManager.getPackageInfo(packageName,0).versionName
+        version = packageManager.getPackageInfo(packageName, 0).versionName
     }
+
     companion object {
         @SuppressLint("StaticFieldLeak")
         lateinit var context: Context
-        lateinit var deviceScreen:List<Int>
+        lateinit var deviceScreen: List<Int>
         lateinit var applicationScope: CoroutineScope
-        lateinit var version:String
-        lateinit var kv:MMKV
+        lateinit var version: String
+        lateinit var kv: MMKV
     }
 
-    private fun getAndroidScreenProperty():List<Int> {
+    private fun getAndroidScreenProperty(): List<Int> {
         val wm = this.getSystemService(WINDOW_SERVICE) as WindowManager
         val dm = DisplayMetrics()
         wm.defaultDisplay.getMetrics(dm)
@@ -47,7 +48,7 @@ class BaseApplication : Application() {
         // 屏幕宽度算法:屏幕宽度（像素）/屏幕密度
         val screenWidth = (width / density).toInt() // 屏幕宽度(dp)
         val screenHeight = (height / density).toInt() // 屏幕高度(dp)
-        return listOf(screenWidth,screenHeight)
+        return listOf(screenWidth, screenHeight)
     }
 
 }

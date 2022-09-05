@@ -76,4 +76,6 @@
     <string name="sry_no_netease_text">Sorry, the NetEase cloud playlist information could not be obtained</string>
     <string name="sry_no_url_text">Sorry, failed to get url info from clipboard</string>
     <string name="see_all_text">See all</string>
+    <string name="next_to_play_text">Next to play</string>
+    <string name="lyrics_text">Lyrics</string>
 </resources>

@@ -1,6 +1,5 @@
 package io.github.mumu12641.lark.network
 
-import android.util.Log
 import io.github.mumu12641.lark.BaseApplication.Companion.kv
 import okhttp3.Interceptor
 import okhttp3.OkHttpClient
@@ -29,7 +28,6 @@ object NetworkCreator {
     val networkService: NetworkService = retrofit.create(NetworkService::class.java)
 
 
-
 }
 
 class ReceivedCookiesInterceptor : Interceptor {
@@ -45,7 +43,6 @@ class ReceivedCookiesInterceptor : Interceptor {
             if (kv.decodeStringSet("cookie") == null) {
                 kv.encode("cookie", cookies)
             }
-            Log.d("Retrofit", "intercept: ")
         }
         return originalResponse
     }
@@ -59,7 +56,6 @@ class AddCookiesInterceptor : Interceptor {
             for (cookie in cookies) {
                 builder.addHeader("Cookie", cookie)
             }
-            Log.d("Retrofit", "intercept: add cookie")
         }
         return chain.proceed(builder.build())
     }

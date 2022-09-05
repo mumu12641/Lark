@@ -76,4 +76,6 @@
     <string name="sry_no_netease_text">抱歉，未能获取到网易云歌单信息</string>
     <string name="sry_no_url_text">抱歉，未能从剪切板获取网址信息</string>
     <string name="see_all_text">更多</string>
+    <string name="next_to_play_text">接下来播放</string>
+    <string name="lyrics_text">歌词</string>
 </resources>

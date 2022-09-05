@@ -5,7 +5,7 @@ data class SearchHot(
     val `data`: List<Data>,
     val message: String
 
-){
+) {
     data class Data(
         val alg: String,
         val content: String,

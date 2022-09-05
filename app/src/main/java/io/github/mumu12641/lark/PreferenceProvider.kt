@@ -12,10 +12,13 @@ import io.github.mumu12641.lark.ui.theme.util.PreferenceUtil.ON
 
 val LocalDarkTheme = compositionLocalOf { FOLLOW_SYSTEM }
 val LocalSeedColor = compositionLocalOf { DEFAULT_SEED_COLOR }
+
 @SuppressLint("CompositionLocalNaming")
 val CurrentAlbumColor = compositionLocalOf { DEFAULT_SEED_COLOR }
+
 @SuppressLint("CompositionLocalNaming")
 val FollowAlbumSwitch = compositionLocalOf { ON }
+
 @SuppressLint("CompositionLocalNaming")
 val DynamicColorSwitch = compositionLocalOf { PreferenceUtil.DynamicPreference() }
 val displayPreferenceFlow = PreferenceUtil.displayPreferenceFlow

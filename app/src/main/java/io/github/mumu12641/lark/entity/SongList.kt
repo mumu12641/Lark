@@ -12,6 +12,6 @@ data class SongList(
     var songNumber: Int,
     var description: String,
     var imageFileUri: String,
-    var type:Int,
+    var type: Int,
     var recentPlay: Date? = null
 )

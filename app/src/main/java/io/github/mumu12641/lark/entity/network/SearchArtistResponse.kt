@@ -3,8 +3,7 @@ package io.github.mumu12641.lark.entity.network
 import com.google.gson.annotations.SerializedName
 
 
-
-data class SearchArtistResponse(val code: Int, val result: SearchResult){
+data class SearchArtistResponse(val code: Int, val result: SearchResult) {
 
     data class SearchResult(val artistCount: Int, val artists: List<StdArtistData>)
 
@@ -16,7 +15,7 @@ data class SearchArtistResponse(val code: Int, val result: SearchResult){
 
 }
 
-data class ArtistDetailsResponse(val code: Int,val data: ArtistDetailsData){
+data class ArtistDetailsResponse(val code: Int, val data: ArtistDetailsData) {
     data class ArtistDetailsData(
         val artist: Artist,
     )

@@ -15,7 +15,6 @@ import android.support.v4.media.MediaBrowserCompat
 import android.support.v4.media.MediaMetadataCompat
 import android.support.v4.media.session.MediaSessionCompat
 import android.support.v4.media.session.PlaybackStateCompat
-import android.util.Log
 import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.core.app.NotificationCompat
@@ -172,7 +171,11 @@ class MediaPlaybackService : MediaBrowserServiceCompat() {
     }
 
     private fun createMetadataFromSong(song: Song): MediaMetadataCompat = with(song) {
-        MediaMetadataCompat.Builder()
+        val builder = MediaMetadataCompat.Builder()
+        this.lyrics?.let {
+            builder.putString(MediaMetadataCompat.METADATA_KEY_COMPOSER, it)
+        }
+        builder
             .putString(MediaMetadataCompat.METADATA_KEY_MEDIA_ID, songId.toString())
             .putString(MediaMetadataCompat.METADATA_KEY_TITLE, songTitle)
             .putString(MediaMetadataCompat.METADATA_KEY_ARTIST, songSinger)
@@ -181,7 +184,6 @@ class MediaPlaybackService : MediaBrowserServiceCompat() {
             .putString(MediaMetadataCompat.METADATA_KEY_MEDIA_URI, mediaFileUri)
             .putLong(MediaMetadataCompat.METADATA_KEY_DISC_NUMBER, neteaseId)
             .build()
-
     }
 
     private fun updatePlayBackState(state: Int) {
@@ -241,9 +243,6 @@ class MediaPlaybackService : MediaBrowserServiceCompat() {
             @RequiresApi(Build.VERSION_CODES.M)
             override fun onMediaItemTransition(mediaItem: MediaItem?, reason: Int) {
                 super.onMediaItemTransition(mediaItem, reason)
-
-                Log.d(TAG, "onMediaItemTransition")
-
                 val song = currentPlayList[mExoPlayer.currentMediaItemIndex]
                 val index = mExoPlayer.currentMediaItemIndex
 
@@ -258,8 +257,7 @@ class MediaPlaybackService : MediaBrowserServiceCompat() {
                     else -> {
 
                         currentPlaySong = song
-                        if (!isBuffering){
-                            Log.d(TAG, "onMediaItemTransition: $song")
+                        if (!isBuffering) {
                             updateAllData()
                         }
                     }

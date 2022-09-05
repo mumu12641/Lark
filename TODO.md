@@ -60,7 +60,9 @@ homescreen ui improment wip
 
 code 重构
 
-搜索！
+**搜索！**
+
+**歌词**
 
 导入歌单之后的艺术家歌单要更改一下逻辑	done
 
@@ -79,6 +81,8 @@ Youtube API
 感觉funtionTab可以写在一个page里面
 
 
+
+***解决了卡顿！！！！！！！！！！！！！！！***
 
 
 

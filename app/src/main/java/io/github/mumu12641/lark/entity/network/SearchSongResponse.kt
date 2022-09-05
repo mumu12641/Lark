@@ -31,6 +31,6 @@ data class SearchSongResponse(
     )
 
     data class Privilege(
-        val fee:Int
+        val fee: Int
     )
 }

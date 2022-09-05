@@ -13,7 +13,6 @@ import android.support.v4.media.MediaMetadataCompat
 import android.support.v4.media.session.MediaControllerCompat
 import android.support.v4.media.session.MediaSessionCompat
 import android.support.v4.media.session.PlaybackStateCompat
-import android.util.Log
 import android.widget.RemoteViews
 import androidx.annotation.RequiresApi
 import androidx.palette.graphics.Palette
@@ -52,6 +51,11 @@ class MediaServiceConnection(context: Context, componentName: ComponentName) {
     private val _currentSongList = MutableStateFlow(INIT_SONG_LIST)
     val currentSongList = _currentSongList
 
+    private val _currentPosition = MutableStateFlow(0L)
+    val currentPosition = _currentPosition
+
+    private val _lyrics = MutableStateFlow(emptyList<String>())
+    val lyrics = _lyrics
 
     val transportControls: MediaControllerCompat.TransportControls
         get() = mediaController.transportControls
@@ -90,10 +94,15 @@ class MediaServiceConnection(context: Context, componentName: ComponentName) {
         @RequiresApi(Build.VERSION_CODES.M)
         override fun onMetadataChanged(metadata: MediaMetadataCompat?) {
             _playMetadata.value = metadata ?: NOTHING_PLAYING
-            Log.d(TAG, "onMetadataChanged: " + metadata?.getString(MediaMetadataCompat.METADATA_KEY_TITLE))
+            metadata?.getString(MediaMetadataCompat.METADATA_KEY_COMPOSER)?.let {
+                val list = regex.split(it.replace("\\s".toRegex(), ""))
+                _lyrics.value = list
+            } ?: run {
+                _lyrics.value = emptyList()
+            }
             updateCurrentAlbumColor(metadata)
             updateWidgetMetadata(metadata)
-            applicationScope.launch(Dispatchers.IO + CoroutineExceptionHandler { _, _ ->  }) {
+            applicationScope.launch(Dispatchers.IO + CoroutineExceptionHandler { _, _ -> }) {
                 val id = metadata?.getString(MediaMetadataCompat.METADATA_KEY_MEDIA_ID)?.toLong()
                 val song = DataBaseUtils.querySongById(id!!)
                 DataBaseUtils.querySongById(id)
@@ -130,7 +139,7 @@ class MediaServiceConnection(context: Context, componentName: ComponentName) {
     }
 
     private fun updateCurrentAlbumColor(metadata: MediaMetadataCompat?) {
-        applicationScope.launch(Dispatchers.IO + CoroutineExceptionHandler { _, _ -> {} }) {
+        applicationScope.launch(Dispatchers.IO + CoroutineExceptionHandler { _, _ -> }) {
             val id = metadata?.getString(MediaMetadataCompat.METADATA_KEY_MEDIA_ID)?.toLong()
             val song = DataBaseUtils.querySongById(id!!)
             val bitmap: Bitmap = Glide
@@ -162,7 +171,7 @@ class MediaServiceConnection(context: Context, componentName: ComponentName) {
                 children: MutableList<MediaBrowserCompat.MediaItem>
             ) {
                 super.onChildrenLoaded(parentId, children)
-                Log.d("TAG", "onChildrenLoaded: $children")
+//                Log.d("TAG", "onChildrenLoaded: $children")
                 scope.launch {
                     if (kv
                             .decodeLong("lastPlaySongList") == 0L || kv
@@ -208,7 +217,8 @@ class MediaServiceConnection(context: Context, componentName: ComponentName) {
     private fun updateProgress() {
         while (job.isActive) {
             if (mediaController.playbackState.state == PlaybackStateCompat.STATE_PLAYING) {
-                _playState.value = mediaController.playbackState
+//                _playState.value = mediaController.playbackState
+                _currentPosition.value = mediaController.playbackState.position
             }
         }
     }
@@ -352,14 +362,8 @@ class MediaServiceConnection(context: Context, componentName: ComponentName) {
             .putLong(MediaMetadataCompat.METADATA_KEY_DURATION, 0)
             .putString(METADATA_KEY_ARTIST, "未知艺术家")
             .build()
+        val regex = Regex("(\\[\\d{2}:\\d{2}.\\d{2,}\\])(.*?)")
 
-        val BUFFERING_METADATA:MediaMetadataCompat = MediaMetadataCompat.Builder()
-            .putString(MediaMetadataCompat.METADATA_KEY_MEDIA_ID, "")
-            .putString(MediaMetadataCompat.METADATA_KEY_ALBUM_ART_URI, "buffer")
-            .putString(MediaMetadataCompat.METADATA_KEY_TITLE, "歌曲缓冲中")
-            .putLong(MediaMetadataCompat.METADATA_KEY_DURATION, 0)
-            .putString(METADATA_KEY_ARTIST, "")
-            .build()
     }
 
     private val TAG: String = "MediaServiceConnection"

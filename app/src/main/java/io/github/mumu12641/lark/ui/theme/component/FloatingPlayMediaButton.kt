@@ -2,7 +2,7 @@ package io.github.mumu12641.lark.ui.theme.component
 
 import android.support.v4.media.MediaMetadataCompat
 import android.support.v4.media.session.PlaybackStateCompat
-import androidx.compose.animation.*
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.*
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -38,19 +38,13 @@ fun FloatingPlayMediaButton(
     val currentMetadata by playState.currentPlayMetadata.collectAsState(initial = NOTHING_PLAYING)
     val currentPlayState by playState.currentPlayState.collectAsState(initial = EMPTY_PLAYBACK_STATE)
     Row(
-        verticalAlignment = Alignment.CenterVertically,
+        verticalAlignment = Alignment.Bottom,
         horizontalArrangement = Arrangement.Center,
         modifier = Modifier.padding(bottom = 10.dp)
     ) {
         val rotation = infiniteRotation(currentPlayState.state == PlaybackStateCompat.STATE_PLAYING)
         AnimatedVisibility(
-            visible = extend,
-            enter = expandVertically(
-                expandFrom = Alignment.Top
-            ) + fadeIn(
-                initialAlpha = 0.3f
-            ),
-            exit = slideOutVertically() + shrinkVertically() + fadeOut()
+            visible = extend
         ) {
             ControlPlayBar(
                 currentMetadata,
@@ -69,10 +63,10 @@ fun FloatingPlayMediaButton(
                 modifier = Modifier
                     .size(60.dp)
                     .clip(CircleShape)
+                    .clickable { extend = !extend }
                     .graphicsLayer {
                         rotationZ = rotation.value
-                    }
-                    .clickable { extend = !extend },
+                    },
                 imageModel = currentMetadata.getString(MediaMetadataCompat.METADATA_KEY_ALBUM_ART_URI),
                 failure = R.drawable.ic_baseline_music_note_24
             )
@@ -117,8 +111,10 @@ private fun ControlPlayBar(
             .clip(RoundedCornerShape(20.dp))
             .background(MaterialTheme.colorScheme.secondaryContainer)
             .clickable(onClick = onClickToPlayPage),
+        contentAlignment = Alignment.Center
+
     ) {
-        Column(Modifier.padding(10.dp)) {
+        Column(Modifier.padding(5.dp)) {
             Row(
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.Center,

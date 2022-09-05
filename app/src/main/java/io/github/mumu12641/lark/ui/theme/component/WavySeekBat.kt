@@ -55,7 +55,7 @@ val DefaultSliderConstraints =
 
 @Composable
 fun WavySeekbar(
-    value: Float,
+    valueProvider: () -> Float,
     onValueChange: (Float) -> Unit,
     modifier: Modifier = Modifier,
     enabled: Boolean = true,
@@ -65,6 +65,7 @@ fun WavySeekbar(
     interactionSource: MutableInteractionSource = remember { MutableInteractionSource() },
     colors: SliderColors = SliderDefaults.colors()
 ) {
+    val value = valueProvider()
     val onValueChangeState = rememberUpdatedState(onValueChange)
     BoxWithConstraints(
         modifier

@@ -2,7 +2,6 @@ package io.github.mumu12641.lark.ui.theme.page.artist
 
 import android.util.Log
 import android.widget.Toast
-import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -27,16 +26,13 @@ import androidx.compose.ui.window.Dialog
 import androidx.navigation.NavController
 import io.github.mumu12641.lark.BaseApplication.Companion.context
 import io.github.mumu12641.lark.R
-import io.github.mumu12641.lark.entity.*
+import io.github.mumu12641.lark.entity.INIT_SONG_LIST
+import io.github.mumu12641.lark.entity.LoadState
 import io.github.mumu12641.lark.ui.theme.component.AsyncImage
 import io.github.mumu12641.lark.ui.theme.component.LarkSmallTopBar
 import io.github.mumu12641.lark.ui.theme.component.TextFieldDialog
 import io.github.mumu12641.lark.ui.theme.page.details.PlayButton
 import io.github.mumu12641.lark.ui.theme.page.details.ShowArtistSongs
-import io.github.mumu12641.lark.ui.theme.page.function.FunctionViewModel
-import io.github.mumu12641.lark.ui.theme.page.function.LoadAnimation
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable

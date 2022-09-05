@@ -7,17 +7,18 @@ import java.util.*
 
 @Entity
 data class Song(
-    @PrimaryKey(autoGenerate = true) var songId:Long,
+    @PrimaryKey(autoGenerate = true) var songId: Long,
     var songTitle: String,
     var songSinger: String,
     var songAlbumFileUri: String,
     var mediaFileUri: String,
-    var duration:Int,
+    var duration: Int,
     var recentPlay: Date? = null,
-    var neteaseId:Long = 0L,
-    var isBuffered:Int = NOT_NEED_BUFFER,
-    var vip:Boolean = false
-){
+    var neteaseId: Long = 0L,
+    var isBuffered: Int = NOT_NEED_BUFFER,
+    var vip: Boolean = false,
+    var lyrics: String? = null
+) {
     override fun equals(other: Any?): Boolean {
         return (other as Song).songId == this.songId
     }
