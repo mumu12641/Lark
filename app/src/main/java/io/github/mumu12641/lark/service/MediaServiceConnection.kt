@@ -102,6 +102,8 @@ class MediaServiceConnection(context: Context, componentName: ComponentName) {
             }
             updateCurrentAlbumColor(metadata)
             updateWidgetMetadata(metadata)
+
+            // 历史播放
             applicationScope.launch(Dispatchers.IO + CoroutineExceptionHandler { _, _ -> }) {
                 val id = metadata?.getString(MediaMetadataCompat.METADATA_KEY_MEDIA_ID)?.toLong()
                 val song = DataBaseUtils.querySongById(id!!)

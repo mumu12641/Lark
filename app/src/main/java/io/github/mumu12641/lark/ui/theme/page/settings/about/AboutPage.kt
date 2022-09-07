@@ -27,7 +27,6 @@ import io.github.mumu12641.lark.BaseApplication.Companion.version
 import io.github.mumu12641.lark.R
 import io.github.mumu12641.lark.ui.theme.component.LarkTopBar
 import io.github.mumu12641.lark.ui.theme.component.SettingItem
-import io.github.mumu12641.lark.ui.theme.component.adapterSystemBar
 import io.github.mumu12641.lark.ui.theme.component.adapterSystemPadding
 
 @OptIn(ExperimentalMaterial3Api::class)

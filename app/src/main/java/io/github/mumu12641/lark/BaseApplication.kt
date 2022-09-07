@@ -15,7 +15,7 @@ import kotlinx.coroutines.SupervisorJob
 
 @HiltAndroidApp
 class BaseApplication : Application() {
-    private  val TAG = "BaseApplication"
+    private val TAG = "BaseApplication"
     override fun onCreate() {
         super.onCreate()
         context = applicationContext

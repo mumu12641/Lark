@@ -20,7 +20,7 @@ data class Song(
     var lyrics: String? = null
 ) {
     override fun equals(other: Any?): Boolean {
-        return (other as Song).songId == this.songId
+        return (other as Song).songId == this.songId && other.neteaseId == this.neteaseId
     }
 
     override fun hashCode(): Int {

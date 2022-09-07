@@ -33,9 +33,7 @@ fun SongDetailBottomSheet(
     song: Song,
     addToSongList: () -> Unit
 ) {
-
     val scope = rememberCoroutineScope()
-
     Column(
         modifier = Modifier.padding(start = 20.dp, end = 20.dp, bottom = 20.dp, top = 0.dp)
     ) {
@@ -61,11 +59,15 @@ fun SongDetailBottomSheet(
                 modifier = Modifier.weight(1f),
                 onClick = {
                     scope.launch(Dispatchers.IO) {
-                        if (!DataBaseUtils.isRefExist(LikeSongListId, song.songId)) {
+                        var id = song.songId
+                        if (song.songId == 0L) {
+                            id = DataBaseUtils.insertSong(song)
+                        }
+                        if (!DataBaseUtils.isRefExist(LikeSongListId, id)) {
                             DataBaseUtils.insertRef(
                                 PlaylistSongCrossRef(
                                     LikeSongListId,
-                                    song.songId
+                                    id
                                 )
                             )
                             withContext(Dispatchers.Main) {

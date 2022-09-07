@@ -2,7 +2,6 @@ package io.github.mumu12641.lark.ui.theme.page.function
 
 import android.annotation.SuppressLint
 import android.os.Build
-import android.util.Log
 import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.compose.animation.*
@@ -40,7 +39,6 @@ import io.github.mumu12641.lark.R
 import io.github.mumu12641.lark.entity.*
 import io.github.mumu12641.lark.room.DataBaseUtils
 import io.github.mumu12641.lark.ui.theme.component.*
-import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -110,14 +108,12 @@ fun FunctionPage(
                         if (showDialog) {
                             AddToSongListDialog(
                                 { allSongList },
-                                coroutineScope,
-                                viewModel,
+                                currentShowSong!!,
                                 showAddDialogFunction = { showAddDialog = it },
                                 showDialogFunction = { showDialog = it }
                             )
                         } else if (showAddDialog) {
                             CreateSongListDialog(
-                                coroutineScope,
                                 text,
                                 showAddDialogFunction = { showAddDialog = it },
                                 changeText = { text = it })
@@ -317,12 +313,12 @@ fun LoadAnimation(modifier: Modifier) {
 
 
 @Composable
-private fun CreateSongListDialog(
-    coroutineScope: CoroutineScope,
+fun CreateSongListDialog(
     text: String,
     showAddDialogFunction: (Boolean) -> Unit,
     changeText: (String) -> Unit
 ) {
+    val coroutineScope = rememberCoroutineScope()
     TextFieldDialog(
         onDismissRequest = { showAddDialogFunction(false) },
         title = stringResource(id = R.string.add_songlist_text),
@@ -335,8 +331,8 @@ private fun CreateSongListDialog(
                         text,
                         "2022/7/22",
                         0,
-                        "test",
-                        "null",
+                        "",
+                        "",
                         2
                     )
                 )
@@ -353,14 +349,14 @@ private fun CreateSongListDialog(
 }
 
 @Composable
-private fun AddToSongListDialog(
+fun AddToSongListDialog(
     allSongListProvider: () -> List<SongList>,
-    coroutineScope: CoroutineScope,
-    viewModel: FunctionViewModel,
+    currentShowSong: Song,
     showDialogFunction: (Boolean) -> Unit,
     showAddDialogFunction: (Boolean) -> Unit
 ) {
     val allSongList = allSongListProvider()
+    val scope = rememberCoroutineScope()
     LarkAlertDialog(
         onDismissRequest = { showDialogFunction(false) },
         title = stringResource(id = R.string.add_to_song_list_text),
@@ -371,18 +367,13 @@ private fun AddToSongListDialog(
                     it.songListId
                 }) { item: SongList ->
                     SongListItemRow(item) {
-                        coroutineScope.launch(Dispatchers.IO) {
-                            if (!DataBaseUtils.isRefExist(
-                                    item.songListId,
-                                    viewModel.currentShowSong.value!!.songId
-                                )
-                            ) {
-                                DataBaseUtils.insertRef(
-                                    PlaylistSongCrossRef(
-                                        item.songListId,
-                                        viewModel.currentShowSong.value!!.songId
-                                    )
-                                )
+                        scope.launch(Dispatchers.IO) {
+                            var id = currentShowSong.songId
+                            if (currentShowSong.songId == 0L) {
+                                id = DataBaseUtils.insertSong(currentShowSong)
+                            }
+                            if (!DataBaseUtils.isRefExist(item.songListId, id)) {
+                                DataBaseUtils.insertRef(PlaylistSongCrossRef(item.songListId, id))
                                 withContext(Dispatchers.Main) {
                                     Toast.makeText(
                                         context,

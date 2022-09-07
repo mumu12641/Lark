@@ -37,9 +37,10 @@ class DataBaseUtils {
         }
 
         suspend fun insertSong(song: Song): Long {
+            if (isNeteaseIdExist(song.neteaseId)) {
+                return querySongIdByNeteaseId(song.neteaseId)
+            }
             val id = musicDao.insertSong(song)
-
-            // 更新艺术家歌曲
             val singerList = song.songSinger.split(",")
             for (i in singerList) {
                 if (!isSongListExist(i, ARTIST_SONGLIST_TYPE)) {
@@ -63,6 +64,7 @@ class DataBaseUtils {
                     )
                 }
             }
+
             return id
         }
 
@@ -160,11 +162,6 @@ class DataBaseUtils {
         suspend fun updateSong(song: Song) {
             musicDao.updateSong(song)
         }
-
-//        suspend fun insertSongToArtist(song: Song) {
-//
-//
-//        }
 
     }
 

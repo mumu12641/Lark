@@ -20,7 +20,6 @@ import io.github.mumu12641.lark.R
 import io.github.mumu12641.lark.entity.SongList
 import io.github.mumu12641.lark.ui.theme.component.ArtistIcon
 import io.github.mumu12641.lark.ui.theme.component.LarkSmallTopBar
-import io.github.mumu12641.lark.ui.theme.component.adapterSystemBar
 import io.github.mumu12641.lark.ui.theme.component.adapterSystemPadding
 
 @OptIn(ExperimentalMaterial3Api::class)

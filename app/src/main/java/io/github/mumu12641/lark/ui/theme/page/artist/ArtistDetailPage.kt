@@ -2,7 +2,6 @@ package io.github.mumu12641.lark.ui.theme.page.artist
 
 import android.util.Log
 import android.widget.Toast
-import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
@@ -30,7 +29,10 @@ import io.github.mumu12641.lark.entity.INIT_SONG_LIST
 import io.github.mumu12641.lark.entity.LoadState
 import io.github.mumu12641.lark.entity.Song
 import io.github.mumu12641.lark.entity.SongList
-import io.github.mumu12641.lark.ui.theme.component.*
+import io.github.mumu12641.lark.ui.theme.component.AsyncImage
+import io.github.mumu12641.lark.ui.theme.component.LarkSmallTopBar
+import io.github.mumu12641.lark.ui.theme.component.TextFieldDialog
+import io.github.mumu12641.lark.ui.theme.component.adapterSystemPadding
 import io.github.mumu12641.lark.ui.theme.page.details.PlayButton
 import io.github.mumu12641.lark.ui.theme.page.details.ShowArtistSongs
 
