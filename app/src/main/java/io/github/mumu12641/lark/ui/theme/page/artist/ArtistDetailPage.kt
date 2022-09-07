@@ -28,9 +28,9 @@ import io.github.mumu12641.lark.BaseApplication.Companion.context
 import io.github.mumu12641.lark.R
 import io.github.mumu12641.lark.entity.INIT_SONG_LIST
 import io.github.mumu12641.lark.entity.LoadState
-import io.github.mumu12641.lark.ui.theme.component.AsyncImage
-import io.github.mumu12641.lark.ui.theme.component.LarkSmallTopBar
-import io.github.mumu12641.lark.ui.theme.component.TextFieldDialog
+import io.github.mumu12641.lark.entity.Song
+import io.github.mumu12641.lark.entity.SongList
+import io.github.mumu12641.lark.ui.theme.component.*
 import io.github.mumu12641.lark.ui.theme.page.details.PlayButton
 import io.github.mumu12641.lark.ui.theme.page.details.ShowArtistSongs
 
@@ -52,6 +52,7 @@ fun ArtistDetailPage(
             .nestedScroll(scrollBehavior.nestedScrollConnection),
         topBar = {
             LarkSmallTopBar(
+                paddingValues = adapterSystemPadding(),
                 title = "",
                 scrollBehavior = scrollBehavior,
                 actionIcon = Icons.Filled.Refresh,
@@ -75,7 +76,6 @@ fun ArtistDetailPage(
     )
 }
 
-@OptIn(ExperimentalAnimationApi::class)
 @Composable
 fun ArtistDetailContent(
     modifier: Modifier,
@@ -89,19 +89,9 @@ fun ArtistDetailContent(
     val songs by artistViewModel.songs.collectAsState(initial = emptyList())
     val songList by artistViewModel.songList.collectAsState(initial = INIT_SONG_LIST)
     val loadState by artistViewModel.loadState.collectAsState(initial = LoadState.None())
-    var maxLines by remember {
-        mutableStateOf(4)
-    }
     var text by remember {
         mutableStateOf("")
     }
-
-//    AnimatedContent(
-//        modifier = Modifier
-//            .fillMaxSize()
-//            .background(MaterialTheme.colorScheme.background),
-//        targetState = loadState,
-//    ) { targetState ->
     when (loadState) {
         is LoadState.Loading -> {
             Dialog(onDismissRequest = {}) {
@@ -114,101 +104,15 @@ fun ArtistDetailContent(
                 Log.d("TAG", "ArtistDetailContent: " + loadState.msg)
                 setLoadStateToNone()
             }
-            LazyColumn(modifier = modifier) {
-                item {
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.Center
-                    ) {
-                        Box(
-                            modifier = Modifier
-                                .size(350.dp)
-                                .padding(10.dp)
-                                .clip(CircleShape)
-                                .background(MaterialTheme.colorScheme.secondaryContainer),
-                            contentAlignment = Alignment.Center
-                        ) {
-                            AsyncImage(
-                                modifier = Modifier.size(350.dp),
-                                imageModel = songList.imageFileUri,
-                                failure = R.drawable.ic_baseline_face_24
-                            )
-                        }
-                    }
-                }
-                item {
-                    Text(
-                        text = songList.songListTitle,
-                        style = MaterialTheme.typography.displaySmall,
-                        color = MaterialTheme.colorScheme.onBackground,
-                        modifier = Modifier.padding(start = 20.dp)
-                    )
-                }
-                item {
-                    PlayButton(playMedia, songList = songList, songs = songs)
-                }
-                item {
-                    Text(
-                        text = stringResource(id = R.string.description_text),
-                        style = MaterialTheme.typography.titleMedium,
-                        color = MaterialTheme.colorScheme.onBackground,
-                        modifier = Modifier.padding(20.dp)
-                    )
-                }
-                item {
-                    Column(
-                        modifier = Modifier.padding(
-                            start = 20.dp,
-                            top = 5.dp,
-                            end = 20.dp
-                        )
-                    ) {
-                        Text(
-                            text = songList.description,
-                            style = MaterialTheme.typography.bodyMedium,
-                            maxLines = maxLines,
-                            overflow = TextOverflow.Ellipsis,
-                            color = MaterialTheme.colorScheme.onBackground,
-                        )
-                        Text(
-                            text = if (maxLines == 4) stringResource(id = R.string.show_more_text)
-                            else stringResource(id = R.string.fold_text),
-                            style = MaterialTheme.typography.bodyMedium,
-                            color = MaterialTheme.colorScheme.secondary,
-                            modifier = Modifier
-
-                                .clickable {
-                                    maxLines = if (maxLines == 4) Int.MAX_VALUE
-                                    else 4
-                                }
-                        )
-                    }
-
-                }
-                item {
-                    Text(
-                        text = stringResource(id = R.string.song_text),
-                        style = MaterialTheme.typography.titleMedium,
-                        color = MaterialTheme.colorScheme.onBackground,
-                        modifier = Modifier.padding(20.dp)
-                    )
-                }
-                item {
-                    ShowArtistSongs(
-                        songs = songs,
-                        modifier = Modifier.padding(start = 20.dp, end = 20.dp),
-                        playMedia = { songListId: Long, songId: Long ->
-                            playMedia(songListId, songId)
-                        },
-                        songList = songList
-                    )
+            if (songList != INIT_SONG_LIST) {
+                ArtistContent(modifier, songList, playMedia, songs)
+            } else {
+                Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                    CircularProgressIndicator()
                 }
             }
         }
     }
-
-//    }
-
 
     if (showResetArtistDialog) {
         TextFieldDialog(
@@ -237,4 +141,106 @@ fun ArtistDetailContent(
     }
 
 
+}
+
+@Composable
+private fun ArtistContent(
+    modifier: Modifier,
+    songList: SongList,
+    playMedia: (Long, Long) -> Unit,
+    songs: List<Song>,
+) {
+    var maxLines by remember {
+        mutableStateOf(4)
+    }
+    LazyColumn(modifier = modifier) {
+        item {
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.Center
+            ) {
+                Box(
+                    modifier = Modifier
+                        .size(350.dp)
+                        .padding(10.dp)
+                        .clip(CircleShape)
+                        .background(MaterialTheme.colorScheme.secondaryContainer),
+                    contentAlignment = Alignment.Center
+                ) {
+                    AsyncImage(
+                        modifier = Modifier.size(350.dp),
+                        imageModel = songList.imageFileUri,
+                        failure = R.drawable.ic_baseline_face_24
+                    )
+                }
+            }
+        }
+        item {
+            Text(
+                text = songList.songListTitle,
+                style = MaterialTheme.typography.displaySmall,
+                color = MaterialTheme.colorScheme.onBackground,
+                modifier = Modifier.padding(start = 20.dp)
+            )
+        }
+        item {
+            PlayButton(playMedia, songList = songList, songs = songs)
+        }
+        item {
+            Text(
+                text = stringResource(id = R.string.description_text),
+                style = MaterialTheme.typography.titleMedium,
+                color = MaterialTheme.colorScheme.onBackground,
+                modifier = Modifier.padding(20.dp)
+            )
+        }
+        item {
+            Column(
+                modifier = Modifier.padding(
+                    start = 20.dp,
+                    top = 5.dp,
+                    end = 20.dp
+                )
+            ) {
+                Text(
+                    text = songList.description,
+                    style = MaterialTheme.typography.bodyMedium,
+                    maxLines = maxLines,
+                    overflow = TextOverflow.Ellipsis,
+                    color = MaterialTheme.colorScheme.onBackground,
+                )
+                Text(
+                    text = if (maxLines == 4) stringResource(id = R.string.show_more_text)
+                    else stringResource(id = R.string.fold_text),
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = MaterialTheme.colorScheme.secondary,
+                    modifier = Modifier
+
+                        .clickable {
+                            maxLines = if (maxLines == 4) Int.MAX_VALUE
+                            else 4
+                        }
+                )
+            }
+
+        }
+        item {
+            Text(
+                text = stringResource(id = R.string.song_text),
+                style = MaterialTheme.typography.titleMedium,
+                color = MaterialTheme.colorScheme.onBackground,
+                modifier = Modifier.padding(20.dp)
+            )
+        }
+        item {
+            ShowArtistSongs(
+                songs = songs,
+                modifier = Modifier.padding(start = 20.dp, end = 20.dp),
+                playMedia = { songListId: Long, songId: Long ->
+                    playMedia(songListId, songId)
+                },
+                songList = songList
+            )
+        }
+    }
 }

@@ -173,7 +173,7 @@ class MediaPlaybackService : MediaBrowserServiceCompat() {
     private fun createMetadataFromSong(song: Song): MediaMetadataCompat = with(song) {
         val builder = MediaMetadataCompat.Builder()
         this.lyrics?.let {
-            builder.putString(MediaMetadataCompat.METADATA_KEY_COMPOSER, it)
+            builder.putString(MediaMetadataCompat.METADATA_KEY_COMPILATION, it)
         }
         builder
             .putString(MediaMetadataCompat.METADATA_KEY_MEDIA_ID, songId.toString())

@@ -63,6 +63,7 @@ fun HomeScreen(
         modifier = Modifier.fillMaxSize()
     ) {
         Scaffold(
+            modifier = Modifier.adapterSystemBar(),
             topBar = {
                 LarkSmallTopBar(
                     title = stringResource(id = R.string.app_name),

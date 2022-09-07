@@ -36,6 +36,8 @@ import io.github.mumu12641.lark.entity.Song
 import io.github.mumu12641.lark.room.DataBaseUtils
 import io.github.mumu12641.lark.ui.theme.component.LarkTopBar
 import io.github.mumu12641.lark.ui.theme.component.SongItemRow
+import io.github.mumu12641.lark.ui.theme.component.adapterSystemBar
+import io.github.mumu12641.lark.ui.theme.component.adapterSystemPadding
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
@@ -70,6 +72,7 @@ fun SearchPage(
             .nestedScroll(scrollBehavior.nestedScrollConnection),
         topBar = {
             LarkTopBar(
+                adapterSystemPadding(),
                 title = stringResource(id = R.string.search_text),
                 navIcon = Icons.Default.ArrowBack,
                 scrollBehavior = scrollBehavior

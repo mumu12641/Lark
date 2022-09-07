@@ -5,6 +5,7 @@ import android.annotation.SuppressLint
 import android.app.Application
 import android.content.Context
 import android.util.DisplayMetrics
+import android.util.Log
 import android.view.WindowManager
 import com.tencent.mmkv.MMKV
 import dagger.hilt.android.HiltAndroidApp
@@ -14,6 +15,7 @@ import kotlinx.coroutines.SupervisorJob
 
 @HiltAndroidApp
 class BaseApplication : Application() {
+    private  val TAG = "BaseApplication"
     override fun onCreate() {
         super.onCreate()
         context = applicationContext
@@ -48,6 +50,7 @@ class BaseApplication : Application() {
         // 屏幕宽度算法:屏幕宽度（像素）/屏幕密度
         val screenWidth = (width / density).toInt() // 屏幕宽度(dp)
         val screenHeight = (height / density).toInt() // 屏幕高度(dp)
+        Log.d(TAG, "getAndroidScreenProperty: " + listOf(screenWidth, screenHeight))
         return listOf(screenWidth, screenHeight)
     }
 

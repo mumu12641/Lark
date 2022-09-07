@@ -121,7 +121,7 @@ private fun ControlPlayBar(
             ) {
                 Text(
                     text = currentMetadata.getString(MediaMetadataCompat.METADATA_KEY_TITLE),
-                    modifier = Modifier.width(150.dp),
+                    modifier = Modifier.width(150.dp).padding(horizontal = 10.dp),
                     softWrap = false,
                     overflow = TextOverflow.Ellipsis,
                     style = MaterialTheme.typography.labelLarge

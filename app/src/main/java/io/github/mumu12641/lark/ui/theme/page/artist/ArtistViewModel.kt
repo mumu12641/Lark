@@ -5,12 +5,15 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import io.github.mumu12641.lark.entity.ARTIST_SONGLIST_TYPE
+import io.github.mumu12641.lark.entity.INIT_SONG_LIST
 import io.github.mumu12641.lark.entity.LoadState
 import io.github.mumu12641.lark.network.NetworkCreator
 import io.github.mumu12641.lark.room.DataBaseUtils
 import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -29,19 +32,34 @@ class ArtistViewModel @Inject constructor() : ViewModel() {
     }
 
     var currentSongListId = 1L
-    val songList
-        get() = DataBaseUtils.querySongListFlowByIdType(
-            currentSongListId,
-            ARTIST_SONGLIST_TYPE
-        )
-    val songs
-        get() =
-            DataBaseUtils.querySongListWithSongsBySongListIdFlow(currentSongListId).map {
-                it.songs
-            }
+    var songList = DataBaseUtils.querySongListFlowByIdType(
+        currentSongListId,
+        ARTIST_SONGLIST_TYPE
+    )
+    var songs =
+        DataBaseUtils.querySongListWithSongsBySongListIdFlow(currentSongListId).map {
+            it.songs
+        }
 
     fun refreshId(id: Long) {
-        currentSongListId = id
+        viewModelScope.launch(Dispatchers.IO) {
+            songList = flow {
+                emit(INIT_SONG_LIST)
+            }
+            songs = flow {
+                emit(emptyList())
+            }
+            currentSongListId = id
+            songList = DataBaseUtils.querySongListFlowByIdType(
+                currentSongListId,
+                ARTIST_SONGLIST_TYPE
+            )
+            songs =
+                DataBaseUtils.querySongListWithSongsBySongListIdFlow(currentSongListId).map {
+                    it.songs
+                }
+        }
+
     }
 
     private val _loadState = MutableStateFlow<LoadState>(LoadState.None())

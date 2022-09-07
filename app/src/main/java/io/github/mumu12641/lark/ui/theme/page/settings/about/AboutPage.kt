@@ -27,6 +27,8 @@ import io.github.mumu12641.lark.BaseApplication.Companion.version
 import io.github.mumu12641.lark.R
 import io.github.mumu12641.lark.ui.theme.component.LarkTopBar
 import io.github.mumu12641.lark.ui.theme.component.SettingItem
+import io.github.mumu12641.lark.ui.theme.component.adapterSystemBar
+import io.github.mumu12641.lark.ui.theme.component.adapterSystemPadding
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -43,6 +45,7 @@ fun AboutPage(navController: NavController) {
                 .nestedScroll(scrollBehavior.nestedScrollConnection),
             topBar = {
                 LarkTopBar(
+                    adapterSystemPadding(),
                     title = stringResource(id = R.string.about_text),
                     navIcon = Icons.Default.ArrowBack,
                     scrollBehavior = scrollBehavior

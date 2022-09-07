@@ -33,6 +33,7 @@ import io.github.mumu12641.lark.R
 import io.github.mumu12641.lark.entity.LoadState
 import io.github.mumu12641.lark.ui.theme.component.LarkAlertDialog
 import io.github.mumu12641.lark.ui.theme.component.LarkTopBar
+import io.github.mumu12641.lark.ui.theme.component.adapterSystemBar
 import io.github.mumu12641.lark.ui.theme.page.user.UserViewModel.Companion.INIT_USER
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -49,6 +50,7 @@ fun UserPage(
         modifier = Modifier.fillMaxSize()
     ) {
         Scaffold(
+            modifier = Modifier.adapterSystemBar(),
             topBar = {
                 LarkTopBar(
                     title = stringResource(id = R.string.user_message_text),

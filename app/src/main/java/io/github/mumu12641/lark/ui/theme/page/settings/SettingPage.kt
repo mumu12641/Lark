@@ -9,7 +9,6 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.sharp.Info
 import androidx.compose.material.icons.sharp.Palette
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
@@ -19,14 +18,15 @@ import io.github.mumu12641.lark.R
 import io.github.mumu12641.lark.entity.Route
 import io.github.mumu12641.lark.ui.theme.component.LarkTopBar
 import io.github.mumu12641.lark.ui.theme.component.SettingItem
+import io.github.mumu12641.lark.ui.theme.component.adapterSystemBar
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SettingPage(navController: NavController) {
 
 
     Box(modifier = Modifier.fillMaxSize()) {
         Scaffold(
+            modifier = Modifier.adapterSystemBar(),
             backgroundColor = MaterialTheme.colorScheme.background,
             topBar = {
                 LarkTopBar(

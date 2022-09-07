@@ -1,5 +1,6 @@
 package io.github.mumu12641.lark.ui.theme.component
 
+import android.annotation.SuppressLint
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
@@ -15,6 +16,7 @@ import io.github.mumu12641.lark.R
 
 @Composable
 fun LarkTopBar(
+    paddingValues: PaddingValues = PaddingValues(),
     title: String,
     navIcon: ImageVector,
     actions: @Composable RowScope.() -> Unit = {},
@@ -28,15 +30,7 @@ fun LarkTopBar(
     Box(
         modifier = Modifier
             .drawBehind { drawRect(backgroundColor) }
-            .padding(
-                WindowInsets
-                    .statusBars
-                    .only(
-                        WindowInsetsSides.Horizontal
-                                + WindowInsetsSides.Top
-                    )
-                    .asPaddingValues()
-            ),
+            .padding(paddingValues),
     ) {
         MediumTopAppBar(
             title = {
@@ -61,6 +55,7 @@ fun LarkTopBar(
 
 @Composable
 fun LarkSmallTopBar(
+    paddingValues: PaddingValues = PaddingValues(),
     title: String,
     scrollBehavior: TopAppBarScrollBehavior? = null,
     colors: TopAppBarColors = TopAppBarDefaults.smallTopAppBarColors(),
@@ -79,15 +74,7 @@ fun LarkSmallTopBar(
     Box(
         modifier = Modifier
             .drawBehind { drawRect(backgroundColor) }
-            .padding(
-                WindowInsets
-                    .statusBars
-                    .only(
-                        WindowInsetsSides.Horizontal
-                                + WindowInsetsSides.Top
-                    )
-                    .asPaddingValues()
-            ),
+            .padding(paddingValues),
     ) {
         SmallTopAppBar(
             title = { Text(text = title) },
@@ -122,4 +109,28 @@ fun LarkSmallTopBar(
             ),
         )
     }
+}
+
+@SuppressLint("ComposableModifierFactory")
+@Composable
+fun Modifier.adapterSystemBar() =
+    this.padding(
+        WindowInsets
+            .statusBars
+            .only(
+                WindowInsetsSides.Horizontal
+                        + WindowInsetsSides.Top
+            )
+            .asPaddingValues()
+    )
+
+@Composable
+fun adapterSystemPadding(): PaddingValues {
+    return WindowInsets
+        .statusBars
+        .only(
+            WindowInsetsSides.Horizontal
+                    + WindowInsetsSides.Top
+        )
+        .asPaddingValues()
 }

@@ -44,6 +44,7 @@ import io.github.mumu12641.lark.ui.theme.PlayPageTheme
 import io.github.mumu12641.lark.ui.theme.component.AsyncImage
 import io.github.mumu12641.lark.ui.theme.component.LarkSmallTopBar
 import io.github.mumu12641.lark.ui.theme.component.WavySeekbar
+import io.github.mumu12641.lark.ui.theme.component.adapterSystemBar
 import io.github.mumu12641.lark.ui.theme.page.details.ShowSongs
 import io.github.mumu12641.lark.ui.theme.page.home.MainViewModel
 import kotlinx.coroutines.Dispatchers
@@ -103,11 +104,17 @@ fun PlayPage(
                         mainViewModel,
                         currentSongList,
                         lyrics
-                    )
+                    ) {
+                        if (bottomSheetScaffoldState.bottomSheetState.isCollapsed) {
+                            scope.launch {
+                                bottomSheetScaffoldState.bottomSheetState.expand()
+                            }
+                        }
+                    }
                 },
                 sheetPeekHeight = 72.dp,
                 sheetBackgroundColor = MaterialTheme.colorScheme.secondaryContainer,
-
+                modifier = Modifier.adapterSystemBar(),
                 sheetShape = RoundedCornerShape(topStart = 20.dp, topEnd = 20.dp),
                 content = { paddingValues ->
                     PlayPageContent(
@@ -133,7 +140,8 @@ private fun SheetContent(
     currentPlaySongs: List<Song>,
     mainViewModel: MainViewModel,
     currentSongList: SongList,
-    lyrics: List<String>
+    lyrics: List<String>,
+    showBottomSheet: () -> Unit
 ) {
     val pagerState = rememberPagerState()
     val pages = listOf(
@@ -167,6 +175,7 @@ private fun SheetContent(
                     text = { Text(title) },
                     selected = pagerState.currentPage == index,
                     onClick = {
+                        showBottomSheet()
                         scope.launch {
                             pagerState.scrollToPage(index and 1)
                         }
@@ -214,6 +223,7 @@ private fun SheetContent(
                                         Text(
                                             text = item,
                                             modifier = Modifier.padding(10.dp),
+                                            color = MaterialTheme.colorScheme.onSecondaryContainer,
                                             style = MaterialTheme.typography.titleMedium
                                         )
                                     }

@@ -20,6 +20,8 @@ import io.github.mumu12641.lark.R
 import io.github.mumu12641.lark.entity.SongList
 import io.github.mumu12641.lark.ui.theme.component.ArtistIcon
 import io.github.mumu12641.lark.ui.theme.component.LarkSmallTopBar
+import io.github.mumu12641.lark.ui.theme.component.adapterSystemBar
+import io.github.mumu12641.lark.ui.theme.component.adapterSystemPadding
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -32,9 +34,11 @@ fun ArtistPage(
     val allArtistSongList by artistViewModel.artistSongList.collectAsState(initial = emptyList())
     val scrollBehavior = TopAppBarDefaults.pinnedScrollBehavior(rememberTopAppBarScrollState())
     Scaffold(
-        modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
+        modifier = Modifier
+            .nestedScroll(scrollBehavior.nestedScrollConnection),
         topBar = {
             LarkSmallTopBar(
+                adapterSystemPadding(),
                 title = stringResource(id = R.string.singer_text),
                 scrollBehavior = scrollBehavior,
                 navIconClick = { navController.popBackStack() })

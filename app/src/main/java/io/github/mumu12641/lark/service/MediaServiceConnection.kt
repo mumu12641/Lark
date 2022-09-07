@@ -94,8 +94,8 @@ class MediaServiceConnection(context: Context, componentName: ComponentName) {
         @RequiresApi(Build.VERSION_CODES.M)
         override fun onMetadataChanged(metadata: MediaMetadataCompat?) {
             _playMetadata.value = metadata ?: NOTHING_PLAYING
-            metadata?.getString(MediaMetadataCompat.METADATA_KEY_COMPOSER)?.let {
-                val list = regex.split(it.replace("\\s".toRegex(), ""))
+            metadata?.getString(MediaMetadataCompat.METADATA_KEY_COMPILATION)?.let {
+                val list = regex.split(it.replace("\\r|\\n".toRegex(), ""))
                 _lyrics.value = list
             } ?: run {
                 _lyrics.value = emptyList()

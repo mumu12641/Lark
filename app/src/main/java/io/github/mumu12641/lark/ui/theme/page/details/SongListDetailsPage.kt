@@ -80,9 +80,10 @@ fun SongListDetailsPage(
                     songListProvider = { state }
                 )
             },
-            sheetPeekHeight = (BaseApplication.deviceScreen[1] - 570).dp,
+            sheetPeekHeight = 260.dp,
             sheetBackgroundColor = MaterialTheme.colorScheme.secondaryContainer,
 
+            modifier = Modifier.adapterSystemBar(),
             sheetShape = RoundedCornerShape(topStart = 20.dp, topEnd = 20.dp),
             topBar = {
                 LarkSmallTopBar(title = "", navIconClick = { navController.popBackStack() })

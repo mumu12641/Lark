@@ -76,8 +76,6 @@ fun FunctionPage(
         canScroll = { true }
     )
 
-    Log.d("TAG", "FunctionPage: $route")
-
     Box(
         modifier = Modifier.fillMaxSize()
     ) {
@@ -98,6 +96,7 @@ fun FunctionPage(
 
             topBar = {
                 LarkTopBar(
+                    adapterSystemPadding(),
                     title = route,
                     navIcon = Icons.Filled.ArrowBack,
                     scrollBehavior = scrollBehavior,
