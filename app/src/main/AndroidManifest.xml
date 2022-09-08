@@ -50,8 +50,6 @@
             </intent-filter>
         </service>
 
-
-
         <receiver android:name=".widget.LarkWidgetProvider"
             android:exported="true">
             <intent-filter>

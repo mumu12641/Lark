@@ -53,21 +53,6 @@ class FunctionViewModel @Inject constructor() : ViewModel() {
             }
     )
 
-//    val allSongList: Flow<List<SongList>> = DataBaseUtils.queryAllSongList().map { list ->
-//        list.filter {
-//            it.type in 1 until ARTIST_SONGLIST_TYPE
-//        }
-//    }
-//    val localMusicList: Flow<List<Song>> = DataBaseUtils.querySongListWithSongsBySongListIdFlow(LocalSongListId).map {
-//        it.songs
-//    }
-//    val historySongList: Flow<List<Song>> =
-//        DataBaseUtils.querySongListWithSongsBySongListIdFlow(HistorySongListId).map {
-//            it.songs.sortedByDescending { song ->
-//                song.recentPlay
-//            }
-//        }
-
     fun changeCurrentShowSong(song: Song) {
         _currentShowSong.value = song
     }

@@ -49,6 +49,15 @@ fun ArtistDetailPage(
     }
     val scrollBehavior = pinnedScrollBehavior(rememberTopAppBarScrollState())
 
+
+    LaunchedEffect(Unit) {
+        navController.currentBackStackEntryFlow.collect {
+            it.arguments?.getString("songListId")?.let { songListId ->
+                artistViewModel.initData(songListId.toLong())
+            }
+        }
+    }
+
     Scaffold(
         modifier = Modifier
             .nestedScroll(scrollBehavior.nestedScrollConnection),
@@ -67,7 +76,6 @@ fun ArtistDetailPage(
                 modifier = Modifier.padding(paddingValues),
                 artistViewModel,
                 showResetArtistDialog,
-                { artistViewModel.setStateToNone() },
                 playMedia,
                 { showResetArtistDialog = it },
             ) {
@@ -83,32 +91,31 @@ fun ArtistDetailContent(
     modifier: Modifier,
     artistViewModel: ArtistViewModel,
     showResetArtistDialog: Boolean,
-    setLoadStateToNone: () -> Unit,
     playMedia: (Long, Long) -> Unit,
     setShowResetArtistDialog: (Boolean) -> Unit,
     updateArtistDetail: (String) -> Unit,
 ) {
-    val songs by artistViewModel.songs.collectAsState(initial = emptyList())
-    val songList by artistViewModel.songList.collectAsState(initial = INIT_SONG_LIST)
-    val loadState by artistViewModel.loadState.collectAsState(initial = LoadState.None())
+    val uiState by artistViewModel.artistUiState.collectAsState()
+    val songList = uiState.songList
+    val songs = uiState.songs
+    val loadState = uiState.loadState
+
     var text by remember {
         mutableStateOf("")
     }
     when (loadState) {
         is LoadState.Loading -> {
-            Dialog(onDismissRequest = {}) {
+            Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
                 CircularProgressIndicator()
             }
         }
         else -> {
             if (loadState is LoadState.Fail) {
                 Toast.makeText(context, loadState.msg, Toast.LENGTH_LONG).show()
-                Log.d("TAG", "ArtistDetailContent: " + loadState.msg)
-                setLoadStateToNone()
             }
-            if (songList != INIT_SONG_LIST) {
+            songList?.let {
                 ArtistContent(modifier, songList, playMedia, songs)
-            } else {
+            } ?: run {
                 Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
                     CircularProgressIndicator()
                 }
@@ -141,8 +148,6 @@ fun ArtistDetailContent(
             }
         )
     }
-
-
 }
 
 @Composable

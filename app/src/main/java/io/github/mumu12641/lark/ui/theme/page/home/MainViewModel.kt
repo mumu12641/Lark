@@ -56,14 +56,14 @@ class MainViewModel @Inject constructor() : ViewModel() {
         val currentPlayState: Flow<PlaybackStateCompat>,
         val currentSongList: Flow<SongList>,
         val currentPlaySongs: Flow<List<Song>>,
-        val lyrics: Flow<List<String>>
+        val lyrics: Flow<List<String>>,
     ) {
         constructor(mediaServiceConnection: MediaServiceConnection) : this(
             mediaServiceConnection.playMetadata,
             mediaServiceConnection.playState,
             mediaServiceConnection.currentSongList,
             mediaServiceConnection.playList,
-            mediaServiceConnection.lyrics
+            mediaServiceConnection.lyrics,
         )
     }
 

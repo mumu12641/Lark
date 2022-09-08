@@ -3,6 +3,8 @@ package io.github.mumu12641.lark.ui.theme.page.play
 import android.support.v4.media.MediaMetadataCompat
 import android.support.v4.media.session.PlaybackStateCompat
 import androidx.activity.compose.BackHandler
+import androidx.compose.animation.AnimatedContent
+import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.animation.core.animateIntAsState
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -213,7 +215,8 @@ private fun SheetContent(
                         if (lyrics.isEmpty()) {
                             Text(
                                 text = "暂无歌词",
-                                modifier = Modifier.padding(10.dp),
+                                modifier = Modifier
+                                    .padding(10.dp),
                                 style = MaterialTheme.typography.titleMedium
                             )
                         } else {
@@ -237,6 +240,7 @@ private fun SheetContent(
     }
 }
 
+@OptIn(ExperimentalAnimationApi::class)
 @Composable
 fun PlayPageContent(
     modifier: Modifier,
@@ -254,6 +258,7 @@ fun PlayPageContent(
     val cornerAlbum: Int by animateIntAsState(if (currentPlayState.state == PlaybackStateCompat.STATE_PLAYING) 100 else 50)
     val cornerButton: Int by animateIntAsState(if (currentPlayState.state == PlaybackStateCompat.STATE_PLAYING) 80 else 28)
     val currentPosition by mainViewModel.currentPosition.collectAsState()
+    val scope = rememberCoroutineScope()
 
     Box(modifier = modifier) {
         Column(
@@ -304,7 +309,7 @@ fun PlayPageContent(
                     modifier = Modifier
                         .padding(top = 20.dp)
                         .clickable {
-                            applicationScope.launch(Dispatchers.IO) {
+                            scope.launch(Dispatchers.IO) {
                                 val songListId = DataBaseUtils.querySongListId(
                                     currentMetadata
                                         .getString(MediaMetadataCompat.METADATA_KEY_ARTIST)
@@ -320,6 +325,7 @@ fun PlayPageContent(
                 )
             }
             Row(modifier = Modifier.padding(top = 30.dp)) {
+
                 Box(
                     modifier = Modifier
                         .size(width = 200.dp, height = 75.dp)
@@ -331,18 +337,20 @@ fun PlayPageContent(
                         ),
                     contentAlignment = Alignment.Center
                 ) {
-                    if (currentPlayState.state == PlaybackStateCompat.STATE_PLAYING) {
-                        Icon(
-                            painter = painterResource(id = R.drawable.ic_baseline_pause_24),
-                            modifier = Modifier.size(30.dp),
-                            contentDescription = "pause"
-                        )
-                    } else {
-                        Icon(
-                            Icons.Filled.PlayArrow,
-                            modifier = Modifier.size(30.dp),
-                            contentDescription = "play"
-                        )
+                    AnimatedContent(targetState = currentPlayState) { targetState ->
+                        when (targetState.state) {
+                            PlaybackStateCompat.STATE_PLAYING -> Icon(
+                                painter = painterResource(id = R.drawable.ic_baseline_pause_24),
+                                modifier = Modifier.size(30.dp),
+                                contentDescription = "pause"
+                            )
+                            else -> Icon(
+                                Icons.Filled.PlayArrow,
+                                modifier = Modifier.size(30.dp),
+                                contentDescription = "play"
+                            )
+                        }
+
                     }
                 }
                 Spacer(modifier = Modifier.weight(1f))

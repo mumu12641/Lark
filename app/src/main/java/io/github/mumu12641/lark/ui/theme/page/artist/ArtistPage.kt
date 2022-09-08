@@ -30,7 +30,6 @@ fun ArtistPage(
     refreshArtist: () -> Unit,
     navigateToDetail: (Long) -> Unit
 ) {
-    val allArtistSongList by artistViewModel.artistSongList.collectAsState(initial = emptyList())
     val scrollBehavior = TopAppBarDefaults.pinnedScrollBehavior(rememberTopAppBarScrollState())
     Scaffold(
         modifier = Modifier
@@ -45,7 +44,7 @@ fun ArtistPage(
         content = { paddingValues ->
             ArtistPageContent(
                 modifier = Modifier.padding(paddingValues),
-                list = allArtistSongList
+                artistViewModel
             ) {
                 navigateToDetail(it)
             }
@@ -60,8 +59,10 @@ fun ArtistPage(
 
 @Composable
 fun ArtistPageContent(
-    modifier: Modifier, list: List<SongList>, navigateToDetail: (Long) -> Unit
+    modifier: Modifier, artistViewModel: ArtistViewModel, navigateToDetail: (Long) -> Unit
 ) {
+    val uiState by artistViewModel.artistUiState.collectAsState()
+    val list by uiState.artistSongList.collectAsState(initial = emptyList())
     LazyVerticalGrid(
         modifier = modifier,
         contentPadding = PaddingValues(5.dp),

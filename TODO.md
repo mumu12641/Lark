@@ -48,11 +48,13 @@ playbackService bugs  fixed
 
 通知代码重构	done
 
+导入歌单之后的艺术家歌单要更改一下逻辑	done
 
 
-homescreen ui improment wip
 
 网易云音乐的登录 done  but some bugs
+
+homescreen ui improment wip
 
 搜索多重匹配
 
@@ -60,17 +62,23 @@ homescreen ui improment wip
 
 code 重构
 
+
+
 **搜索！**
 
 **歌词**
 
-导入歌单之后的艺术家歌单要更改一下逻辑	done
+歌词获取
+
+musicConnection那里可以改一下Flow
+
+Compose Glance			
+
+
 
 断网时候retrofit处理
 
 Youtube API
-
-状态后移
 
 
 
@@ -106,7 +114,9 @@ compose version development
 
 
 
-![Detailed view of MusicService](https://github.com/android/uamp/raw/main/docs/images/4-MusicService.png)![Diagram showing how MediaController and MediaSession communicate](https://github.com/android/uamp/raw/main/docs/images/5-MediaController.png)
+![Detailed view of MusicService](https://github.com/android/uamp/raw/main/docs/images/4-MusicService.png)
+
+![Diagram showing how MediaController and MediaSession communicate](https://github.com/android/uamp/raw/main/docs/images/5-MediaController.png)
 
 ![Class diagram showing UAMP's Model-View-ViewModel architecture](https://github.com/android/uamp/raw/main/docs/images/9-mvvm.png)
 

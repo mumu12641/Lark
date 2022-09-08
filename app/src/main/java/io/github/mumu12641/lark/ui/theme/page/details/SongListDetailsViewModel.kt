@@ -3,41 +3,61 @@ package io.github.mumu12641.lark.ui.theme.page.details
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
+import io.github.mumu12641.lark.entity.Song
+import io.github.mumu12641.lark.entity.SongList
 import io.github.mumu12641.lark.room.DataBaseUtils
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
 class SongListDetailsViewModel @Inject constructor() : ViewModel() {
 
-    private var currentSongListId = 1L
-    val songList get() = DataBaseUtils.querySongListFlowById(currentSongListId)
+    private val _songListDetailUiState = MutableStateFlow(SongListDetailUiState())
+    val songListDetailUiState = _songListDetailUiState
 
-    val songs
-        get() = DataBaseUtils.querySongListWithSongsBySongListIdFlow(currentSongListId).map {
-            it.songs
+    fun initData(id: Long) {
+        viewModelScope.launch {
+            _songListDetailUiState.update {
+                it.copy(isLoading = true, currentSongListId = id)
+            }
+            _songListDetailUiState.update { songListDetailUiState ->
+                songListDetailUiState.copy(
+                    songs = DataBaseUtils.querySongListWithSongsBySongListIdFlow(id).map {
+                        it.songs
+                    },
+                    songList = DataBaseUtils.querySongListFlowById(id)
+                )
+            }
+            _songListDetailUiState.update {
+                it.copy(isLoading = false, currentSongListId = id)
+            }
         }
-
-    fun refreshId(id: Long) {
-        currentSongListId = id
     }
 
     fun updateSongListDescription(description: String) {
         viewModelScope.launch(Dispatchers.IO) {
             DataBaseUtils.updateSongList(
-                DataBaseUtils.querySongListById(currentSongListId).copy(description = description)
+                DataBaseUtils.querySongListById(_songListDetailUiState.value.currentSongListId)
+                    .copy(description = description)
             )
         }
     }
 
     fun changeSongListImage(uri: String) {
         viewModelScope.launch(Dispatchers.IO) {
-            songList.collect {
-                DataBaseUtils.updateSongList(it.copy(imageFileUri = uri))
-            }
+            DataBaseUtils.updateSongList(
+                DataBaseUtils.querySongListById(_songListDetailUiState.value.currentSongListId)
+                    .copy(imageFileUri = uri)
+            )
         }
     }
 
+    data class SongListDetailUiState(
+        val currentSongListId: Long = 1L,
+        val isLoading: Boolean = true,
+        val songs: Flow<List<Song>> = emptyFlow(),
+        val songList: Flow<SongList> = emptyFlow()
+    )
 }

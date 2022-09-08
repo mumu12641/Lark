@@ -47,12 +47,22 @@ fun SongListDetailsPage(
     viewModel: SongListDetailsViewModel,
     playMedia: (Long, Long) -> Unit
 ) {
-    val state by viewModel.songList.collectAsState(initial = INIT_SONG_LIST)
-    val songs by viewModel.songs.collectAsState(initial = emptyList())
+    val uiState by viewModel.songListDetailUiState.collectAsState()
+    val songList by uiState.songList.collectAsState(initial = INIT_SONG_LIST)
+    val songs by uiState.songs.collectAsState(initial = emptyList())
+
     val bottomSheetScaffoldState = rememberBottomSheetScaffoldState(
         bottomSheetState = BottomSheetState(BottomSheetValue.Collapsed)
     )
     val scope = rememberCoroutineScope()
+
+    LaunchedEffect(Unit) {
+        navController.currentBackStackEntryFlow.collect {
+            it.arguments?.getString("songListId")?.let { songListId ->
+                viewModel.initData(songListId.toLong())
+            }
+        }
+    }
     BackHandler {
         if (!bottomSheetScaffoldState.bottomSheetState.isCollapsed) {
             scope.launch {
@@ -76,7 +86,7 @@ fun SongListDetailsPage(
                     playMedia = { songListId: Long, songId: Long ->
                         playMedia(songListId, songId)
                     },
-                    songListProvider = { state }
+                    songListProvider = { songList }
                 )
             },
             sheetPeekHeight = 260.dp,
@@ -90,8 +100,9 @@ fun SongListDetailsPage(
             content = { paddingValues ->
                 SongListDetailsContent(
                     modifier = Modifier.padding(paddingValues),
-                    songList = state,
+                    songList = songList,
                     songs = songs,
+                    isLoading = uiState.isLoading,
                     changeSongListImage = { uri ->
                         viewModel.changeSongListImage(uri)
                     },
@@ -109,6 +120,7 @@ fun SongListDetailsContent(
     modifier: Modifier,
     songList: SongList?,
     songs: List<Song>,
+    isLoading: Boolean,
     changeSongListImage: (String) -> Unit,
     updateDescription: (String) -> Unit,
     playMedia: (Long, Long) -> Unit
@@ -125,89 +137,94 @@ fun SongListDetailsContent(
     var showDialog by remember { mutableStateOf(false) }
     var textDescription by remember { mutableStateOf(value = songList?.description) }
 
-
-    Column(
-        modifier = modifier
-    ) {
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.Center
+    if (isLoading) {
+        Box(modifier = Modifier.fillMaxSize()) {
+            androidx.compose.material3.CircularProgressIndicator()
+        }
+    } else {
+        Column(
+            modifier = modifier
         ) {
-            Box(
-                modifier = Modifier
-                    .size(350.dp)
-                    .padding(5.dp)
-                    .clip(RectangleShape)
-                    .clip(RoundedCornerShape(30.dp))
-                    .background(MaterialTheme.colorScheme.secondaryContainer)
-                    .clickable(
-                        onClick = {
-                            if (songList?.type == CREATE_SONGLIST_TYPE) {
-                                launcherBackground.launch("image/*")
-                            } else {
-                                Log.d("TAG", "SongListDetailsContent")
-                            }
-                        }
-                    ),
-                contentAlignment = Alignment.Center,
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.Center
             ) {
-                if (songList?.type == PREFILL_SONGLIST_TYPE) {
-                    Box(modifier = Modifier.size(350.dp)) {
-                        if (songs.isNotEmpty()) {
-                            AsyncImage(
-                                modifier = Modifier.size(350.dp),
-                                imageModel = songList.imageFileUri,
-                                failure = R.drawable.favorite
-                            )
+                Box(
+                    modifier = Modifier
+                        .size(350.dp)
+                        .padding(5.dp)
+                        .clip(RectangleShape)
+                        .clip(RoundedCornerShape(30.dp))
+                        .background(MaterialTheme.colorScheme.secondaryContainer)
+                        .clickable(
+                            onClick = {
+                                if (songList?.type == CREATE_SONGLIST_TYPE) {
+                                    launcherBackground.launch("image/*")
+                                } else {
+                                    Log.d("TAG", "SongListDetailsContent")
+                                }
+                            }
+                        ),
+                    contentAlignment = Alignment.Center,
+                ) {
+                    if (songList?.type == PREFILL_SONGLIST_TYPE) {
+                        Box(modifier = Modifier.size(350.dp)) {
+                            if (songs.isNotEmpty()) {
+                                AsyncImage(
+                                    modifier = Modifier.size(350.dp),
+                                    imageModel = songList.imageFileUri,
+                                    failure = R.drawable.favorite
+                                )
+                            }
+                            SongListPicture(Modifier.size(350.dp), R.drawable.favorite)
                         }
-                        SongListPicture(Modifier.size(350.dp), R.drawable.favorite)
+                    } else {
+                        AsyncImage(
+                            modifier = Modifier.size(350.dp),
+                            imageModel = songList!!.imageFileUri,
+                            failure = R.drawable.album
+                        )
                     }
-                } else {
-                    AsyncImage(
-                        modifier = Modifier.size(350.dp),
-                        imageModel = songList!!.imageFileUri,
-                        failure = R.drawable.album
-                    )
                 }
             }
-        }
-        Text(
-            text = songList!!.songListTitle,
-            style = MaterialTheme.typography.titleLarge,
-            color = MaterialTheme.colorScheme.primary,
-            softWrap = false,
-            overflow = TextOverflow.Ellipsis,
-            modifier = Modifier
-                .padding(start = 20.dp, bottom = 20.dp),
-            maxLines = 1
-        )
-        Text(
-            text = songList.description,
-            style = MaterialTheme.typography.titleMedium,
-            color = MaterialTheme.colorScheme.primary,
-            modifier = Modifier
-                .padding(start = 20.dp, bottom = 20.dp)
-                .clickable { showDialog = true },
-            softWrap = false,
-            overflow = TextOverflow.Ellipsis,
-            maxLines = 1
-        )
-        PlayButton(playMedia, songList, songs)
-        if (showDialog) {
-            TextFieldDialog(
-                onDismissRequest = { showDialog = false },
-                title = stringResource(id = R.string.add_description_text),
-                icon = Icons.Filled.Edit,
-                confirmOnClick = {
-                    if (textDescription != "") {
-                        textDescription?.let { updateDescription(it) }
-                    }
-                    showDialog = false
-                },
-                dismissOnClick = { showDialog = false },
-                content = textDescription!!,
-                onValueChange = { textDescription = it }
+            Text(
+                text = songList!!.songListTitle,
+                style = MaterialTheme.typography.titleLarge,
+                color = MaterialTheme.colorScheme.primary,
+                softWrap = false,
+                overflow = TextOverflow.Ellipsis,
+                modifier = Modifier
+                    .padding(start = 20.dp, bottom = 20.dp),
+                maxLines = 1
             )
+            Text(
+                text = songList.description,
+                style = MaterialTheme.typography.titleMedium,
+                color = MaterialTheme.colorScheme.primary,
+                modifier = Modifier
+                    .padding(start = 20.dp, bottom = 20.dp)
+                    .clickable { showDialog = true },
+                softWrap = false,
+                overflow = TextOverflow.Ellipsis,
+                maxLines = 1
+            )
+            PlayButton(playMedia, songList, songs)
+            if (showDialog) {
+                TextFieldDialog(
+                    onDismissRequest = { showDialog = false },
+                    title = stringResource(id = R.string.add_description_text),
+                    icon = Icons.Filled.Edit,
+                    confirmOnClick = {
+                        if (textDescription != "") {
+                            textDescription?.let { updateDescription(it) }
+                        }
+                        showDialog = false
+                    },
+                    dismissOnClick = { showDialog = false },
+                    content = textDescription!!,
+                    onValueChange = { textDescription = it }
+                )
+            }
         }
     }
 }

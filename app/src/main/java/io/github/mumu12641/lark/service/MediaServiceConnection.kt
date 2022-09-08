@@ -28,7 +28,10 @@ import io.github.mumu12641.lark.ui.theme.util.PreferenceUtil
 import io.github.mumu12641.lark.ui.theme.util.PreferenceUtil.SEED_COLOR
 import io.github.mumu12641.lark.widget.LarkWidgetProvider
 import kotlinx.coroutines.*
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.flow.emptyFlow
 import java.util.*
 
 class MediaServiceConnection(context: Context, componentName: ComponentName) {
@@ -57,6 +60,7 @@ class MediaServiceConnection(context: Context, componentName: ComponentName) {
     private val _lyrics = MutableStateFlow(emptyList<String>())
     val lyrics = _lyrics
 
+
     val transportControls: MediaControllerCompat.TransportControls
         get() = mediaController.transportControls
 
@@ -75,6 +79,7 @@ class MediaServiceConnection(context: Context, componentName: ComponentName) {
             mediaBrowser.unsubscribe(mediaBrowser.root)
             mediaBrowser.subscribe(mediaBrowser.root, mBrowserSubscriptionCallback)
             scope.launch {
+                delay(500)
                 updateProgress()
             }
 
@@ -100,12 +105,13 @@ class MediaServiceConnection(context: Context, componentName: ComponentName) {
             } ?: run {
                 _lyrics.value = emptyList()
             }
+
             updateCurrentAlbumColor(metadata)
             updateWidgetMetadata(metadata)
-
-            // 历史播放
+            updateWidgetPlayState(mediaController.playbackState)
             applicationScope.launch(Dispatchers.IO + CoroutineExceptionHandler { _, _ -> }) {
-                val id = metadata?.getString(MediaMetadataCompat.METADATA_KEY_MEDIA_ID)?.toLong()
+                val id =
+                    metadata?.getString(MediaMetadataCompat.METADATA_KEY_MEDIA_ID)?.toLong()
                 val song = DataBaseUtils.querySongById(id!!)
                 DataBaseUtils.querySongById(id)
                 song.let {
@@ -124,6 +130,7 @@ class MediaServiceConnection(context: Context, componentName: ComponentName) {
         override fun onPlaybackStateChanged(state: PlaybackStateCompat?) {
             _playState.value = state ?: EMPTY_PLAYBACK_STATE
             updateWidgetPlayState(state)
+            updateWidgetMetadata(_playMetadata.value)
         }
 
         override fun onQueueChanged(queue: MutableList<MediaSessionCompat.QueueItem>?) {
