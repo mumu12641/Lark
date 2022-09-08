@@ -13,6 +13,7 @@ import android.support.v4.media.MediaMetadataCompat
 import android.support.v4.media.session.MediaControllerCompat
 import android.support.v4.media.session.MediaSessionCompat
 import android.support.v4.media.session.PlaybackStateCompat
+import android.util.Log
 import android.widget.RemoteViews
 import androidx.annotation.RequiresApi
 import androidx.palette.graphics.Palette
@@ -23,6 +24,7 @@ import io.github.mumu12641.lark.BaseApplication.Companion.kv
 import io.github.mumu12641.lark.MainActivity
 import io.github.mumu12641.lark.R
 import io.github.mumu12641.lark.entity.*
+import io.github.mumu12641.lark.network.NetworkCreator.networkService
 import io.github.mumu12641.lark.room.DataBaseUtils
 import io.github.mumu12641.lark.ui.theme.util.PreferenceUtil
 import io.github.mumu12641.lark.ui.theme.util.PreferenceUtil.SEED_COLOR
@@ -94,6 +96,30 @@ class MediaServiceConnection(context: Context, componentName: ComponentName) {
         }
     }
 
+    fun getLyrics(id: Long) {
+        applicationScope.launch(Dispatchers.IO + CoroutineExceptionHandler { _, e ->
+            Log.d(
+                TAG,
+                "getLyrics: " + e.message
+            )
+        }) {
+            Log.d(TAG, "getLyrics: start")
+            networkService.getLyric(id).lrc.lyric.let {
+                DataBaseUtils.updateSong(
+                    DataBaseUtils.querySongById(
+                        _playMetadata.value.getString(
+                            MediaMetadataCompat.METADATA_KEY_MEDIA_ID
+                        ).toLong()
+                    ).copy(lyrics = it)
+                )
+                Log.d(TAG, "getLyrics: $it")
+                val list = regex.split(it.replace("\\r|\\n".toRegex(), ""))
+                _lyrics.value = list
+
+            }
+        }
+    }
+
     private var controllerCallback = object : MediaControllerCompat.Callback() {
 
         @RequiresApi(Build.VERSION_CODES.M)
@@ -135,7 +161,7 @@ class MediaServiceConnection(context: Context, componentName: ComponentName) {
 
         override fun onQueueChanged(queue: MutableList<MediaSessionCompat.QueueItem>?) {
             super.onQueueChanged(queue)
-            scope.launch {
+            applicationScope.launch {
                 _playList.value = queue?.map {
                     DataBaseUtils.querySongById(it.queueId)
                 } ?: emptyList()
@@ -181,7 +207,7 @@ class MediaServiceConnection(context: Context, componentName: ComponentName) {
             ) {
                 super.onChildrenLoaded(parentId, children)
 //                Log.d("TAG", "onChildrenLoaded: $children")
-                scope.launch {
+                applicationScope.launch {
                     if (kv
                             .decodeLong("lastPlaySongList") == 0L || kv
                             .decodeLong("lastPlaySong") == 0L
@@ -235,7 +261,7 @@ class MediaServiceConnection(context: Context, componentName: ComponentName) {
     @RequiresApi(Build.VERSION_CODES.M)
     fun updateWidgetMetadata(metadata: MediaMetadataCompat?) {
         RemoteViews(context.packageName, R.layout.lark_widget).apply {
-            scope.launch(Dispatchers.IO) {
+            applicationScope.launch(Dispatchers.IO + CoroutineExceptionHandler { _, _ -> }) {
                 withContext(Dispatchers.Main) {
                     this@apply.setTextViewText(
                         R.id.title,
@@ -297,7 +323,7 @@ class MediaServiceConnection(context: Context, componentName: ComponentName) {
     @RequiresApi(Build.VERSION_CODES.M)
     fun updateWidgetPlayState(state: PlaybackStateCompat?) {
         RemoteViews(context.packageName, R.layout.lark_widget).apply {
-            scope.launch(Dispatchers.IO) {
+            applicationScope.launch(Dispatchers.IO) {
                 val res: Int
                 if (state?.state == PlaybackStateCompat.STATE_PLAYING) {
                     res = R.drawable.ic_baseline_pause_24

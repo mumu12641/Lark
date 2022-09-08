@@ -34,6 +34,7 @@ import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
+import io.github.mumu12641.lark.BaseApplication.Companion.applicationScope
 import io.github.mumu12641.lark.MainActivity.Companion.context
 import io.github.mumu12641.lark.R
 import io.github.mumu12641.lark.entity.*
@@ -356,7 +357,6 @@ fun AddToSongListDialog(
     showAddDialogFunction: (Boolean) -> Unit
 ) {
     val allSongList = allSongListProvider()
-    val scope = rememberCoroutineScope()
     LarkAlertDialog(
         onDismissRequest = { showDialogFunction(false) },
         title = stringResource(id = R.string.add_to_song_list_text),
@@ -367,11 +367,13 @@ fun AddToSongListDialog(
                     it.songListId
                 }) { item: SongList ->
                     SongListItemRow(item) {
-                        scope.launch(Dispatchers.IO) {
-                            var id = currentShowSong.songId
-                            if (currentShowSong.songId == 0L) {
-                                id = DataBaseUtils.insertSong(currentShowSong)
-                            }
+                        applicationScope.launch(Dispatchers.IO) {
+                            val id =
+                                if (!DataBaseUtils.isNeteaseIdExist(currentShowSong.neteaseId)) {
+                                    DataBaseUtils.insertSong(currentShowSong)
+                                } else {
+                                    DataBaseUtils.querySongIdByNeteaseId(currentShowSong.neteaseId)
+                                }
                             if (!DataBaseUtils.isRefExist(item.songListId, id)) {
                                 DataBaseUtils.insertRef(PlaylistSongCrossRef(item.songListId, id))
                                 withContext(Dispatchers.Main) {

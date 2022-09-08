@@ -9,8 +9,6 @@
 </p>
 <p align="center">
 </p>
-
-
 ## ScreenShot
 
 <div>
@@ -25,9 +23,8 @@
 ## Features
 
 - Fetch local music to play
-- [Material Design 3](https://m3.material.io/) style UI, with [dynamic color](https://m3.material.io/foundations/customization) theme.
-
-- MAD: UI and logic written with pure Kotlin. Single activity, no fragments, only composable destinations.
+- Import songlists from Netease Music
+- [Material Design 3](https://m3.material.io/) style UI, with [dynamic color](https://m3.material.io/foundations/customization) theme and custom theme
 
 ## What's Next
 

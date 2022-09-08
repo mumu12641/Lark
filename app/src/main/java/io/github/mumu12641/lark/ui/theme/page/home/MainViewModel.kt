@@ -128,6 +128,10 @@ class MainViewModel @Inject constructor() : ViewModel() {
         }
     }
 
+    fun getLyrics(id:Long){
+        mediaServiceConnection.getLyrics(id)
+    }
+
     init {
         viewModelScope.launch(Dispatchers.IO + CoroutineExceptionHandler { _, e ->
             e.message?.let { Log.d(TAG, it) }

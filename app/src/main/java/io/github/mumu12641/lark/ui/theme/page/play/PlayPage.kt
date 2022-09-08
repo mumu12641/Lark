@@ -62,6 +62,7 @@ fun PlayPage(
     val playState by mainViewModel.playState.collectAsState()
     val currentPlaySongs by playState.currentPlaySongs.collectAsState(initial = emptyList())
     val currentSongList by playState.currentSongList.collectAsState(initial = INIT_SONG_LIST)
+    val metadata by playState.currentPlayMetadata.collectAsState(initial = NOTHING_PLAYING)
     val lyrics by playState.lyrics.collectAsState(emptyList())
     val bottomSheetScaffoldState = rememberBottomSheetScaffoldState(
         bottomSheetState = BottomSheetState(BottomSheetValue.Collapsed)
@@ -105,7 +106,9 @@ fun PlayPage(
                         currentPlaySongs,
                         mainViewModel,
                         currentSongList,
-                        lyrics
+                        metadata,
+                        lyrics,
+                        { mainViewModel.getLyrics(it) }
                     ) {
                         if (bottomSheetScaffoldState.bottomSheetState.isCollapsed) {
                             scope.launch {
@@ -142,8 +145,10 @@ private fun SheetContent(
     currentPlaySongs: List<Song>,
     mainViewModel: MainViewModel,
     currentSongList: SongList,
+    currentMetadata: MediaMetadataCompat,
     lyrics: List<String>,
-    showBottomSheet: () -> Unit
+    getLyrics: (Long) -> Unit,
+    showBottomSheet: () -> Unit,
 ) {
     val pagerState = rememberPagerState()
     val pages = listOf(
@@ -214,11 +219,12 @@ private fun SheetContent(
                     ) {
                         if (lyrics.isEmpty()) {
                             Text(
-                                text = "暂无歌词",
+                                text = "获取歌词中......",
                                 modifier = Modifier
                                     .padding(10.dp),
                                 style = MaterialTheme.typography.titleMedium
                             )
+                            getLyrics(currentMetadata.getLong(MediaMetadataCompat.METADATA_KEY_DISC_NUMBER))
                         } else {
                             LazyColumn {
                                 items(lyrics) { item ->
