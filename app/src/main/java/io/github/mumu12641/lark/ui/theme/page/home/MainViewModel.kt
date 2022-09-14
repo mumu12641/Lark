@@ -33,7 +33,7 @@ class MainViewModel @Inject constructor() : ViewModel() {
 
     private val TAG = "MainViewModel"
 
-    var mediaServiceConnection: MediaServiceConnection = MediaServiceConnection(
+    private var mediaServiceConnection: MediaServiceConnection = MediaServiceConnection(
         context,
         ComponentName(context, MediaPlaybackService::class.java)
     )
@@ -57,6 +57,7 @@ class MainViewModel @Inject constructor() : ViewModel() {
         val currentSongList: Flow<SongList>,
         val currentPlaySongs: Flow<List<Song>>,
         val lyrics: Flow<List<String>>,
+        val currentPlaySong :Flow<Song>
     ) {
         constructor(mediaServiceConnection: MediaServiceConnection) : this(
             mediaServiceConnection.playMetadata,
@@ -64,6 +65,7 @@ class MainViewModel @Inject constructor() : ViewModel() {
             mediaServiceConnection.currentSongList,
             mediaServiceConnection.playList,
             mediaServiceConnection.lyrics,
+            mediaServiceConnection.currentPlaySong
         )
     }
 

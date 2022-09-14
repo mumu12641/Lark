@@ -50,6 +50,9 @@ class MediaServiceConnection(context: Context, componentName: ComponentName) {
     private val _playMetadata = MutableStateFlow(NOTHING_PLAYING)
     val playMetadata = _playMetadata
 
+    private val _currentPlaySong = MutableStateFlow(INIT_SONG)
+    val currentPlaySong = _currentPlaySong
+
     private val _playList = MutableStateFlow(emptyList<Song>())
     val playList = _playList
 
@@ -125,6 +128,14 @@ class MediaServiceConnection(context: Context, componentName: ComponentName) {
         @RequiresApi(Build.VERSION_CODES.M)
         override fun onMetadataChanged(metadata: MediaMetadataCompat?) {
             _playMetadata.value = metadata ?: NOTHING_PLAYING
+
+            applicationScope.launch(Dispatchers.IO) {
+                _currentPlaySong.value = DataBaseUtils.querySongById(
+                    _playMetadata.value.getString(MediaMetadataCompat.METADATA_KEY_MEDIA_ID)
+                        .toLong()
+                )
+            }
+
             metadata?.getString(MediaMetadataCompat.METADATA_KEY_COMPILATION)?.let {
                 val list = regex.split(it.replace("\\r|\\n".toRegex(), ""))
                 _lyrics.value = list

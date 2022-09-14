@@ -1,6 +1,7 @@
 package io.github.mumu12641.lark.ui.theme.page.details
 
 import android.annotation.SuppressLint
+import android.content.Intent
 import android.net.Uri
 import android.util.Log
 import androidx.activity.compose.BackHandler
@@ -10,7 +11,9 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
@@ -34,6 +37,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.zIndex
 import androidx.navigation.NavController
+import io.github.mumu12641.lark.MainActivity.Companion.context
 import io.github.mumu12641.lark.R
 import io.github.mumu12641.lark.entity.*
 import io.github.mumu12641.lark.ui.theme.component.*
@@ -131,6 +135,7 @@ fun SongListDetailsContent(
         ActivityResultContracts.GetContent()
     ) { uri: Uri? ->
         uri?.let {
+            Log.d("TAG", "SongListDetailsContent: $uri")
             changeSongListImage(it.toString())
         }
     }
@@ -159,6 +164,9 @@ fun SongListDetailsContent(
                         .clickable(
                             onClick = {
                                 if (songList?.type == CREATE_SONGLIST_TYPE) {
+                                    val intent = Intent()
+                                        .setType("image/*")
+                                        .setAction(Intent.ACTION_OPEN_DOCUMENT)
                                     launcherBackground.launch("image/*")
                                 } else {
                                     Log.d("TAG", "SongListDetailsContent")
@@ -170,7 +178,7 @@ fun SongListDetailsContent(
                     if (songList?.type == PREFILL_SONGLIST_TYPE) {
                         Box(modifier = Modifier.size(350.dp)) {
                             if (songs.isNotEmpty()) {
-                                AsyncImage(
+                                GlideAsyncImage(
                                     modifier = Modifier.size(350.dp),
                                     imageModel = songList.imageFileUri,
                                     failure = R.drawable.favorite
@@ -179,7 +187,7 @@ fun SongListDetailsContent(
                             SongListPicture(Modifier.size(350.dp), R.drawable.favorite)
                         }
                     } else {
-                        AsyncImage(
+                        GlideAsyncImage(
                             modifier = Modifier.size(350.dp),
                             imageModel = songList!!.imageFileUri,
                             failure = R.drawable.album
@@ -272,6 +280,8 @@ fun ShowSongs(
     songsProvider: () -> List<Song>,
     modifier: Modifier,
     top: Int,
+    state: LazyListState = rememberLazyListState(),
+    clipShape: RoundedCornerShape = RoundedCornerShape(topStart = 20.dp, topEnd = 20.dp),
     playMedia: ((Long, Long) -> Unit)? = null,
     seekToSong: ((Long) -> Unit)? = null,
     songListProvider: () -> SongList,
@@ -289,7 +299,7 @@ fun ShowSongs(
             .fillMaxWidth()
             .fillMaxHeight()
             .padding(top = top.dp)
-            .clip(RoundedCornerShape(topStart = 20.dp, topEnd = 20.dp))
+            .clip(clipShape)
             .background(
                 brush = Brush.verticalGradient(
                     listOf(
@@ -309,7 +319,7 @@ fun ShowSongs(
                 )
             }
         } else {
-            LazyColumn {
+            LazyColumn(state = state) {
                 items(songs, key = key) { item ->
                     SongItemRow(
                         item, null, onClick = {

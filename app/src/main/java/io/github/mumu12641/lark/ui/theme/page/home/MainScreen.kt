@@ -110,15 +110,10 @@ fun MainScreen(
         animatedComposable(
             Route.ROUTE_SONG_LIST_DETAILS + "{songListId}"
         ) {
-//                backStackEntry ->
-//            backStackEntry.arguments?.getString("songListId")
-//                ?.let {
-//                    songListDetailsViewModel.refreshId(it.toLong())
-                    SongListDetailsPage(
-                        navController, songListDetailsViewModel,
-                        playMedia
-                    )
-//                }
+            SongListDetailsPage(
+                navController, songListDetailsViewModel,
+                playMedia
+            )
         }
         animatedComposable(
             Route.ROUTE_PLAY_PAGE

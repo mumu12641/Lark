@@ -74,6 +74,8 @@ musicConnection那里可以改一下Flow
 
 Compose Glance			
 
+为什么在首页换的那个图片会显示不了？？？？？？？？？？？？？？？？？
+
 
 
 断网时候retrofit处理

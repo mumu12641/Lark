@@ -11,13 +11,17 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ExpandMore
+import androidx.compose.material.icons.filled.GpsFixed
 import androidx.compose.material.icons.filled.PlayArrow
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.FabPosition
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
@@ -35,7 +39,6 @@ import androidx.navigation.NavController
 import com.google.accompanist.pager.HorizontalPager
 import com.google.accompanist.pager.rememberPagerState
 import io.github.mumu12641.lark.*
-import io.github.mumu12641.lark.BaseApplication.Companion.applicationScope
 import io.github.mumu12641.lark.BaseApplication.Companion.context
 import io.github.mumu12641.lark.R
 import io.github.mumu12641.lark.entity.*
@@ -63,6 +66,7 @@ fun PlayPage(
     val currentPlaySongs by playState.currentPlaySongs.collectAsState(initial = emptyList())
     val currentSongList by playState.currentSongList.collectAsState(initial = INIT_SONG_LIST)
     val metadata by playState.currentPlayMetadata.collectAsState(initial = NOTHING_PLAYING)
+    val currentPlaySong by playState.currentPlaySong.collectAsState(initial = INIT_SONG)
     val lyrics by playState.lyrics.collectAsState(emptyList())
     val bottomSheetScaffoldState = rememberBottomSheetScaffoldState(
         bottomSheetState = BottomSheetState(BottomSheetValue.Collapsed)
@@ -107,6 +111,7 @@ fun PlayPage(
                         mainViewModel,
                         currentSongList,
                         metadata,
+                        currentPlaySong,
                         lyrics,
                         { mainViewModel.getLyrics(it) }
                     ) {
@@ -140,12 +145,14 @@ fun PlayPage(
     }
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun SheetContent(
     currentPlaySongs: List<Song>,
     mainViewModel: MainViewModel,
     currentSongList: SongList,
     currentMetadata: MediaMetadataCompat,
+    currentPlaySong: Song,
     lyrics: List<String>,
     getLyrics: (Long) -> Unit,
     showBottomSheet: () -> Unit,
@@ -156,6 +163,8 @@ private fun SheetContent(
         context.getString(R.string.lyrics_text)
     )
     val scope = rememberCoroutineScope()
+    val state = rememberLazyListState()
+
     Column {
         Row(
             modifier = Modifier
@@ -175,7 +184,8 @@ private fun SheetContent(
         TabRow(
             selectedTabIndex = pagerState.currentPage,
             modifier = Modifier.height(60.dp),
-            backgroundColor = MaterialTheme.colorScheme.secondaryContainer
+            backgroundColor = MaterialTheme.colorScheme.secondaryContainer,
+            contentColor = MaterialTheme.colorScheme.onSecondaryContainer
         ) {
             pages.forEachIndexed { index, title ->
                 Tab(
@@ -196,13 +206,32 @@ private fun SheetContent(
         ) { page ->
             when (page) {
                 NEXT_TO_PLAY_PAGE -> {
-                    ShowSongs(
-                        songsProvider = { currentPlaySongs },
-                        modifier = Modifier,
-                        top = 0,
-                        seekToSong = { songId: Long -> mainViewModel.seekToSong(songId) },
-                        songListProvider = { currentSongList }
-                    )
+                    Box(modifier = Modifier.fillMaxSize()) {
+
+                        ScaffoldWithFab(
+                            fabPosition = FabPosition.End,
+                            onClick = {
+                                scope.launch {
+                                    state.scrollToItem(currentPlaySongs.indexOf(currentPlaySong))
+                                }
+                            },
+                            FabContent = {
+                                Icon(
+                                    Icons.Filled.GpsFixed,
+                                    contentDescription = null
+                                )
+                            }) {
+                            ShowSongs(
+                                songsProvider = { currentPlaySongs },
+                                modifier = Modifier,
+                                top = 0,
+                                state = state,
+                                clipShape = RoundedCornerShape(0.dp),
+                                seekToSong = { songId: Long -> mainViewModel.seekToSong(songId) },
+                                songListProvider = { currentSongList }
+                            )
+                        }
+                    }
                 }
                 LYRICS_PAGE -> {
                     Box(
@@ -242,7 +271,9 @@ private fun SheetContent(
                     }
                 }
             }
+
         }
+
     }
 }
 
@@ -411,3 +442,25 @@ fun PlayPageContent(
     }
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun ScaffoldWithFab(
+    fabPosition: FabPosition,
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier,
+    FabContent: @Composable () -> Unit,
+    content: @Composable (PaddingValues) -> Unit
+) {
+    androidx.compose.material3.Scaffold(
+        floatingActionButtonPosition = fabPosition,
+        floatingActionButton = {
+            androidx.compose.material3.FloatingActionButton(
+                onClick = onClick,
+                modifier = modifier,
+                content = FabContent
+            )
+        }
+    ) {
+        content(it)
+    }
+}

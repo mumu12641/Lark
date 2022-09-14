@@ -1,5 +1,6 @@
 package io.github.mumu12641.lark.ui.theme.component
 
+import android.util.Log
 import androidx.annotation.DrawableRes
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -64,7 +65,7 @@ fun SongListAlbumCard(
     ) {
         if (songList.type == 1) {
             Box(modifier = modifier) {
-                AsyncImage(
+                GlideAsyncImage(
                     modifier = modifier,
                     imageModel = songList.imageFileUri,
                     failure = R.drawable.favorite
@@ -72,7 +73,7 @@ fun SongListAlbumCard(
                 SongListPicture(modifier, R.drawable.favorite)
             }
         } else {
-            AsyncImage(
+            GlideAsyncImage(
                 modifier = modifier,
                 imageModel = songList.imageFileUri,
                 failure = R.drawable.album

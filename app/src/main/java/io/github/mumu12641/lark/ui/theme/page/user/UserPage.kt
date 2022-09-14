@@ -31,6 +31,7 @@ import io.github.mumu12641.lark.BaseApplication.Companion.context
 import io.github.mumu12641.lark.BaseApplication.Companion.kv
 import io.github.mumu12641.lark.R
 import io.github.mumu12641.lark.entity.LoadState
+import io.github.mumu12641.lark.ui.theme.component.GlideAsyncImage
 import io.github.mumu12641.lark.ui.theme.component.LarkAlertDialog
 import io.github.mumu12641.lark.ui.theme.component.LarkTopBar
 import io.github.mumu12641.lark.ui.theme.component.adapterSystemBar
@@ -197,16 +198,6 @@ fun UserContent(
     val user by viewModel.userState.collectAsState(initial = INIT_USER)
     val loadState by viewModel.loadState.collectAsState(initial = LoadState.None())
 
-//    val pickMultipleMedia =rememberLauncherForActivityResult(
-//            ActivityResultContracts.StartActivityForResult()
-//        ) {
-//            if (it.resultCode != Activity.RESULT_OK) {
-//                Log.d("TAG", "UserContent: null")
-//            } else {
-//                val uris = it.data?.clipData
-//                Log.d("Photo picker", "UserContent: $uris")
-//            }
-//        }
     val launcherBackground =
         rememberLauncherForActivityResult(
             contract =
@@ -236,34 +227,13 @@ fun UserContent(
         Column(
             modifier = Modifier.padding(15.dp)
         ) {
-            GlideImage(
-                imageModel = user.backgroundImageUri,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(200.dp)
-                    .clip(RoundedCornerShape(50.dp))
-                    .clickable {
-                        launcherBackground.launch("image/*")
-                    },
-                loading = {
-                    Box(modifier = Modifier.matchParentSize()) {
-                        CircularProgressIndicator(
-                            modifier = Modifier.align(Alignment.Center)
-                        )
-                    }
-                },
-                failure = {
-                    GlideImage(imageModel = R.drawable.userbackground,
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .height(200.dp)
-                            .clip(RoundedCornerShape(50.dp))
-                            .clickable {
-                                launcherBackground.launch("image/*")
-                            })
-                }
-
-            )
+            GlideAsyncImage(modifier = Modifier
+                .fillMaxWidth()
+                .height(200.dp)
+                .clip(RoundedCornerShape(50.dp))
+                .clickable {
+                    launcherBackground.launch("image/*")
+                }, imageModel = user.backgroundImageUri, failure = R.drawable.userbackground)
 
             Row(
                 modifier = Modifier.padding(top = 20.dp),

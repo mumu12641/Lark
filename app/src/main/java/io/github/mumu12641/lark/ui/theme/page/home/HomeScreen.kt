@@ -2,6 +2,7 @@ package io.github.mumu12641.lark.ui.theme.page.home
 
 import android.Manifest
 import android.annotation.SuppressLint
+import android.content.Intent.ACTION_OPEN_DOCUMENT
 import android.os.Build
 import android.widget.Toast
 import androidx.annotation.RequiresApi
@@ -116,7 +117,12 @@ fun HomeSetup(
                 )
             )
         } else {
-            rememberMultiplePermissionsState(permissions = listOf(Manifest.permission.READ_EXTERNAL_STORAGE))
+            rememberMultiplePermissionsState(
+                permissions = listOf(
+                    Manifest.permission.READ_EXTERNAL_STORAGE,
+                    Manifest.permission.ACCESS_MEDIA_LOCATION,
+                )
+            )
         }
     if (permissionState.allPermissionsGranted) {
         showDialog = false
@@ -558,7 +564,6 @@ private fun FunctionTab(
             navController.navigate(Route.ROUTE_DOWNLOAD)
         }
         CardIcon(
-//            FilterDrama
             Icons.Rounded.Backup,
             contentDescription = stringResource(id = R.string.cloud_text)
         ) {
