@@ -21,6 +21,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.PlayArrow
 import androidx.compose.material3.Button
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
@@ -37,13 +38,12 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.zIndex
 import androidx.navigation.NavController
-import io.github.mumu12641.lark.MainActivity.Companion.context
 import io.github.mumu12641.lark.R
 import io.github.mumu12641.lark.entity.*
 import io.github.mumu12641.lark.ui.theme.component.*
 import kotlinx.coroutines.launch
 
-@OptIn(ExperimentalMaterialApi::class)
+@OptIn(ExperimentalMaterialApi::class, ExperimentalMaterial3Api::class)
 @SuppressLint("StateFlowValueCalledInComposition")
 @Composable
 fun SongListDetailsPage(
@@ -80,6 +80,7 @@ fun SongListDetailsPage(
         modifier = Modifier.fillMaxSize()
     ) {
         BottomSheetScaffold(
+            modifier = Modifier.adapterSystemBar(),
             backgroundColor = MaterialTheme.colorScheme.background,
             scaffoldState = bottomSheetScaffoldState,
             sheetContent = {
@@ -96,7 +97,6 @@ fun SongListDetailsPage(
             sheetPeekHeight = 260.dp,
             sheetBackgroundColor = MaterialTheme.colorScheme.secondaryContainer,
 
-            modifier = Modifier.adapterSystemBar(),
             sheetShape = RoundedCornerShape(topStart = 20.dp, topEnd = 20.dp),
             topBar = {
                 LarkSmallTopBar(title = "", navIconClick = { navController.popBackStack() })

@@ -14,6 +14,7 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.*
@@ -54,6 +55,7 @@ fun SearchPage(
 
     Box(modifier = Modifier.fillMaxSize()) {
         BottomSheetScaffold(
+            modifier = Modifier.adapterSystemBar(),
             sheetContent = {
                 SongDetailBottomSheet(currentShowSong) {
                     showDialog = true
@@ -108,8 +110,7 @@ private fun SearchTopBar(
     ) {
         Row(
             modifier = Modifier
-                .fillMaxWidth()
-                .adapterSystemBar(),
+                .fillMaxWidth(),
             verticalAlignment = Alignment.CenterVertically,
         ) {
             Icon(
@@ -203,6 +204,7 @@ fun SearchPageContent(
     }
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun SearchTextInput(
     searchViewModel: SearchViewModel

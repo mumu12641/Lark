@@ -1,3 +1,53 @@
+**搜索！（艺术家）**
+
+**歌词**
+
+歌词获取
+
+
+
+在播放页那里做几个FAB去获取歌词，seek到当前歌曲
+
+插入歌曲以及获取歌词的逻辑
+
+把currentMetadata更改为currentPlaySong
+
+歌单以及播放页面的topbar那里加上菜单栏
+
+
+
+
+
+musicConnection那里可以改一下Flow
+
+Compose Glance			
+
+为什么在首页换的那个图片会显示不了？？？？？？？？？？？？？？？？？
+
+
+
+断网时候retrofit处理
+
+Youtube API
+
+
+
+[UI]: https://dribbble.com/shots/16033507-Streamy-Podcast-App-Concept
+
+
+
+感觉funtionTab可以写在一个page里面
+
+
+
+***解决了卡顿！！！！！！！！！！！！！！！***
+
+
+
+Client ID `358b9fc9bc3b4bc992325fef89633663`
+
+Client Secret `efa34c3bc2924bd2ac2ba22cecea8114`
+
 Media Session	done
 
 Add Song List		done
@@ -34,8 +84,6 @@ Artist	  	选取较多歌曲的显示在首页 	done
 
 历史播放	done
 
-
-
 banner中的网络歌曲播放	fixed
 
 playbackService bugs  fixed
@@ -50,8 +98,6 @@ playbackService bugs  fixed
 
 导入歌单之后的艺术家歌单要更改一下逻辑	done
 
-
-
 网易云音乐的登录 done  but some bugs
 
 homescreen ui improment wip
@@ -61,44 +107,6 @@ homescreen ui improment wip
 协程的一些错误处理
 
 code 重构
-
-
-
-**搜索！**
-
-**歌词**
-
-歌词获取
-
-musicConnection那里可以改一下Flow
-
-Compose Glance			
-
-为什么在首页换的那个图片会显示不了？？？？？？？？？？？？？？？？？
-
-
-
-断网时候retrofit处理
-
-Youtube API
-
-
-
-[UI]: https://dribbble.com/shots/16033507-Streamy-Podcast-App-Concept
-
-
-
-感觉funtionTab可以写在一个page里面
-
-
-
-***解决了卡顿！！！！！！！！！！！！！！！***
-
-
-
-Client ID `358b9fc9bc3b4bc992325fef89633663`
-
-Client Secret `efa34c3bc2924bd2ac2ba22cecea8114`
 
 
 

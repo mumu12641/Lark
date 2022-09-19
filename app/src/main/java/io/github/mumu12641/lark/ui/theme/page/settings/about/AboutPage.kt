@@ -1,6 +1,5 @@
 package io.github.mumu12641.lark.ui.theme.page.settings.about
 
-import androidx.compose.animation.rememberSplineBasedDecay
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
@@ -27,24 +26,19 @@ import io.github.mumu12641.lark.BaseApplication.Companion.version
 import io.github.mumu12641.lark.R
 import io.github.mumu12641.lark.ui.theme.component.LarkTopBar
 import io.github.mumu12641.lark.ui.theme.component.SettingItem
-import io.github.mumu12641.lark.ui.theme.component.adapterSystemPadding
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AboutPage(navController: NavController) {
-    val decayAnimationSpec = rememberSplineBasedDecay<Float>()
     val scrollBehavior = TopAppBarDefaults.exitUntilCollapsedScrollBehavior(
-        decayAnimationSpec,
-        rememberTopAppBarScrollState(),
+        rememberTopAppBarState(),
         canScroll = { true }
     )
-    Box(modifier = Modifier.fillMaxSize()) {
         Scaffold(
             modifier = Modifier
                 .nestedScroll(scrollBehavior.nestedScrollConnection),
             topBar = {
                 LarkTopBar(
-                    adapterSystemPadding(),
                     title = stringResource(id = R.string.about_text),
                     navIcon = Icons.Default.ArrowBack,
                     scrollBehavior = scrollBehavior
@@ -56,7 +50,7 @@ fun AboutPage(navController: NavController) {
                 AboutContent(modifier = Modifier.padding(paddingValues))
             }
         )
-    }
+
 }
 
 @Composable

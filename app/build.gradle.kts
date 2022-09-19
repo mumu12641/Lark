@@ -6,7 +6,7 @@ plugins {
     id("dagger.hilt.android.plugin")
 }
 
-val composeVersion = "1.2.0-beta03"
+val composeVersion = "1.2.0"
 val roomVersion = "2.4.2"
 val navVersion = "2.4.2"
 val hiltVersion = "2.42"
@@ -50,12 +50,15 @@ android {
     kotlinOptions {
         jvmTarget = "1.8"
         freeCompilerArgs = listOf(
-            "-Xskip-prerelease-check",
-            "-Xuse-experimental=kotlinx.coroutines.ExperimentalCoroutinesApi",
-            "-Xuse-experimental=androidx.compose.animation.ExperimentalAnimationApi",
-            "-Xopt-in=androidx.compose.material.ExperimentalMaterialApi",
-            "-Xopt-in=com.google.accompanist.pager.ExperimentalPagerApi",
-            "-Xopt-in=kotlin.RequiresOptIn",
+//            "-Xskip-prerelease-check",
+//            "-Xuse-experimental=kotlinx.coroutines.ExperimentalCoroutinesApi",
+//            "-Xuse-experimental=androidx.compose.animation.ExperimentalAnimationApi",
+//            "-Xopt-in=androidx.compose.material.ExperimentalMaterialApi",
+//            "-Xopt-in=com.google.accompanist.pager.ExperimentalPagerApi",
+//            "-Xopt-in=kotlin.RequiresOptIn",
+//            "-Xopt-in=kotlin.ExperimentalUnsignedTypes",
+//            "-Xuse-experimental=androidx.compose.animation.ExperimentalAnimationApi",
+//            "-Xuse-experimental=kotlinx.coroutines.ExperimentalCoroutinesApi"
         )
 
     }
@@ -74,13 +77,13 @@ android {
 
 dependencies {
 
-    implementation("androidx.core:core-ktx:1.8.0")
+    implementation("androidx.core:core-ktx:1.9.0")
     implementation("androidx.compose.ui:ui:$composeVersion")
-    implementation("androidx.compose.material3:material3:1.0.0-alpha14")
+    implementation("androidx.compose.material3:material3:1.0.0-beta02")
     implementation("androidx.compose.ui:ui-tooling-preview:$composeVersion")
     implementation("androidx.compose.material:material-icons-extended:$composeVersion")
-    implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.5.0")
-    implementation("androidx.lifecycle:lifecycle-viewmodel-compose:2.5.0")
+    implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.5.1")
+    implementation("androidx.lifecycle:lifecycle-viewmodel-compose:2.5.1")
     implementation("com.afollestad.material-dialogs:color:3.3.0")
     implementation("androidx.activity:activity-compose:1.5.1")
     implementation("androidx.activity:activity-ktx:1.5.1")

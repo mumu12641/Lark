@@ -2,7 +2,6 @@ package io.github.mumu12641.lark.ui.theme.page.home
 
 import android.Manifest
 import android.annotation.SuppressLint
-import android.content.Intent.ACTION_OPEN_DOCUMENT
 import android.os.Build
 import android.widget.Toast
 import androidx.annotation.RequiresApi
@@ -64,9 +63,9 @@ fun HomeScreen(
         modifier = Modifier.fillMaxSize()
     ) {
         Scaffold(
-            modifier = Modifier.adapterSystemBar(),
             topBar = {
                 LarkSmallTopBar(
+                    paddingValues = adapterSystemPadding(),
                     title = stringResource(id = R.string.app_name),
                     navIcon = Icons.Filled.Search,
                     navIconClick = { navController.navigate(Route.ROUTE_SEARCH) },

@@ -17,10 +17,8 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import io.github.mumu12641.lark.R
-import io.github.mumu12641.lark.entity.SongList
 import io.github.mumu12641.lark.ui.theme.component.ArtistIcon
 import io.github.mumu12641.lark.ui.theme.component.LarkSmallTopBar
-import io.github.mumu12641.lark.ui.theme.component.adapterSystemPadding
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -30,15 +28,15 @@ fun ArtistPage(
     refreshArtist: () -> Unit,
     navigateToDetail: (Long) -> Unit
 ) {
-    val scrollBehavior = TopAppBarDefaults.pinnedScrollBehavior(rememberTopAppBarScrollState())
+    val scrollBehavior = TopAppBarDefaults.pinnedScrollBehavior(rememberTopAppBarState())
     Scaffold(
         modifier = Modifier
             .nestedScroll(scrollBehavior.nestedScrollConnection),
         topBar = {
             LarkSmallTopBar(
-                adapterSystemPadding(),
                 title = stringResource(id = R.string.singer_text),
                 scrollBehavior = scrollBehavior,
+                windowInsets = TopAppBarDefaults.windowInsets,
                 navIconClick = { navController.popBackStack() })
         },
         content = { paddingValues ->

@@ -14,22 +14,27 @@
 <div>
 <img src="assert/1.png" width="30%" />
 <img src="assert/2.png" width="30%" />
-<img src="assert/3.png" width="30%" />
 <img src="assert/4.png" width="30%" />
 <img src="assert/5.png" width="30%" />
 <img src="assert/6.png" width="30%" />
+<img src="assert/7.png" width="30%" />
+<img src="assert/8.png" width="30%" />
+<img src="assert/9.png" width="30%" />
 </div>
+
 
 ## Features
 
 - Fetch local music to play
 - Import songlists from Netease Music
+- Adaptive play theme with currently playing song
 - [Material Design 3](https://m3.material.io/) style UI, with [dynamic color](https://m3.material.io/foundations/customization) theme and custom theme
 
 ## What's Next
 
 - UI development
 - Fetch songs from Netease Cloud Music to play
+- Fetch lyrics  from Netease Cloud Music
 
 ## Download
 

@@ -36,6 +36,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.zIndex
 import androidx.navigation.NavController
+import com.google.accompanist.pager.ExperimentalPagerApi
 import com.google.accompanist.pager.HorizontalPager
 import com.google.accompanist.pager.rememberPagerState
 import io.github.mumu12641.lark.*
@@ -56,7 +57,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
-@OptIn(ExperimentalMaterialApi::class)
+@OptIn(ExperimentalMaterialApi::class, ExperimentalMaterial3Api::class)
 @Composable
 fun PlayPage(
     navController: NavController,
@@ -93,10 +94,11 @@ fun PlayPage(
     ) {
         Box(
             modifier = Modifier
-                .fillMaxSize()
                 .background(MaterialTheme.colorScheme.background)
+                .fillMaxSize()
         ) {
             BottomSheetScaffold(
+                modifier = Modifier.adapterSystemBar(),
                 backgroundColor = MaterialTheme.colorScheme.background,
                 topBar = {
                     LarkSmallTopBar(
@@ -124,7 +126,6 @@ fun PlayPage(
                 },
                 sheetPeekHeight = 72.dp,
                 sheetBackgroundColor = MaterialTheme.colorScheme.secondaryContainer,
-                modifier = Modifier.adapterSystemBar(),
                 sheetShape = RoundedCornerShape(topStart = 20.dp, topEnd = 20.dp),
                 content = { paddingValues ->
                     PlayPageContent(
@@ -145,7 +146,7 @@ fun PlayPage(
     }
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalPagerApi::class)
 @Composable
 private fun SheetContent(
     currentPlaySongs: List<Song>,
@@ -271,9 +272,7 @@ private fun SheetContent(
                     }
                 }
             }
-
         }
-
     }
 }
 

@@ -12,6 +12,7 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import io.github.mumu12641.lark.BaseApplication.Companion.context
 import io.github.mumu12641.lark.R
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun TextFieldDialog(
     onDismissRequest: () -> Unit,

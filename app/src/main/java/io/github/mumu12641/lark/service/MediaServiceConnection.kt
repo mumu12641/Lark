@@ -30,10 +30,7 @@ import io.github.mumu12641.lark.ui.theme.util.PreferenceUtil
 import io.github.mumu12641.lark.ui.theme.util.PreferenceUtil.SEED_COLOR
 import io.github.mumu12641.lark.widget.LarkWidgetProvider
 import kotlinx.coroutines.*
-import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.collect
-import kotlinx.coroutines.flow.emptyFlow
 import java.util.*
 
 class MediaServiceConnection(context: Context, componentName: ComponentName) {

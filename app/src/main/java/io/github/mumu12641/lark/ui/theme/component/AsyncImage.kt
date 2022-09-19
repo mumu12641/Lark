@@ -1,14 +1,10 @@
 package io.github.mumu12641.lark.ui.theme.component
 
-import android.util.Log
 import androidx.annotation.DrawableRes
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.res.imageResource
 import androidx.compose.ui.res.painterResource
-import androidx.glance.Image
 import com.skydoves.landscapist.glide.GlideImage
 
 @Composable

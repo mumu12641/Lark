@@ -33,7 +33,10 @@ import androidx.navigation.NavController
 import io.github.mumu12641.lark.*
 import io.github.mumu12641.lark.R
 import io.github.mumu12641.lark.ui.theme.color.palettes.CorePalette
-import io.github.mumu12641.lark.ui.theme.component.*
+import io.github.mumu12641.lark.ui.theme.component.LarkAlertDialog
+import io.github.mumu12641.lark.ui.theme.component.LarkTopBar
+import io.github.mumu12641.lark.ui.theme.component.SettingItem
+import io.github.mumu12641.lark.ui.theme.component.SettingSwitchItem
 import io.github.mumu12641.lark.ui.theme.util.PreferenceUtil
 import io.github.mumu12641.lark.ui.theme.util.PreferenceUtil.DARK_MODE_CLOSE
 import io.github.mumu12641.lark.ui.theme.util.PreferenceUtil.DARK_MODE_FOLLOW_SYSTEM
@@ -48,30 +51,26 @@ import io.github.mumu12641.lark.ui.theme.util.PreferenceUtil.ON
 @Composable
 fun DisplayPage(navController: NavController) {
 
-    val decayAnimationSpec = rememberSplineBasedDecay<Float>()
     val scrollBehavior = TopAppBarDefaults.exitUntilCollapsedScrollBehavior(
-        decayAnimationSpec,
-        rememberTopAppBarScrollState(),
+        rememberTopAppBarState(),
         canScroll = { true }
     )
 
-    Box(modifier = Modifier.fillMaxSize()) {
-        Scaffold(
-            modifier = Modifier
-                .nestedScroll(scrollBehavior.nestedScrollConnection),
-            topBar = {
-                LarkTopBar(
-                    adapterSystemPadding(),
-                    title = stringResource(id = R.string.display_text),
-                    scrollBehavior = scrollBehavior,
-                    navIcon = Icons.Filled.ArrowBack,
-                    navIconClick = { navController.popBackStack() })
-            },
-            content = { paddingValues ->
-                DisplayPageContent(modifier = Modifier.padding(paddingValues))
-            }
-        )
-    }
+    Scaffold(
+        modifier = Modifier
+            .nestedScroll(scrollBehavior.nestedScrollConnection),
+        topBar = {
+            LarkTopBar(
+                title = stringResource(id = R.string.display_text),
+                scrollBehavior = scrollBehavior,
+                navIcon = Icons.Filled.ArrowBack,
+                navIconClick = { navController.popBackStack() })
+        },
+        content = { paddingValues ->
+            DisplayPageContent(modifier = Modifier.padding(paddingValues))
+        }
+    )
+
 }
 
 @SuppressLint("CheckResult")

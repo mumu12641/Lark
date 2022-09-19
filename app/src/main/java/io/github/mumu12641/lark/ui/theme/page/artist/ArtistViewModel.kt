@@ -1,16 +1,20 @@
 package io.github.mumu12641.lark.ui.theme.page.artist
 
-import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
-import io.github.mumu12641.lark.entity.*
+import io.github.mumu12641.lark.entity.ARTIST_SONGLIST_TYPE
+import io.github.mumu12641.lark.entity.LoadState
+import io.github.mumu12641.lark.entity.Song
+import io.github.mumu12641.lark.entity.SongList
 import io.github.mumu12641.lark.network.NetworkCreator
 import io.github.mumu12641.lark.room.DataBaseUtils
 import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 

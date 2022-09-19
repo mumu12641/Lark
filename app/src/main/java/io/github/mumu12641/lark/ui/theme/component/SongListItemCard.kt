@@ -1,6 +1,5 @@
 package io.github.mumu12641.lark.ui.theme.component
 
-import android.util.Log
 import androidx.annotation.DrawableRes
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background

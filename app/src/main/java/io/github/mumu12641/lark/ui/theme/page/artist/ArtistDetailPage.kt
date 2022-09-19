@@ -1,6 +1,5 @@
 package io.github.mumu12641.lark.ui.theme.page.artist
 
-import android.util.Log
 import android.widget.Toast
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -21,18 +20,15 @@ import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.window.Dialog
 import androidx.navigation.NavController
 import io.github.mumu12641.lark.BaseApplication.Companion.context
 import io.github.mumu12641.lark.R
-import io.github.mumu12641.lark.entity.INIT_SONG_LIST
 import io.github.mumu12641.lark.entity.LoadState
 import io.github.mumu12641.lark.entity.Song
 import io.github.mumu12641.lark.entity.SongList
 import io.github.mumu12641.lark.ui.theme.component.AsyncImage
 import io.github.mumu12641.lark.ui.theme.component.LarkSmallTopBar
 import io.github.mumu12641.lark.ui.theme.component.TextFieldDialog
-import io.github.mumu12641.lark.ui.theme.component.adapterSystemPadding
 import io.github.mumu12641.lark.ui.theme.page.details.PlayButton
 import io.github.mumu12641.lark.ui.theme.page.details.ShowArtistSongs
 
@@ -47,9 +43,7 @@ fun ArtistDetailPage(
     var showResetArtistDialog by remember {
         mutableStateOf(false)
     }
-    val scrollBehavior = pinnedScrollBehavior(rememberTopAppBarScrollState())
-
-
+    val scrollBehavior = pinnedScrollBehavior(rememberTopAppBarState())
     LaunchedEffect(Unit) {
         navController.currentBackStackEntryFlow.collect {
             it.arguments?.getString("songListId")?.let { songListId ->
@@ -63,10 +57,10 @@ fun ArtistDetailPage(
             .nestedScroll(scrollBehavior.nestedScrollConnection),
         topBar = {
             LarkSmallTopBar(
-                paddingValues = adapterSystemPadding(),
                 title = "",
                 scrollBehavior = scrollBehavior,
                 actionIcon = Icons.Filled.Refresh,
+                windowInsets = TopAppBarDefaults.windowInsets,
                 navIconClick = { navController.popBackStack() }) {
                 showResetArtistDialog = true
             }

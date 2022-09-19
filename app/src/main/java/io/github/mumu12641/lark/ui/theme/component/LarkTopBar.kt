@@ -8,12 +8,12 @@ import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.stringResource
 import io.github.mumu12641.lark.R
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun LarkTopBar(
     paddingValues: PaddingValues = PaddingValues(),
@@ -21,46 +21,39 @@ fun LarkTopBar(
     navIcon: ImageVector,
     actions: @Composable RowScope.() -> Unit = {},
     scrollBehavior: TopAppBarScrollBehavior? = null,
-    colors: TopAppBarColors = TopAppBarDefaults.mediumTopAppBarColors(),
     navIconClick: () -> Unit
 ) {
-    val backgroundColor = colors.containerColor(
-        scrollFraction = scrollBehavior?.scrollFraction ?: 0f
-    ).value
-    Box(
-        modifier = Modifier
-            .drawBehind { drawRect(backgroundColor) }
-            .padding(paddingValues),
-    ) {
-        MediumTopAppBar(
-            title = {
-                Text(
-                    text = title
-                )
-            },
-            navigationIcon = {
-                IconButton(onClick = navIconClick) {
-                    Icon(navIcon, contentDescription = title)
-                }
-            },
-            actions = actions,
-            scrollBehavior = scrollBehavior,
-            colors = TopAppBarDefaults.largeTopAppBarColors(
-                containerColor = Color.Transparent,
-                scrolledContainerColor = Color.Transparent
-            ),
-        )
-    }
+    MediumTopAppBar(
+
+        title = {
+            Text(
+                text = title
+            )
+        },
+        navigationIcon = {
+            IconButton(onClick = navIconClick) {
+                Icon(navIcon, contentDescription = title)
+            }
+        },
+        actions = actions,
+        scrollBehavior = scrollBehavior,
+        colors = TopAppBarDefaults.largeTopAppBarColors(
+            containerColor = Color.Transparent,
+            scrolledContainerColor = MaterialTheme.colorScheme.secondaryContainer
+        ),
+        modifier = Modifier.padding(paddingValues),
+    )
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun LarkSmallTopBar(
     paddingValues: PaddingValues = PaddingValues(),
     title: String,
     scrollBehavior: TopAppBarScrollBehavior? = null,
-    colors: TopAppBarColors = TopAppBarDefaults.smallTopAppBarColors(),
     navIcon: ImageVector = Icons.Filled.ArrowBack,
     actionIcon: ImageVector = Icons.Filled.MoreVert,
+    windowInsets: WindowInsets = TopAppBarDefaults.windowInsets.only(WindowInsetsSides.Horizontal),
     navIconClick: () -> Unit,
     actionClick: (() -> Unit)? = null,
     singleActionClick: (() -> Unit)? = null
@@ -68,47 +61,41 @@ fun LarkSmallTopBar(
     var actionMenu by remember {
         mutableStateOf(false)
     }
-    val backgroundColor = colors.containerColor(
-        scrollFraction = scrollBehavior?.scrollFraction ?: 0f
-    ).value
-    Box(
-        modifier = Modifier
-            .drawBehind { drawRect(backgroundColor) }
-            .padding(paddingValues),
-    ) {
-        SmallTopAppBar(
-            title = { Text(text = title) },
-            navigationIcon = {
-                IconButton(onClick = navIconClick) {
-                    Icon(navIcon, contentDescription = "back")
-                }
-            },
-            actions = {
-                actionClick?.let {
-                    IconButton(onClick = { actionMenu = !actionMenu }) {
-                        Icon(actionIcon, contentDescription = "Menu")
-                    }
-                    DropdownMenu(expanded = actionMenu, onDismissRequest = { actionMenu = false }) {
-                        DropdownMenuItem(
-                            text = { Text(text = stringResource(id = R.string.reset_artist_text)) },
-                            onClick = actionClick
-                        )
-                    }
-                }
-                singleActionClick?.let {
-                    IconButton(onClick = it) {
-                        Icon(actionIcon, contentDescription = "Menu")
-                    }
-                }
+    TopAppBar(
 
-            },
-            scrollBehavior = scrollBehavior,
-            colors = TopAppBarDefaults.smallTopAppBarColors(
-                containerColor = Color.Transparent,
-                scrolledContainerColor = Color.Transparent
-            ),
-        )
-    }
+        title = { Text(text = title) },
+        navigationIcon = {
+            IconButton(onClick = navIconClick) {
+                Icon(navIcon, contentDescription = "back")
+            }
+        },
+        actions = {
+            actionClick?.let {
+                IconButton(onClick = { actionMenu = !actionMenu }) {
+                    Icon(actionIcon, contentDescription = "Menu")
+                }
+                DropdownMenu(expanded = actionMenu, onDismissRequest = { actionMenu = false }) {
+                    DropdownMenuItem(
+                        text = { Text(text = stringResource(id = R.string.reset_artist_text)) },
+                        onClick = actionClick
+                    )
+                }
+            }
+            singleActionClick?.let {
+                IconButton(onClick = it) {
+                    Icon(actionIcon, contentDescription = "Menu")
+                }
+            }
+
+        },
+        scrollBehavior = scrollBehavior,
+        colors = TopAppBarDefaults.smallTopAppBarColors(
+            containerColor = Color.Transparent,
+            scrolledContainerColor = MaterialTheme.colorScheme.secondaryContainer
+        ),
+        windowInsets = windowInsets,
+        modifier = Modifier.padding(paddingValues),
+    )
 }
 
 @SuppressLint("ComposableModifierFactory")

@@ -4,9 +4,6 @@ package io.github.mumu12641.lark
 import android.annotation.SuppressLint
 import android.app.Application
 import android.content.Context
-import android.util.DisplayMetrics
-import android.util.Log
-import android.view.WindowManager
 import com.tencent.mmkv.MMKV
 import dagger.hilt.android.HiltAndroidApp
 import kotlinx.coroutines.CoroutineScope
