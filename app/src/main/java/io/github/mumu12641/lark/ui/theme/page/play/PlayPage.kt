@@ -1,7 +1,7 @@
 package io.github.mumu12641.lark.ui.theme.page.play
 
-import android.support.v4.media.MediaMetadataCompat
 import android.support.v4.media.session.PlaybackStateCompat
+import android.util.Log
 import androidx.activity.compose.BackHandler
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.ExperimentalAnimationApi
@@ -45,7 +45,6 @@ import io.github.mumu12641.lark.R
 import io.github.mumu12641.lark.entity.*
 import io.github.mumu12641.lark.room.DataBaseUtils
 import io.github.mumu12641.lark.service.MediaServiceConnection.Companion.EMPTY_PLAYBACK_STATE
-import io.github.mumu12641.lark.service.MediaServiceConnection.Companion.NOTHING_PLAYING
 import io.github.mumu12641.lark.ui.theme.PlayPageTheme
 import io.github.mumu12641.lark.ui.theme.component.AsyncImage
 import io.github.mumu12641.lark.ui.theme.component.LarkSmallTopBar
@@ -66,8 +65,9 @@ fun PlayPage(
     val playState by mainViewModel.playState.collectAsState()
     val currentPlaySongs by playState.currentPlaySongs.collectAsState(initial = emptyList())
     val currentSongList by playState.currentSongList.collectAsState(initial = INIT_SONG_LIST)
-    val metadata by playState.currentPlayMetadata.collectAsState(initial = NOTHING_PLAYING)
     val currentPlaySong by playState.currentPlaySong.collectAsState(initial = INIT_SONG)
+    val currentPosition by mainViewModel.currentPosition.collectAsState(initial = 0)
+    val currentPlayState by playState.currentPlayState.collectAsState(initial = EMPTY_PLAYBACK_STATE)
     val lyrics by playState.lyrics.collectAsState(emptyList())
     val bottomSheetScaffoldState = rememberBottomSheetScaffoldState(
         bottomSheetState = BottomSheetState(BottomSheetValue.Collapsed)
@@ -109,12 +109,11 @@ fun PlayPage(
                 scaffoldState = bottomSheetScaffoldState,
                 sheetContent = {
                     SheetContent(
-                        currentPlaySongs,
+                        { currentPlaySongs },
                         mainViewModel,
-                        currentSongList,
-                        metadata,
-                        currentPlaySong,
-                        lyrics,
+                        { currentSongList },
+                        { currentPlaySong },
+                        { lyrics },
                         { mainViewModel.getLyrics(it) }
                     ) {
                         if (bottomSheetScaffoldState.bottomSheetState.isCollapsed) {
@@ -134,7 +133,9 @@ fun PlayPage(
                             .fillMaxSize()
                             .background(MaterialTheme.colorScheme.background),
                         navController,
-                        mainViewModel,
+                        { currentPlaySong },
+                        { currentPlayState },
+                        { currentPosition },
                         onClickNext = { mainViewModel.onSkipToNext() },
                         onClickPause = { mainViewModel.onPause() },
                         onClickPlay = { mainViewModel.onPlay() },
@@ -149,15 +150,18 @@ fun PlayPage(
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalPagerApi::class)
 @Composable
 private fun SheetContent(
-    currentPlaySongs: List<Song>,
+    currentPlaySongsProvider: () -> List<Song>,
     mainViewModel: MainViewModel,
-    currentSongList: SongList,
-    currentMetadata: MediaMetadataCompat,
-    currentPlaySong: Song,
-    lyrics: List<String>,
+    currentSongListProvider: () -> SongList,
+    currentPlaySongProvider: () -> Song,
+    lyricsProvider: () -> List<String>,
     getLyrics: (Long) -> Unit,
     showBottomSheet: () -> Unit,
 ) {
+    val currentPlaySong = currentPlaySongProvider()
+    val currentSongList = currentSongListProvider()
+    val currentPlaySongs = currentPlaySongsProvider()
+    val lyrics = lyricsProvider()
     val pagerState = rememberPagerState()
     val pages = listOf(
         context.getString(R.string.next_to_play_text),
@@ -247,6 +251,7 @@ private fun SheetContent(
                                 )
                             )
                     ) {
+                        Log.d("Lyrics", "SheetContent: $lyrics")
                         if (lyrics.isEmpty()) {
                             Text(
                                 text = "获取歌词中......",
@@ -254,7 +259,7 @@ private fun SheetContent(
                                     .padding(10.dp),
                                 style = MaterialTheme.typography.titleMedium
                             )
-                            getLyrics(currentMetadata.getLong(MediaMetadataCompat.METADATA_KEY_DISC_NUMBER))
+                            getLyrics(currentPlaySong.neteaseId)
                         } else {
                             LazyColumn {
                                 items(lyrics) { item ->
@@ -281,19 +286,19 @@ private fun SheetContent(
 fun PlayPageContent(
     modifier: Modifier,
     navController: NavController,
-    mainViewModel: MainViewModel,
+    currentPlaySongProvider: () -> Song,
+    currentPlayStateProvider: () -> PlaybackStateCompat,
+    currentPositionProvider: () -> Long,
     onClickPrevious: () -> Unit,
     onClickPlay: () -> Unit,
     onClickPause: () -> Unit,
     onClickNext: () -> Unit,
     onSeekTo: (Long) -> Unit
 ) {
-    val playState by mainViewModel.playState.collectAsState()
-    val currentMetadata by playState.currentPlayMetadata.collectAsState(initial = NOTHING_PLAYING)
-    val currentPlayState by playState.currentPlayState.collectAsState(initial = EMPTY_PLAYBACK_STATE)
+    val currentPlayState = currentPlayStateProvider()
+    val currentPlaySong = currentPlaySongProvider()
     val cornerAlbum: Int by animateIntAsState(if (currentPlayState.state == PlaybackStateCompat.STATE_PLAYING) 100 else 50)
     val cornerButton: Int by animateIntAsState(if (currentPlayState.state == PlaybackStateCompat.STATE_PLAYING) 80 else 28)
-    val currentPosition by mainViewModel.currentPosition.collectAsState()
     val scope = rememberCoroutineScope()
 
     Box(modifier = modifier) {
@@ -322,13 +327,13 @@ fun PlayPageContent(
                             modifier = Modifier
                                 .clip(RoundedCornerShape(cornerAlbum.dp))
                                 .size(width = 350.dp, height = 300.dp),
-                            imageModel = currentMetadata.getString(MediaMetadataCompat.METADATA_KEY_ALBUM_ART_URI),
+                            imageModel = currentPlaySong.songAlbumFileUri,
                             failure = R.drawable.ic_baseline_music_note_24
                         )
                     }
                 }
                 Text(
-                    text = currentMetadata.getString(MediaMetadataCompat.METADATA_KEY_TITLE),
+                    text = currentPlaySong.songTitle,
                     style = MaterialTheme.typography.titleLarge,
                     maxLines = 2,
                     softWrap = false,
@@ -337,7 +342,7 @@ fun PlayPageContent(
                     color = MaterialTheme.colorScheme.onBackground
                 )
                 Text(
-                    text = currentMetadata.getString(MediaMetadataCompat.METADATA_KEY_ARTIST),
+                    text = currentPlaySong.songSinger,
                     maxLines = 1,
                     softWrap = false,
                     overflow = TextOverflow.Ellipsis,
@@ -347,8 +352,7 @@ fun PlayPageContent(
                         .clickable {
                             scope.launch(Dispatchers.IO) {
                                 val songListId = DataBaseUtils.querySongListId(
-                                    currentMetadata
-                                        .getString(MediaMetadataCompat.METADATA_KEY_ARTIST)
+                                    currentPlaySong.songSinger
                                         .split(",")[0],
                                     ARTIST_SONGLIST_TYPE
                                 )
@@ -425,11 +429,11 @@ fun PlayPageContent(
                 }
                 WavySeekbar(
                     modifier = Modifier.padding(start = 5.dp),
-                    valueProvider = { currentPosition.toFloat() },
+                    valueProvider = { currentPositionProvider().toFloat() },
                     onValueChange = {
                         onSeekTo(it.toLong())
                     },
-                    valueRange = 0f..currentMetadata.getLong(MediaMetadataCompat.METADATA_KEY_DURATION)
+                    valueRange = 0f..currentPlaySong.duration
                         .toFloat(),
                     colors = SliderDefaults.colors(
                         activeTrackColor = MaterialTheme.colorScheme.primaryContainer,

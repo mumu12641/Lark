@@ -70,7 +70,6 @@ fun SearchPage(
                 SearchTopBar(navController, searchViewModel)
             },
             content = { paddingValues ->
-
                 if (showDialog) {
                     AddToSongListDialog(
                         { allSongList },

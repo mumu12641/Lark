@@ -59,8 +59,9 @@ fun ArtistPage(
 fun ArtistPageContent(
     modifier: Modifier, artistViewModel: ArtistViewModel, navigateToDetail: (Long) -> Unit
 ) {
-    val uiState by artistViewModel.artistUiState.collectAsState()
-    val list by uiState.artistSongList.collectAsState(initial = emptyList())
+    val allArtistUiState by artistViewModel.allArtistUiState.collectAsState()
+    val list by allArtistUiState.artistSongList.collectAsState(initial = emptyList())
+
     LazyVerticalGrid(
         modifier = modifier,
         contentPadding = PaddingValues(5.dp),

@@ -26,10 +26,12 @@ class ArtistViewModel @Inject constructor() : ViewModel() {
     private val _artistUiState = MutableStateFlow(ArtistUiState())
     val artistUiState = _artistUiState
 
-    fun initData(id: Long) {
+    private val _allArtistUiState = MutableStateFlow(AllArtistUiState())
+    val allArtistUiState = _allArtistUiState
 
+    fun initData(id: Long) {
+        showLoading()
         viewModelScope.launch {
-            showLoading()
             _artistUiState.update {
                 it.copy(
                     currentSongListId = 1L,
@@ -95,8 +97,7 @@ class ArtistViewModel @Inject constructor() : ViewModel() {
         }
     }
 
-
-    data class ArtistUiState(
+    data class AllArtistUiState(
         val artistSongList: Flow<List<SongList>> = DataBaseUtils.queryAllSongList().map {
             it.filter { songList ->
                 songList.type == ARTIST_SONGLIST_TYPE
@@ -104,6 +105,9 @@ class ArtistViewModel @Inject constructor() : ViewModel() {
                 list.songNumber
             }
         },
+    )
+
+    data class ArtistUiState(
         var currentSongListId: Long = 1L,
         var songList: SongList? = null,
         var songs: List<Song> = emptyList(),

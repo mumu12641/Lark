@@ -112,6 +112,10 @@ class MediaPlaybackService : MediaBrowserServiceCompat() {
 
     override fun onDestroy() {
         super.onDestroy()
+        kv.apply {
+            currentSongList?.let { encode("lastPlaySongList", it.songListId) }
+            currentPlaySong?.let { encode("lastPlaySong",it.songId) }
+        }
         mExoPlayer.release()
         scope.cancel()
         unregisterReceiver(mReceiver)
@@ -249,10 +253,6 @@ class MediaPlaybackService : MediaBrowserServiceCompat() {
                 when (song.isBuffered) {
                     NOT_BUFFERED -> {
                         bufferSong(song, index)
-//                        createNotification(
-//                            PlaybackStateCompat.STATE_BUFFERING,
-//                            song
-//                        )
                     }
                     else -> {
 

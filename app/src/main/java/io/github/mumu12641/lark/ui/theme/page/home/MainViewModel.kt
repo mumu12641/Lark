@@ -52,7 +52,6 @@ class MainViewModel @Inject constructor() : ViewModel() {
     val playState = _playState
 
     data class PlayState(
-        val currentPlayMetadata: Flow<MediaMetadataCompat>,
         val currentPlayState: Flow<PlaybackStateCompat>,
         val currentSongList: Flow<SongList>,
         val currentPlaySongs: Flow<List<Song>>,
@@ -60,7 +59,6 @@ class MainViewModel @Inject constructor() : ViewModel() {
         val currentPlaySong :Flow<Song>
     ) {
         constructor(mediaServiceConnection: MediaServiceConnection) : this(
-            mediaServiceConnection.playMetadata,
             mediaServiceConnection.playState,
             mediaServiceConnection.currentSongList,
             mediaServiceConnection.playList,
@@ -220,7 +218,6 @@ class MainViewModel @Inject constructor() : ViewModel() {
 
 
     fun playMedia(songListId: Long, songId: Long) {
-        Log.d("TAG", "playMedia: $songListId + $songId")
         val bundle = Bundle()
         bundle.apply {
             putLong("songListId", songListId)

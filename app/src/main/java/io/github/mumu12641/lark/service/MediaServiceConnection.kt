@@ -97,13 +97,9 @@ class MediaServiceConnection(context: Context, componentName: ComponentName) {
     }
 
     fun getLyrics(id: Long) {
-        applicationScope.launch(Dispatchers.IO + CoroutineExceptionHandler { _, e ->
-            Log.d(
-                TAG,
-                "getLyrics: " + e.message
-            )
+        applicationScope.launch(Dispatchers.IO + CoroutineExceptionHandler { _, _ ->
+            _lyrics.value = listOf("","获取歌词失败")
         }) {
-            Log.d(TAG, "getLyrics: start")
             networkService.getLyric(id).lrc.lyric.let {
                 DataBaseUtils.updateSong(
                     DataBaseUtils.querySongById(
@@ -112,10 +108,8 @@ class MediaServiceConnection(context: Context, componentName: ComponentName) {
                         ).toLong()
                     ).copy(lyrics = it)
                 )
-                Log.d(TAG, "getLyrics: $it")
                 val list = regex.split(it.replace("\\r|\\n".toRegex(), ""))
                 _lyrics.value = list
-
             }
         }
     }
@@ -139,10 +133,15 @@ class MediaServiceConnection(context: Context, componentName: ComponentName) {
             } ?: run {
                 _lyrics.value = emptyList()
             }
+            Log.d(TAG, "onMetadataChanged: "+metadata?.getString(MediaMetadataCompat.METADATA_KEY_DISC_NUMBER))
+            if (metadata?.getString(MediaMetadataCompat.METADATA_KEY_DISC_NUMBER)?.toLong()  == 0L){
+                _lyrics.value = listOf("本地歌曲无法获取歌词")
+            }
 
             updateCurrentAlbumColor(metadata)
             updateWidgetMetadata(metadata)
             updateWidgetPlayState(mediaController.playbackState)
+
             applicationScope.launch(Dispatchers.IO + CoroutineExceptionHandler { _, _ -> }) {
                 val id =
                     metadata?.getString(MediaMetadataCompat.METADATA_KEY_MEDIA_ID)?.toLong()
@@ -214,7 +213,6 @@ class MediaServiceConnection(context: Context, componentName: ComponentName) {
                 children: MutableList<MediaBrowserCompat.MediaItem>
             ) {
                 super.onChildrenLoaded(parentId, children)
-//                Log.d("TAG", "onChildrenLoaded: $children")
                 applicationScope.launch {
                     if (kv
                             .decodeLong("lastPlaySongList") == 0L || kv
@@ -260,7 +258,6 @@ class MediaServiceConnection(context: Context, componentName: ComponentName) {
     private fun updateProgress() {
         while (job.isActive) {
             if (mediaController.playbackState.state == PlaybackStateCompat.STATE_PLAYING) {
-//                _playState.value = mediaController.playbackState
                 _currentPosition.value = mediaController.playbackState.position
             }
         }

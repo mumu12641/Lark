@@ -23,9 +23,10 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import io.github.mumu12641.lark.R
+import io.github.mumu12641.lark.entity.INIT_SONG
 import io.github.mumu12641.lark.entity.Route
+import io.github.mumu12641.lark.entity.Song
 import io.github.mumu12641.lark.service.MediaServiceConnection.Companion.EMPTY_PLAYBACK_STATE
-import io.github.mumu12641.lark.service.MediaServiceConnection.Companion.NOTHING_PLAYING
 import io.github.mumu12641.lark.ui.theme.page.home.MainViewModel
 
 @Composable
@@ -35,7 +36,7 @@ fun FloatingPlayMediaButton(
 ) {
     var extend by remember { mutableStateOf(false) }
     val playState by mainViewModel.playState.collectAsState()
-    val currentMetadata by playState.currentPlayMetadata.collectAsState(initial = NOTHING_PLAYING)
+    val currentPlaySong by playState.currentPlaySong.collectAsState(initial = INIT_SONG)
     val currentPlayState by playState.currentPlayState.collectAsState(initial = EMPTY_PLAYBACK_STATE)
     Row(
         verticalAlignment = Alignment.Bottom,
@@ -47,8 +48,8 @@ fun FloatingPlayMediaButton(
             visible = extend
         ) {
             ControlPlayBar(
-                currentMetadata,
-                currentPlayState,
+                { currentPlaySong },
+                { currentPlayState },
                 { navController.navigate(Route.ROUTE_PLAY_PAGE) },
                 { mainViewModel.onSkipToPrevious() },
                 { mainViewModel.onPause() },
@@ -67,7 +68,7 @@ fun FloatingPlayMediaButton(
                     .graphicsLayer {
                         rotationZ = rotation.value
                     },
-                imageModel = currentMetadata.getString(MediaMetadataCompat.METADATA_KEY_ALBUM_ART_URI),
+                imageModel = currentPlaySong.songAlbumFileUri,
                 failure = R.drawable.ic_baseline_music_note_24
             )
         }
@@ -97,14 +98,16 @@ private fun infiniteRotation(
 
 @Composable
 private fun ControlPlayBar(
-    currentMetadata: MediaMetadataCompat,
-    currentPlayState: PlaybackStateCompat,
+    currentPlaySong: () -> Song,
+    currentPlayState: () -> PlaybackStateCompat,
     onClickToPlayPage: () -> Unit,
     onClickPrevious: () -> Unit,
     onClickPause: () -> Unit,
     onClickPlay: () -> Unit,
     onClickNext: () -> Unit
 ) {
+    val song = currentPlaySong()
+    val playState = currentPlayState()
     Box(
         modifier = Modifier
             .padding(end = 10.dp)
@@ -120,7 +123,7 @@ private fun ControlPlayBar(
                 horizontalArrangement = Arrangement.Center,
             ) {
                 Text(
-                    text = currentMetadata.getString(MediaMetadataCompat.METADATA_KEY_TITLE),
+                    text = song.songTitle,
                     modifier = Modifier
                         .width(150.dp)
                         .padding(horizontal = 10.dp),
@@ -138,7 +141,7 @@ private fun ControlPlayBar(
                         .clickable(onClick = onClickPrevious),
                     contentDescription = null,
                 )
-                if (currentPlayState.state == PlaybackStateCompat.STATE_PLAYING) {
+                if (playState.state == PlaybackStateCompat.STATE_PLAYING) {
                     Icon(
                         painter = painterResource(id = R.drawable.ic_baseline_pause_24),
                         contentDescription = null,

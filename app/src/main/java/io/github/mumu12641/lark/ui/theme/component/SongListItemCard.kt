@@ -105,7 +105,7 @@ fun SongListItemRow(
             .clip(RoundedCornerShape(5.dp))
             .clickable(onClick = onClick)
     ) {
-        AsyncImage(
+        GlideAsyncImage(
             modifier = Modifier
                 .size(50.dp)
                 .padding(start = 0.dp)

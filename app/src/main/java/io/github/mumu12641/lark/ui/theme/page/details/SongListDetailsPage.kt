@@ -1,7 +1,6 @@
 package io.github.mumu12641.lark.ui.theme.page.details
 
 import android.annotation.SuppressLint
-import android.content.Intent
 import android.net.Uri
 import android.util.Log
 import androidx.activity.compose.BackHandler
@@ -104,9 +103,9 @@ fun SongListDetailsPage(
             content = { paddingValues ->
                 SongListDetailsContent(
                     modifier = Modifier.padding(paddingValues),
-                    songList = songList,
-                    songs = songs,
-                    isLoading = uiState.isLoading,
+                    songListProvider = { songList },
+                    songsProvider = { songs },
+                    isLoadingProvider = { uiState.isLoading },
                     changeSongListImage = { uri ->
                         viewModel.changeSongListImage(uri)
                     },
@@ -122,20 +121,21 @@ fun SongListDetailsPage(
 @Composable
 fun SongListDetailsContent(
     modifier: Modifier,
-    songList: SongList?,
-    songs: List<Song>,
-    isLoading: Boolean,
+    songListProvider: () -> SongList?,
+    songsProvider: () -> List<Song>,
+    isLoadingProvider: () -> Boolean,
     changeSongListImage: (String) -> Unit,
     updateDescription: (String) -> Unit,
     playMedia: (Long, Long) -> Unit
 ) {
-
+    val isLoading = isLoadingProvider()
+    val songList = songListProvider()
+    val songs = songsProvider()
     val launcherBackground = rememberLauncherForActivityResult(
         contract =
         ActivityResultContracts.GetContent()
     ) { uri: Uri? ->
         uri?.let {
-            Log.d("TAG", "SongListDetailsContent: $uri")
             changeSongListImage(it.toString())
         }
     }
@@ -164,9 +164,6 @@ fun SongListDetailsContent(
                         .clickable(
                             onClick = {
                                 if (songList?.type == CREATE_SONGLIST_TYPE) {
-                                    val intent = Intent()
-                                        .setType("image/*")
-                                        .setAction(Intent.ACTION_OPEN_DOCUMENT)
                                     launcherBackground.launch("image/*")
                                 } else {
                                     Log.d("TAG", "SongListDetailsContent")

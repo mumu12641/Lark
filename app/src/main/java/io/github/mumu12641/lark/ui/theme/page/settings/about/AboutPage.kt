@@ -81,7 +81,9 @@ fun AboutContent(modifier: Modifier) {
                 Image(
                     painter = painterResource(id = R.drawable.lark),
                     contentDescription = "icon",
-                    modifier = Modifier.size(150.dp)
+                    modifier = Modifier
+                        .padding(10.dp)
+                        .size(100.dp)
                 )
             }
         }

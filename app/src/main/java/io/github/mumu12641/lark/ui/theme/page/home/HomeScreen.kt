@@ -58,7 +58,6 @@ fun HomeScreen(
     navController: NavController,
     mainViewModel: MainViewModel,
 ) {
-
     Box(
         modifier = Modifier.fillMaxSize()
     ) {
@@ -218,7 +217,7 @@ fun HomeContent(
     }
 }
 
-@OptIn(ExperimentalPagerApi::class, ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalPagerApi::class)
 @Composable
 private fun Banner(
     bannerProvider: () -> List<BannerX>,
