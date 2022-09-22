@@ -78,4 +78,7 @@
     <string name="see_all_text">See all</string>
     <string name="next_to_play_text">Next to play</string>
     <string name="lyrics_text">Lyrics</string>
+    <string name="view_lyrics_text">View Lyrics</string>
+    <string name="view_playlist_text">View playlist</string>
+    <string name="view_artist_text">View artist</string>
 </resources>

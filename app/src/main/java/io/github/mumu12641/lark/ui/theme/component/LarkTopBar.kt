@@ -10,8 +10,6 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.compose.ui.res.stringResource
-import io.github.mumu12641.lark.R
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -55,14 +53,11 @@ fun LarkSmallTopBar(
     actionIcon: ImageVector = Icons.Filled.MoreVert,
     windowInsets: WindowInsets = TopAppBarDefaults.windowInsets.only(WindowInsetsSides.Horizontal),
     navIconClick: () -> Unit,
-    actionClick: (() -> Unit)? = null,
+    actions: (@Composable RowScope.() -> Unit)? = null,
     singleActionClick: (() -> Unit)? = null
 ) {
-    var actionMenu by remember {
-        mutableStateOf(false)
-    }
-    TopAppBar(
 
+    TopAppBar(
         title = { Text(text = title) },
         navigationIcon = {
             IconButton(onClick = navIconClick) {
@@ -70,16 +65,19 @@ fun LarkSmallTopBar(
             }
         },
         actions = {
-            actionClick?.let {
-                IconButton(onClick = { actionMenu = !actionMenu }) {
-                    Icon(actionIcon, contentDescription = "Menu")
-                }
-                DropdownMenu(expanded = actionMenu, onDismissRequest = { actionMenu = false }) {
-                    DropdownMenuItem(
-                        text = { Text(text = stringResource(id = R.string.reset_artist_text)) },
-                        onClick = actionClick
-                    )
-                }
+//            actionClick?.let {
+//                IconButton(onClick = { actionMenu = !actionMenu }) {
+//                    Icon(actionIcon, contentDescription = "Menu")
+//                }
+//                DropdownMenu(expanded = actionMenu, onDismissRequest = { actionMenu = false }) {
+//                    DropdownMenuItem(
+//                        text = { Text(text = stringResource(id = R.string.reset_artist_text)) },
+//                        onClick = actionClick
+//                    )
+//                }
+//            }
+            actions?.let {
+                it()
             }
             singleActionClick?.let {
                 IconButton(onClick = it) {

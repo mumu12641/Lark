@@ -248,7 +248,11 @@ fun PlayButton(
     ) {
         OutlinedButton(
             modifier = Modifier.weight(1f),
-            onClick = { playMedia(songList.songListId, songs[0].songId) }) {
+            onClick = {
+                if (songs.isNotEmpty()) {
+                    playMedia(songList.songListId, songs[0].songId)
+                }
+            }) {
             Row(verticalAlignment = Alignment.CenterVertically) {
                 Icon(Icons.Filled.PlayArrow, contentDescription = "play")
                 Text(text = stringResource(id = R.string.play_all_text))
@@ -256,10 +260,12 @@ fun PlayButton(
         }
         Spacer(modifier = Modifier.weight(0.25f))
         Button(modifier = Modifier.weight(1f), onClick = {
-            playMedia(
-                songList.songListId,
-                CHANGE_PLAT_LIST_SHUFFLE
-            )
+            if (songs.isNotEmpty()) {
+                playMedia(
+                    songList.songListId,
+                    CHANGE_PLAT_LIST_SHUFFLE
+                )
+            }
         }) {
             Row(verticalAlignment = Alignment.CenterVertically) {
                 Icon(

@@ -66,8 +66,8 @@ fun HomeScreen(
                 LarkSmallTopBar(
                     paddingValues = adapterSystemPadding(),
                     title = stringResource(id = R.string.app_name),
-                    navIcon = Icons.Filled.Search,
-                    navIconClick = { navController.navigate(Route.ROUTE_SEARCH) },
+                    navIcon = Icons.Filled.Home,
+                    navIconClick = {  },
                     actionIcon = Icons.Filled.Settings,
                     singleActionClick = {
                         navController.navigate(Route.ROUTE_SETTING)

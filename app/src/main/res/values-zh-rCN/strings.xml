@@ -78,4 +78,7 @@
     <string name="see_all_text">更多</string>
     <string name="next_to_play_text">接下来播放</string>
     <string name="lyrics_text">歌词</string>
+    <string name="view_lyrics_text">查看歌词</string>
+    <string name="view_playlist_text">查看播放列表</string>
+    <string name="view_artist_text">查看艺术家</string>
 </resources>

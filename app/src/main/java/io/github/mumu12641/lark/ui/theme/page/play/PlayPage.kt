@@ -1,11 +1,10 @@
 package io.github.mumu12641.lark.ui.theme.page.play
 
 import android.support.v4.media.session.PlaybackStateCompat
-import android.util.Log
 import androidx.activity.compose.BackHandler
-import androidx.compose.animation.AnimatedContent
-import androidx.compose.animation.ExperimentalAnimationApi
+import androidx.compose.animation.*
 import androidx.compose.animation.core.animateIntAsState
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
@@ -16,28 +15,31 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ExpandMore
-import androidx.compose.material.icons.filled.GpsFixed
-import androidx.compose.material.icons.filled.PlayArrow
+import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FabPosition
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.material3.Tab
+import androidx.compose.material3.Text
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.zIndex
 import androidx.navigation.NavController
 import com.google.accompanist.pager.ExperimentalPagerApi
 import com.google.accompanist.pager.HorizontalPager
+import com.google.accompanist.pager.PagerState
 import com.google.accompanist.pager.rememberPagerState
 import io.github.mumu12641.lark.*
 import io.github.mumu12641.lark.BaseApplication.Companion.context
@@ -56,7 +58,10 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
-@OptIn(ExperimentalMaterialApi::class, ExperimentalMaterial3Api::class)
+@OptIn(
+    ExperimentalMaterialApi::class, ExperimentalMaterial3Api::class, ExperimentalPagerApi::class,
+    ExperimentalMaterialApi::class
+)
 @Composable
 fun PlayPage(
     navController: NavController,
@@ -69,11 +74,14 @@ fun PlayPage(
     val currentPosition by mainViewModel.currentPosition.collectAsState(initial = 0)
     val currentPlayState by playState.currentPlayState.collectAsState(initial = EMPTY_PLAYBACK_STATE)
     val lyrics by playState.lyrics.collectAsState(emptyList())
+    val pagerState = rememberPagerState()
     val bottomSheetScaffoldState = rememberBottomSheetScaffoldState(
         bottomSheetState = BottomSheetState(BottomSheetValue.Collapsed)
     )
+    var actionMenu by remember {
+        mutableStateOf(false)
+    }
     val scope = rememberCoroutineScope()
-
     BackHandler {
         if (!bottomSheetScaffoldState.bottomSheetState.isCollapsed) {
             scope.launch {
@@ -104,7 +112,57 @@ fun PlayPage(
                     LarkSmallTopBar(
                         title = "",
                         navIcon = Icons.Filled.ExpandMore,
-                        navIconClick = { navController.popBackStack() })
+                        navIconClick = { navController.popBackStack() },
+                        actions = {
+                            IconButton(onClick = { actionMenu = !actionMenu }) {
+                                Icon(
+                                    Icons.Filled.Menu,
+                                    contentDescription = null
+                                )
+                            }
+                            DropdownMenu(
+                                expanded = actionMenu,
+                                onDismissRequest = { actionMenu = false }) {
+                                DropdownMenuItem(
+                                    text = {
+                                        Text(
+                                            text = stringResource(
+                                                id = R.string.view_artist_text
+                                            )
+                                        )
+                                    }, onClick = {
+                                        scope.launch(Dispatchers.IO) {
+                                            val songListId = DataBaseUtils.querySongListId(
+                                                currentPlaySong.songSinger
+                                                    .split(",")[0],
+                                                ARTIST_SONGLIST_TYPE
+                                            )
+                                            withContext(Dispatchers.Main) {
+                                                navController.navigate(Route.ROUTE_ARTIST_DETAIL_PAGE + songListId)
+                                            }
+                                        }
+                                    })
+                                DropdownMenuItem(
+                                    text = {
+                                        Text(text = stringResource(id = R.string.view_lyrics_text))
+                                    }, onClick = {
+                                        scope.launch {
+                                            bottomSheetScaffoldState.bottomSheetState.expand()
+                                            pagerState.scrollToPage(1)
+                                        }
+                                    })
+                                DropdownMenuItem(
+                                    text = {
+                                        Text(text = stringResource(id = R.string.view_playlist_text))
+                                    }, onClick = {
+                                        scope.launch {
+                                            bottomSheetScaffoldState.bottomSheetState.expand()
+                                            pagerState.scrollToPage(0)
+                                        }
+                                    })
+                            }
+                        }
+                    )
                 },
                 scaffoldState = bottomSheetScaffoldState,
                 sheetContent = {
@@ -114,6 +172,7 @@ fun PlayPage(
                         { currentSongList },
                         { currentPlaySong },
                         { lyrics },
+                        { pagerState },
                         { mainViewModel.getLyrics(it) }
                     ) {
                         if (bottomSheetScaffoldState.bottomSheetState.isCollapsed) {
@@ -155,6 +214,7 @@ private fun SheetContent(
     currentSongListProvider: () -> SongList,
     currentPlaySongProvider: () -> Song,
     lyricsProvider: () -> List<String>,
+    pageStateProvider: () -> PagerState,
     getLyrics: (Long) -> Unit,
     showBottomSheet: () -> Unit,
 ) {
@@ -162,7 +222,7 @@ private fun SheetContent(
     val currentSongList = currentSongListProvider()
     val currentPlaySongs = currentPlaySongsProvider()
     val lyrics = lyricsProvider()
-    val pagerState = rememberPagerState()
+    val pagerState = pageStateProvider()
     val pages = listOf(
         context.getString(R.string.next_to_play_text),
         context.getString(R.string.lyrics_text)
@@ -212,7 +272,6 @@ private fun SheetContent(
             when (page) {
                 NEXT_TO_PLAY_PAGE -> {
                     Box(modifier = Modifier.fillMaxSize()) {
-
                         ScaffoldWithFab(
                             fabPosition = FabPosition.End,
                             onClick = {
@@ -239,37 +298,41 @@ private fun SheetContent(
                     }
                 }
                 LYRICS_PAGE -> {
-                    Box(
-                        modifier = Modifier
-                            .fillMaxSize()
-                            .background(
-                                brush = Brush.verticalGradient(
-                                    listOf(
-                                        MaterialTheme.colorScheme.secondaryContainer,
-                                        MaterialTheme.colorScheme.background
+                    ScaffoldWithFab(
+                        fabPosition = FabPosition.End,
+                        onClick = { getLyrics(currentPlaySong.neteaseId) },
+                        FabContent = { Icon(Icons.Filled.Refresh, contentDescription = null) }) {
+                        Box(
+                            modifier = Modifier
+                                .fillMaxSize()
+                                .background(
+                                    brush = Brush.verticalGradient(
+                                        listOf(
+                                            MaterialTheme.colorScheme.secondaryContainer,
+                                            MaterialTheme.colorScheme.background
+                                        )
                                     )
                                 )
-                            )
-                    ) {
-                        Log.d("Lyrics", "SheetContent: $lyrics")
-                        if (lyrics.isEmpty()) {
-                            Text(
-                                text = "获取歌词中......",
-                                modifier = Modifier
-                                    .padding(10.dp),
-                                style = MaterialTheme.typography.titleMedium
-                            )
-                            getLyrics(currentPlaySong.neteaseId)
-                        } else {
-                            LazyColumn {
-                                items(lyrics) { item ->
-                                    if (lyrics.indexOf(item) >= 1) {
-                                        Text(
-                                            text = item,
-                                            modifier = Modifier.padding(10.dp),
-                                            color = MaterialTheme.colorScheme.onSecondaryContainer,
-                                            style = MaterialTheme.typography.titleMedium
-                                        )
+                        ) {
+                            if (lyrics.isEmpty()) {
+                                Text(
+                                    text = "获取歌词中......",
+                                    modifier = Modifier
+                                        .padding(10.dp),
+                                    style = MaterialTheme.typography.titleMedium
+                                )
+                                getLyrics(currentPlaySong.neteaseId)
+                            } else {
+                                LazyColumn {
+                                    items(lyrics) { item ->
+                                        if (lyrics.indexOf(item) >= 1) {
+                                            Text(
+                                                text = item,
+                                                modifier = Modifier.padding(10.dp),
+                                                color = MaterialTheme.colorScheme.onSecondaryContainer,
+                                                style = MaterialTheme.typography.titleMedium
+                                            )
+                                        }
                                     }
                                 }
                             }
@@ -300,7 +363,6 @@ fun PlayPageContent(
     val cornerAlbum: Int by animateIntAsState(if (currentPlayState.state == PlaybackStateCompat.STATE_PLAYING) 100 else 50)
     val cornerButton: Int by animateIntAsState(if (currentPlayState.state == PlaybackStateCompat.STATE_PLAYING) 80 else 28)
     val scope = rememberCoroutineScope()
-
     Box(modifier = modifier) {
         Column(
             modifier = Modifier
@@ -377,7 +439,22 @@ fun PlayPageContent(
                         ),
                     contentAlignment = Alignment.Center
                 ) {
-                    AnimatedContent(targetState = currentPlayState) { targetState ->
+                    AnimatedContent(targetState = currentPlayState, transitionSpec = {
+                        slideInVertically(
+                            animationSpec = tween(220, delayMillis = 90)
+                        ) + fadeIn(
+                            animationSpec = tween(
+                                220,
+                                delayMillis = 90
+                            )
+                        ) with slideOutVertically(
+                            animationSpec = tween(220, delayMillis = 90)
+                        ) + fadeOut(
+                            animationSpec = tween(
+                                90
+                            )
+                        )
+                    }) { targetState ->
                         when (targetState.state) {
                             PlaybackStateCompat.STATE_PLAYING -> Icon(
                                 painter = painterResource(id = R.drawable.ic_baseline_pause_24),
