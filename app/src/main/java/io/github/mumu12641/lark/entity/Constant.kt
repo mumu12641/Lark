@@ -61,8 +61,8 @@ const val PREFILL_SONGLIST_TYPE = 1
 const val CREATE_SONGLIST_TYPE = 2
 const val ARTIST_SONGLIST_TYPE = 3
 
-val INIT_SONG = Song(0L, "最伟大的作品", "周杰伦", "11", "11", 100)
-val EMPTY_SONG = Song(0L, "empty", "empty", "", "", 0)
+val INIT_SONG = Song(0L, "暂无歌曲", "未知艺术家", "11", "11", 100)
+val BUFFER_SONG = Song(-1L, "", "", "", "", 0)
 val INIT_SONG_LIST = SongList(0L, "", "", 0, "", "", 2)
 
 // tabRow

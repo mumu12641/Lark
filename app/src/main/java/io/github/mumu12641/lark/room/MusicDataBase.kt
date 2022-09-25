@@ -14,7 +14,7 @@ import io.github.mumu12641.lark.entity.SongList
 
 @Database(
     entities = [SongList::class, Song::class, PlaylistSongCrossRef::class],
-    version = 23,
+    version = 22,
     exportSchema = true
 )
 @TypeConverters(Converters::class)
@@ -34,7 +34,7 @@ abstract class MusicDataBase : RoomDatabase() {
         }
     }
 
-    class DatabaseCallback : RoomDatabase.Callback() {
+    class DatabaseCallback : Callback() {
         override fun onCreate(db: SupportSQLiteDatabase) = db.run {
             beginTransaction()
             try {

@@ -87,7 +87,6 @@ dependencies {
     implementation("com.afollestad.material-dialogs:color:3.3.0")
     implementation("androidx.activity:activity-compose:1.5.1")
     implementation("androidx.activity:activity-ktx:1.5.1")
-    implementation("androidx.glance:glance-appwidget:1.0.0-alpha04")
     testImplementation("junit:junit:4.13.2")
     androidTestImplementation("androidx.test.ext:junit:1.1.3")
     androidTestImplementation("androidx.test.espresso:espresso-core:3.4.0")
@@ -118,7 +117,7 @@ dependencies {
 
     implementation("androidx.media:media:1.6.0")
     implementation("com.google.android.exoplayer:exoplayer-core:2.18.1")
-    implementation("com.google.android.exoplayer:exoplayer-dash:2.18.1")
+//    implementation("com.google.android.exoplayer:exoplayer-dash:2.18.1")
     implementation("com.google.android.exoplayer:exoplayer-ui:2.18.1")
 
     // accompanist

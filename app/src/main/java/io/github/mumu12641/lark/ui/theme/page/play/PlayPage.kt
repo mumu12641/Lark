@@ -42,6 +42,7 @@ import com.google.accompanist.pager.HorizontalPager
 import com.google.accompanist.pager.PagerState
 import com.google.accompanist.pager.rememberPagerState
 import io.github.mumu12641.lark.*
+import io.github.mumu12641.lark.BaseApplication.Companion.applicationScope
 import io.github.mumu12641.lark.BaseApplication.Companion.context
 import io.github.mumu12641.lark.R
 import io.github.mumu12641.lark.entity.*
@@ -230,6 +231,7 @@ private fun SheetContent(
     val scope = rememberCoroutineScope()
     val state = rememberLazyListState()
 
+
     Column {
         Row(
             modifier = Modifier
@@ -298,6 +300,7 @@ private fun SheetContent(
                     }
                 }
                 LYRICS_PAGE -> {
+
                     ScaffoldWithFab(
                         fabPosition = FabPosition.End,
                         onClick = { getLyrics(currentPlaySong.neteaseId) },
@@ -375,7 +378,7 @@ fun PlayPageContent(
             ) {
 
                 Box(modifier = Modifier.fillMaxWidth(), contentAlignment = Alignment.Center) {
-                    if (currentPlayState.state == PlaybackStateCompat.STATE_BUFFERING) {
+                    if (currentPlaySong.songId == -1L || currentPlayState.state == PlaybackStateCompat.STATE_BUFFERING) {
                         Row(
                             modifier = Modifier.size(width = 350.dp, height = 300.dp),
                             verticalAlignment = Alignment.CenterVertically,

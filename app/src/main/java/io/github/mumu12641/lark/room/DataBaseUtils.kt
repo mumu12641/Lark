@@ -41,7 +41,7 @@ class DataBaseUtils {
         }
 
         suspend fun insertSong(song: Song): Long {
-            if (isNeteaseIdExist(song.neteaseId)) {
+            if (song.neteaseId != 0L && isNeteaseIdExist(song.neteaseId)) {
                 return querySongIdByNeteaseId(song.neteaseId)
             }
             val id = musicDao.insertSong(song)

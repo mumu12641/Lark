@@ -83,12 +83,13 @@ class FunctionViewModel @Inject constructor() : ViewModel() {
                             cursor.getString(cursor.getColumnIndexOrThrow(MediaStore.Audio.Media.DATA)),
                             cursor.getInt(cursor.getColumnIndexOrThrow(MediaStore.Audio.Media.DURATION))
                         )
-                        if (allMediaFileUri.isEmpty() || !allMediaFileUri.contains(song.mediaFileUri)) {
+                        if (!allMediaFileUri.contains(song.mediaFileUri)  ) {
                             id = DataBaseUtils.insertSong(song)
                             if (!DataBaseUtils.isRefExist(LocalSongListId, id)) {
                                 DataBaseUtils.insertRef(PlaylistSongCrossRef(LocalSongListId, id))
                             }
-                        } else {
+                        }
+                        else {
                             if (!DataBaseUtils.isRefExist(
                                     LocalSongListId,
                                     DataBaseUtils.querySongIdByMediaUri(song.mediaFileUri)

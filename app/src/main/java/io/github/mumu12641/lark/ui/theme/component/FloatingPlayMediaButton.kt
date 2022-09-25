@@ -1,6 +1,5 @@
 package io.github.mumu12641.lark.ui.theme.component
 
-import android.support.v4.media.MediaMetadataCompat
 import android.support.v4.media.session.PlaybackStateCompat
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.*
@@ -57,7 +56,7 @@ fun FloatingPlayMediaButton(
                 { mainViewModel.onSkipToNext() }
             )
         }
-        if (currentPlayState.state == PlaybackStateCompat.STATE_BUFFERING) {
+        if (currentPlaySong.songId == -1L || currentPlayState.state == PlaybackStateCompat.STATE_BUFFERING) {
             CircularProgressIndicator()
         } else {
             AsyncImage(

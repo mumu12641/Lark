@@ -2,6 +2,7 @@ package io.github.mumu12641.lark.ui.theme.page.function
 
 import android.annotation.SuppressLint
 import android.os.Build
+import android.util.Log
 import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.compose.animation.*
@@ -44,7 +45,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
-
+private const val TAG = "FunctionPage"
 @SuppressLint("UnrememberedMutableState", "RememberReturnType")
 @RequiresApi(Build.VERSION_CODES.Q)
 @OptIn(ExperimentalMaterialApi::class, ExperimentalMaterial3Api::class)
@@ -67,6 +68,8 @@ fun FunctionPage(
     var showDialog by remember { mutableStateOf(false) }
     var showAddDialog by remember { mutableStateOf(false) }
     var text by remember { mutableStateOf("") }
+
+
 
     val scrollBehavior = TopAppBarDefaults.exitUntilCollapsedScrollBehavior(
         rememberTopAppBarState(),
@@ -207,6 +210,7 @@ fun LocalContent(
 
     val localMusicList by uiState.localMusicList.collectAsState(initial = emptyList())
     val loadLocal = loadStateProvider()
+    Log.d(TAG, "LocalContent: $localMusicList")
     AnimatedContent(
         modifier = Modifier
             .fillMaxSize()

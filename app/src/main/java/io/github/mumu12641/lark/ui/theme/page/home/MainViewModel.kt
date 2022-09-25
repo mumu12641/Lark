@@ -3,7 +3,6 @@ package io.github.mumu12641.lark.ui.theme.page.home
 import android.content.ComponentName
 import android.os.Build
 import android.os.Bundle
-import android.support.v4.media.MediaMetadataCompat
 import android.support.v4.media.session.PlaybackStateCompat
 import android.util.Log
 import androidx.annotation.RequiresApi
@@ -191,25 +190,27 @@ class MainViewModel @Inject constructor() : ViewModel() {
                 songlist
             )
             for (i in tracks.songs) {
-                val lyrics = networkService.getLyric(i.id.toLong()).lrc.lyric
-                val song = Song(
-                    0L,
-                    i.name,
-                    i.ar.joinToString(",") { it.name },
-                    i.al.picUrl,
-                    EMPTY_URI + i.al.picUrl,
-                    i.dt,
-                    neteaseId = i.id.toLong(),
-                    isBuffered = NOT_BUFFERED,
-                    lyrics = lyrics
-                )
-                if (!DataBaseUtils.isNeteaseIdExist(i.id.toLong())) {
-                    DataBaseUtils.insertSong(song)
-                }
-                val songId = DataBaseUtils.querySongIdByNeteaseId(i.id.toLong())
-                if (!DataBaseUtils.isRefExist(listId, songId)) {
-                    DataBaseUtils.insertRef(PlaylistSongCrossRef(listId, songId))
-                }
+//                if (networkService.getCheckMusic(i.id.toLong()).success) {
+                    val lyrics = networkService.getLyric(i.id.toLong()).lrc.lyric
+                    val song = Song(
+                        0L,
+                        i.name,
+                        i.ar.joinToString(",") { it.name },
+                        i.al.picUrl,
+                        EMPTY_URI + i.al.picUrl,
+                        i.dt,
+                        neteaseId = i.id.toLong(),
+                        isBuffered = NOT_BUFFERED,
+                        lyrics = lyrics
+                    )
+                    if (!DataBaseUtils.isNeteaseIdExist(i.id.toLong())) {
+                        DataBaseUtils.insertSong(song)
+                    }
+                    val songId = DataBaseUtils.querySongIdByNeteaseId(i.id.toLong())
+                    if (!DataBaseUtils.isRefExist(listId, songId)) {
+                        DataBaseUtils.insertRef(PlaylistSongCrossRef(listId, songId))
+                    }
+//                }
             }
 
             _loadState.value = Load.SUCCESS

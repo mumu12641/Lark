@@ -98,7 +98,7 @@ class MediaServiceConnection(context: Context, componentName: ComponentName) {
 
     fun getLyrics(id: Long) {
         applicationScope.launch(Dispatchers.IO + CoroutineExceptionHandler { _, _ ->
-            _lyrics.value = listOf("","获取歌词失败")
+            _lyrics.value = listOf("","")
         }) {
             networkService.getLyric(id).lrc.lyric.let {
                 DataBaseUtils.updateSong(
@@ -121,10 +121,16 @@ class MediaServiceConnection(context: Context, componentName: ComponentName) {
             _playMetadata.value = metadata ?: NOTHING_PLAYING
 
             applicationScope.launch(Dispatchers.IO) {
-                _currentPlaySong.value = DataBaseUtils.querySongById(
-                    _playMetadata.value.getString(MediaMetadataCompat.METADATA_KEY_MEDIA_ID)
-                        .toLong()
-                )
+                if (_playMetadata.value.getString(MediaMetadataCompat.METADATA_KEY_MEDIA_ID)
+                        .toLong() == -1L
+                ) {
+                    _currentPlaySong.value = BUFFER_SONG
+                } else {
+                    _currentPlaySong.value = DataBaseUtils.querySongById(
+                        _playMetadata.value.getString(MediaMetadataCompat.METADATA_KEY_MEDIA_ID)
+                            .toLong()
+                    )
+                }
             }
 
             metadata?.getString(MediaMetadataCompat.METADATA_KEY_COMPILATION)?.let {
@@ -133,8 +139,8 @@ class MediaServiceConnection(context: Context, componentName: ComponentName) {
             } ?: run {
                 _lyrics.value = emptyList()
             }
-            Log.d(TAG, "onMetadataChanged: "+metadata?.getString(MediaMetadataCompat.METADATA_KEY_DISC_NUMBER))
-            if (metadata?.getString(MediaMetadataCompat.METADATA_KEY_DISC_NUMBER)?.toLong()  == 0L){
+            Log.d(TAG, "onMetadataChanged: "+metadata?.getString(MediaMetadataCompat.METADATA_KEY_COMPILATION))
+            if (metadata?.getString(MediaMetadataCompat.METADATA_KEY_COMPILATION)?.toLong()  == 0L){
                 _lyrics.value = listOf("本地歌曲无法获取歌词")
             }
 
