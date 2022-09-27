@@ -20,10 +20,7 @@ import io.github.mumu12641.lark.service.MediaServiceConnection
 import io.github.mumu12641.lark.service.MediaServiceConnection.Companion.EMPTY_PLAYBACK_STATE
 import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -39,8 +36,8 @@ class MainViewModel @Inject constructor() : ViewModel() {
 
     private val currentPlayState by lazy { mediaServiceConnection.playState }
 
-    private val _loadState = MutableStateFlow(Load.NONE)
-    val loadState: StateFlow<Int> = _loadState
+    private val _loadState = MutableStateFlow(LoadState())
+    val loadState = _loadState
 
     val currentPosition by lazy { mediaServiceConnection.currentPosition }
 
@@ -49,6 +46,11 @@ class MainViewModel @Inject constructor() : ViewModel() {
 
     private val _playState = MutableStateFlow(PlayState(mediaServiceConnection))
     val playState = _playState
+
+    data class LoadState(
+        val num:Int = 0,
+        val loadState: io.github.mumu12641.lark.entity.LoadState = io.github.mumu12641.lark.entity.LoadState.None()
+    )
 
     data class PlayState(
         val currentPlayState: Flow<PlaybackStateCompat>,
@@ -169,11 +171,17 @@ class MainViewModel @Inject constructor() : ViewModel() {
 
     fun getNeteaseSongList(id: Long) {
         viewModelScope.launch(Dispatchers.IO + CoroutineExceptionHandler { _, e ->
-            _loadState.value = Load.ERROR
+            e.message?.let {
+                _loadState.update { state->
+                    state.copy(loadState = io.github.mumu12641.lark.entity.LoadState.Fail(it))
+                }
+            }
             Log.d(TAG, "getNeteaseSongList: " + e.message)
         }
         ) {
-            _loadState.value = Load.LOADING
+            _loadState.update {
+                it.copy(loadState = io.github.mumu12641.lark.entity.LoadState.Loading("0"))
+            }
             val list = networkService.getNeteaseSongList(id)
             val tracks = networkService.getNeteaseSongListTracks(id)
             val songlist = SongList(
@@ -189,8 +197,10 @@ class MainViewModel @Inject constructor() : ViewModel() {
             val listId: Long = DataBaseUtils.insertSongList(
                 songlist
             )
+            _loadState.update {
+                it.copy(num = tracks.songs.size)
+            }
             for (i in tracks.songs) {
-//                if (networkService.getCheckMusic(i.id.toLong()).success) {
                     val lyrics = networkService.getLyric(i.id.toLong()).lrc.lyric
                     val song = Song(
                         0L,
@@ -210,10 +220,14 @@ class MainViewModel @Inject constructor() : ViewModel() {
                     if (!DataBaseUtils.isRefExist(listId, songId)) {
                         DataBaseUtils.insertRef(PlaylistSongCrossRef(listId, songId))
                     }
-//                }
+                _loadState.update {
+                    it.copy(loadState = io.github.mumu12641.lark.entity.LoadState.Loading(tracks.songs.indexOf(i).toString()))
+                }
             }
 
-            _loadState.value = Load.SUCCESS
+            _loadState.update {
+                it.copy(loadState = io.github.mumu12641.lark.entity.LoadState.Success("0"))
+            }
         }
     }
 

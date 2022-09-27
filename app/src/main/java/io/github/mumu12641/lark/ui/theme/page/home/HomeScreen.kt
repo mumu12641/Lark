@@ -3,6 +3,7 @@ package io.github.mumu12641.lark.ui.theme.page.home
 import android.Manifest
 import android.annotation.SuppressLint
 import android.os.Build
+import android.util.Log
 import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.clickable
@@ -210,10 +211,19 @@ fun HomeContent(
         ) { navController.navigate(Route.ROUTE_SONG_LIST_DETAILS + it.toString()) }
         ArtistRow(navController) { artistSongList }
     }
-    if (loadState == Load.LOADING) {
-        Dialog(onDismissRequest = {}) {
-            CircularProgressIndicator()
-        }
+    if(loadState.loadState is LoadState.Loading){
+        AlertDialog(onDismissRequest = { }, confirmButton = {
+        }, title = {
+            Row {
+                Text(text = "正在导入中")
+                CircularProgressIndicator(modifier = Modifier.size(20.dp))
+            }
+        },text = {
+            Column {
+                Slider(value = loadState.loadState.msg.toFloat(), onValueChange = {},valueRange = 0f..loadState.num.toFloat())
+                Text(text = loadState.loadState.msg + "/" + loadState.num.toString())
+            }
+        })
     }
 }
 

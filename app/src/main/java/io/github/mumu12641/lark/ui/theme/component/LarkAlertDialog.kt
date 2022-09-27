@@ -36,7 +36,6 @@ fun LarkAlertDialog(
             }
         },
         dismissButton = dismissButton
-
     )
 }
 

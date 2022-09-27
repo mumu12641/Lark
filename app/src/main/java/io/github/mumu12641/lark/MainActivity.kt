@@ -18,6 +18,7 @@ import io.github.mumu12641.lark.ui.theme.page.details.SongListDetailsViewModel
 import io.github.mumu12641.lark.ui.theme.page.function.FunctionViewModel
 import io.github.mumu12641.lark.ui.theme.page.home.MainScreen
 import io.github.mumu12641.lark.ui.theme.page.home.MainViewModel
+import io.github.mumu12641.lark.ui.theme.page.play.PlayViewModel
 import io.github.mumu12641.lark.ui.theme.page.search.SearchViewModel
 import io.github.mumu12641.lark.ui.theme.page.user.UserViewModel
 
@@ -34,6 +35,7 @@ class MainActivity : ComponentActivity() {
     private val songListDetailsViewModel: SongListDetailsViewModel by viewModels()
     private val artistViewModel: ArtistViewModel by viewModels()
     private val searchViewModel: SearchViewModel by viewModels()
+    private val playViewModel: PlayViewModel by viewModels()
 
     @RequiresApi(Build.VERSION_CODES.Q)
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -55,7 +57,8 @@ class MainActivity : ComponentActivity() {
                             userViewModel,
                             songListDetailsViewModel,
                             artistViewModel,
-                            searchViewModel
+                            searchViewModel,
+                            playViewModel
                         )
                     }
                 }

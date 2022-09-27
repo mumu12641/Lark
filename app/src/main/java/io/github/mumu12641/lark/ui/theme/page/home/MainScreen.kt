@@ -19,6 +19,7 @@ import io.github.mumu12641.lark.ui.theme.page.details.SongListDetailsViewModel
 import io.github.mumu12641.lark.ui.theme.page.function.FunctionPage
 import io.github.mumu12641.lark.ui.theme.page.function.FunctionViewModel
 import io.github.mumu12641.lark.ui.theme.page.play.PlayPage
+import io.github.mumu12641.lark.ui.theme.page.play.PlayViewModel
 import io.github.mumu12641.lark.ui.theme.page.search.SearchPage
 import io.github.mumu12641.lark.ui.theme.page.search.SearchViewModel
 import io.github.mumu12641.lark.ui.theme.page.settings.SettingPage
@@ -36,7 +37,8 @@ fun MainScreen(
     userViewModel: UserViewModel,
     songListDetailsViewModel: SongListDetailsViewModel,
     artistViewModel: ArtistViewModel,
-    searchViewModel: SearchViewModel
+    searchViewModel: SearchViewModel,
+    playViewModel: PlayViewModel
 ) {
     val navController = rememberAnimatedNavController()
 
@@ -118,7 +120,7 @@ fun MainScreen(
         animatedComposable(
             Route.ROUTE_PLAY_PAGE
         ) {
-            PlayPage(navController = navController, mainViewModel = mainViewModel)
+            PlayPage(navController = navController, mainViewModel = mainViewModel, playViewModel)
         }
         animatedComposable(
             Route.ROUTE_ARTIST_PAGE
