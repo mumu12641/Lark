@@ -3,7 +3,6 @@ package io.github.mumu12641.lark.ui.theme.page.home
 import android.Manifest
 import android.annotation.SuppressLint
 import android.os.Build
-import android.util.Log
 import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.clickable
@@ -28,7 +27,6 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.util.lerp
-import androidx.compose.ui.window.Dialog
 import androidx.navigation.NavController
 import com.google.accompanist.pager.ExperimentalPagerApi
 import com.google.accompanist.pager.HorizontalPager
@@ -68,7 +66,7 @@ fun HomeScreen(
                     paddingValues = adapterSystemPadding(),
                     title = stringResource(id = R.string.app_name),
                     navIcon = Icons.Filled.Home,
-                    navIconClick = {  },
+                    navIconClick = { },
                     actionIcon = Icons.Filled.Settings,
                     singleActionClick = {
                         navController.navigate(Route.ROUTE_SETTING)
@@ -211,16 +209,16 @@ fun HomeContent(
         ) { navController.navigate(Route.ROUTE_SONG_LIST_DETAILS + it.toString()) }
         ArtistRow(navController) { artistSongList }
     }
-    if(loadState.loadState is LoadState.Loading){
+    if (loadState.loadState is LoadState.Loading) {
         AlertDialog(onDismissRequest = { }, confirmButton = {
         }, title = {
             Row {
-                Text(text = "正在导入中")
+                Text(text = stringResource(id = R.string.importing_text))
                 CircularProgressIndicator(modifier = Modifier.size(20.dp))
             }
-        },text = {
+        }, text = {
             Column {
-                Slider(value = loadState.loadState.msg.toFloat(), onValueChange = {},valueRange = 0f..loadState.num.toFloat())
+                LinearProgressIndicator(progress = (loadState.loadState.msg.toFloat() / (loadState.num.toFloat() + 1e-6)).toFloat())
                 Text(text = loadState.loadState.msg + "/" + loadState.num.toString())
             }
         })

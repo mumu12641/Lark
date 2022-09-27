@@ -34,22 +34,22 @@ fun AboutPage(navController: NavController) {
         rememberTopAppBarState(),
         canScroll = { true }
     )
-        Scaffold(
-            modifier = Modifier
-                .nestedScroll(scrollBehavior.nestedScrollConnection),
-            topBar = {
-                LarkTopBar(
-                    title = stringResource(id = R.string.about_text),
-                    navIcon = Icons.Default.ArrowBack,
-                    scrollBehavior = scrollBehavior
-                ) {
-                    navController.popBackStack()
-                }
-            },
-            content = { paddingValues ->
-                AboutContent(modifier = Modifier.padding(paddingValues))
+    Scaffold(
+        modifier = Modifier
+            .nestedScroll(scrollBehavior.nestedScrollConnection),
+        topBar = {
+            LarkTopBar(
+                title = stringResource(id = R.string.about_text),
+                navIcon = Icons.Default.ArrowBack,
+                scrollBehavior = scrollBehavior
+            ) {
+                navController.popBackStack()
             }
-        )
+        },
+        content = { paddingValues ->
+            AboutContent(modifier = Modifier.padding(paddingValues))
+        }
+    )
 
 }
 

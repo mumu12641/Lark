@@ -74,7 +74,6 @@ fun DisplayPage(navController: NavController) {
 }
 
 @SuppressLint("CheckResult")
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun DisplayPageContent(modifier: Modifier) {
 
@@ -158,6 +157,8 @@ fun DisplayPageContent(modifier: Modifier) {
                     ColorCard(Color(0, 68, 155))
                     ColorCard(Color(220, 123, 88))
                     ColorCard(Color(181, 210, 180))
+                    ColorCard(Color(233, 30, 99, 255))
+                    ColorCard(Color(255, 235, 59, 255))
                 }
             }
         }

@@ -23,7 +23,7 @@ class DataBaseUtils {
             return musicDao.querySongById(songId)
         }
 
-        suspend fun querySongFlowById(songId: Long): Flow<Song>{
+        suspend fun querySongFlowById(songId: Long): Flow<Song> {
             return musicDao.querySongFlowById(songId)
         }
 

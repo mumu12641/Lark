@@ -1,7 +1,6 @@
 package io.github.mumu12641.lark.ui.theme.page.play
 
 import android.support.v4.media.session.PlaybackStateCompat
-import android.util.Log
 import androidx.activity.compose.BackHandler
 import androidx.compose.animation.*
 import androidx.compose.animation.core.animateIntAsState
@@ -75,7 +74,6 @@ fun PlayPage(
     val currentPlaySong by playState.currentPlaySong.collectAsState(initial = INIT_SONG)
     val currentPosition by mainViewModel.currentPosition.collectAsState(initial = 0)
     val currentPlayState by playState.currentPlayState.collectAsState(initial = EMPTY_PLAYBACK_STATE)
-    val lyrics by playState.lyrics.collectAsState(emptyList())
     val playUiState by playViewModel.playUiState.collectAsState()
     val pagerState = rememberPagerState()
     val bottomSheetScaffoldState = rememberBottomSheetScaffoldState(
@@ -151,6 +149,7 @@ fun PlayPage(
                                         Text(text = stringResource(id = R.string.view_lyrics_text))
                                     }, onClick = {
                                         scope.launch {
+                                            actionMenu = false
                                             bottomSheetScaffoldState.bottomSheetState.expand()
                                             pagerState.scrollToPage(1)
                                         }
@@ -160,6 +159,7 @@ fun PlayPage(
                                         Text(text = stringResource(id = R.string.view_playlist_text))
                                     }, onClick = {
                                         scope.launch {
+                                            actionMenu = false
                                             bottomSheetScaffoldState.bottomSheetState.expand()
                                             pagerState.scrollToPage(0)
                                         }
@@ -240,7 +240,6 @@ private fun SheetContent(
     val state = rememberLazyListState()
 
     LaunchedEffect(currentPlaySong.neteaseId) {
-        Log.d("TAG", "PlayPage: " + currentPlaySong.neteaseId)
         getLyrics(currentPlaySong.neteaseId)
     }
 
@@ -328,31 +327,15 @@ private fun SheetContent(
                                     )
                                 )
                         ) {
-//                            if (lyrics.isEmpty()) {
-//                                Text(
-//                                    text = "获取歌词中......",
-//                                    modifier = Modifier
-//                                        .padding(10.dp),
-//                                    style = MaterialTheme.typography.titleMedium
-//                                )
-//                                getLyrics(currentPlaySong.neteaseId)
-//                            } else {
-//                                LazyColumn {
-//                                    items(lyrics) { item ->
-//                                        if (lyrics.indexOf(item) >= 1) {
-//                                            Text(
-//                                                text = item,
-//                                                modifier = Modifier.padding(10.dp),
-//                                                color = MaterialTheme.colorScheme.onSecondaryContainer,
-//                                                style = MaterialTheme.typography.titleMedium
-//                                            )
-//                                        }
-//                                    }
-//                                }
-//                            }
                             AnimatedContent(targetState = loading) { targetState ->
                                 when (targetState) {
-                                    true -> CircularProgressIndicator()
+                                    true ->
+                                        Box(
+                                            modifier = Modifier.fillMaxSize(),
+                                            contentAlignment = Alignment.Center
+                                        ) {
+                                    CircularProgressIndicator()
+                                }
                                     false ->
                                         LazyColumn {
                                             items(lyrics) { item ->

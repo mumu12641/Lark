@@ -50,6 +50,6 @@ interface NetworkService {
     suspend fun getLyric(@Query("id") id: Long): Lyrics
 
     @GET("/check/music")
-    suspend fun getCheckMusic(@Query("id") id :Long):MusicCheck
+    suspend fun getCheckMusic(@Query("id") id: Long): MusicCheck
 
 }

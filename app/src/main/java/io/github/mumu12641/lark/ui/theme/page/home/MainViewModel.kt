@@ -20,7 +20,10 @@ import io.github.mumu12641.lark.service.MediaServiceConnection
 import io.github.mumu12641.lark.service.MediaServiceConnection.Companion.EMPTY_PLAYBACK_STATE
 import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -48,7 +51,7 @@ class MainViewModel @Inject constructor() : ViewModel() {
     val playState = _playState
 
     data class LoadState(
-        val num:Int = 0,
+        val num: Int = 0,
         val loadState: io.github.mumu12641.lark.entity.LoadState = io.github.mumu12641.lark.entity.LoadState.None()
     )
 
@@ -56,14 +59,12 @@ class MainViewModel @Inject constructor() : ViewModel() {
         val currentPlayState: Flow<PlaybackStateCompat>,
         val currentSongList: Flow<SongList>,
         val currentPlaySongs: Flow<List<Song>>,
-        val lyrics: Flow<List<String>>,
-        val currentPlaySong :Flow<Song>
+        val currentPlaySong: Flow<Song>
     ) {
         constructor(mediaServiceConnection: MediaServiceConnection) : this(
             mediaServiceConnection.playState,
             mediaServiceConnection.currentSongList,
             mediaServiceConnection.playList,
-            mediaServiceConnection.lyrics,
             mediaServiceConnection.currentPlaySong
         )
     }
@@ -129,9 +130,6 @@ class MainViewModel @Inject constructor() : ViewModel() {
         }
     }
 
-    fun getLyrics(id:Long){
-        mediaServiceConnection.getLyrics(id)
-    }
 
     init {
         viewModelScope.launch(Dispatchers.IO + CoroutineExceptionHandler { _, e ->
@@ -172,7 +170,7 @@ class MainViewModel @Inject constructor() : ViewModel() {
     fun getNeteaseSongList(id: Long) {
         viewModelScope.launch(Dispatchers.IO + CoroutineExceptionHandler { _, e ->
             e.message?.let {
-                _loadState.update { state->
+                _loadState.update { state ->
                     state.copy(loadState = io.github.mumu12641.lark.entity.LoadState.Fail(it))
                 }
             }
@@ -201,27 +199,33 @@ class MainViewModel @Inject constructor() : ViewModel() {
                 it.copy(num = tracks.songs.size)
             }
             for (i in tracks.songs) {
-                    val lyrics = networkService.getLyric(i.id.toLong()).lrc.lyric
-                    val song = Song(
-                        0L,
-                        i.name,
-                        i.ar.joinToString(",") { it.name },
-                        i.al.picUrl,
-                        EMPTY_URI + i.al.picUrl,
-                        i.dt,
-                        neteaseId = i.id.toLong(),
-                        isBuffered = NOT_BUFFERED,
-                        lyrics = lyrics
-                    )
-                    if (!DataBaseUtils.isNeteaseIdExist(i.id.toLong())) {
-                        DataBaseUtils.insertSong(song)
-                    }
-                    val songId = DataBaseUtils.querySongIdByNeteaseId(i.id.toLong())
-                    if (!DataBaseUtils.isRefExist(listId, songId)) {
-                        DataBaseUtils.insertRef(PlaylistSongCrossRef(listId, songId))
-                    }
+                val lyrics = networkService.getLyric(i.id.toLong()).lrc.lyric
+                val song = Song(
+                    0L,
+                    i.name,
+                    i.ar.joinToString(",") { it.name },
+                    i.al.picUrl,
+                    EMPTY_URI + i.al.picUrl,
+                    i.dt,
+                    neteaseId = i.id.toLong(),
+                    isBuffered = NOT_BUFFERED,
+                    lyrics = lyrics
+                )
+                if (!DataBaseUtils.isNeteaseIdExist(i.id.toLong())) {
+                    DataBaseUtils.insertSong(song)
+                }
+                val songId = DataBaseUtils.querySongIdByNeteaseId(i.id.toLong())
+                if (!DataBaseUtils.isRefExist(listId, songId)) {
+                    DataBaseUtils.insertRef(PlaylistSongCrossRef(listId, songId))
+                }
                 _loadState.update {
-                    it.copy(loadState = io.github.mumu12641.lark.entity.LoadState.Loading(tracks.songs.indexOf(i).toString()))
+                    it.copy(
+                        loadState = io.github.mumu12641.lark.entity.LoadState.Loading(
+                            tracks.songs.indexOf(
+                                i
+                            ).toString()
+                        )
+                    )
                 }
             }
 

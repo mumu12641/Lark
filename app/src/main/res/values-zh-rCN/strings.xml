@@ -81,4 +81,5 @@
     <string name="view_lyrics_text">查看歌词</string>
     <string name="view_playlist_text">查看播放列表</string>
     <string name="view_artist_text">查看艺术家</string>
+    <string name="importing_text">正在导入中</string>
 </resources>

@@ -46,6 +46,7 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
 private const val TAG = "FunctionPage"
+
 @SuppressLint("UnrememberedMutableState", "RememberReturnType")
 @RequiresApi(Build.VERSION_CODES.Q)
 @OptIn(ExperimentalMaterialApi::class, ExperimentalMaterial3Api::class)
@@ -68,7 +69,6 @@ fun FunctionPage(
     var showDialog by remember { mutableStateOf(false) }
     var showAddDialog by remember { mutableStateOf(false) }
     var text by remember { mutableStateOf("") }
-
 
 
     val scrollBehavior = TopAppBarDefaults.exitUntilCollapsedScrollBehavior(

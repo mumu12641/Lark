@@ -45,7 +45,6 @@ class MediaServiceConnection(context: Context, componentName: ComponentName) {
     val playState = _playState
 
     private val _playMetadata = MutableStateFlow(NOTHING_PLAYING)
-    val playMetadata = _playMetadata
 
     private val _currentPlaySong = MutableStateFlow(INIT_SONG)
     val currentPlaySong = _currentPlaySong
@@ -58,9 +57,6 @@ class MediaServiceConnection(context: Context, componentName: ComponentName) {
 
     private val _currentPosition = MutableStateFlow(0L)
     val currentPosition = _currentPosition
-
-    private val _lyrics = MutableStateFlow(emptyList<String>())
-    val lyrics = _lyrics
 
 
     val transportControls: MediaControllerCompat.TransportControls
@@ -96,23 +92,6 @@ class MediaServiceConnection(context: Context, componentName: ComponentName) {
         }
     }
 
-    fun getLyrics(id: Long) {
-        applicationScope.launch(Dispatchers.IO + CoroutineExceptionHandler { _, _ ->
-            _lyrics.value = listOf("","")
-        }) {
-            networkService.getLyric(id).lrc.lyric.let {
-                DataBaseUtils.updateSong(
-                    DataBaseUtils.querySongById(
-                        _playMetadata.value.getString(
-                            MediaMetadataCompat.METADATA_KEY_MEDIA_ID
-                        ).toLong()
-                    ).copy(lyrics = it)
-                )
-                val list = regex.split(it.replace("\\r|\\n".toRegex(), ""))
-                _lyrics.value = list
-            }
-        }
-    }
 
     private var controllerCallback = object : MediaControllerCompat.Callback() {
 
@@ -132,18 +111,10 @@ class MediaServiceConnection(context: Context, componentName: ComponentName) {
                     )
                 }
             }
-
-            metadata?.getString(MediaMetadataCompat.METADATA_KEY_COMPILATION)?.let {
-                val list = regex.split(it.replace("\\r|\\n".toRegex(), ""))
-                _lyrics.value = list
-            } ?: run {
-                _lyrics.value = emptyList()
-            }
-            Log.d(TAG, "onMetadataChanged: "+metadata?.getString(MediaMetadataCompat.METADATA_KEY_COMPILATION))
-            if (metadata?.getString(MediaMetadataCompat.METADATA_KEY_COMPILATION)?.toLong()  == 0L){
-                _lyrics.value = listOf("本地歌曲无法获取歌词")
-            }
-
+            Log.d(
+                TAG,
+                "onMetadataChanged: " + metadata?.getString(MediaMetadataCompat.METADATA_KEY_COMPILATION)
+            )
             updateCurrentAlbumColor(metadata)
             updateWidgetMetadata(metadata)
             updateWidgetPlayState(mediaController.playbackState)
@@ -263,7 +234,7 @@ class MediaServiceConnection(context: Context, componentName: ComponentName) {
 
     private fun updateProgress() {
         while (job.isActive) {
-            if (mediaController.playbackState.state == PlaybackStateCompat.STATE_PLAYING) {
+            if (mediaController.playbackState.state == PlaybackStateCompat.STATE_PLAYING || mediaController.playbackState.state == PlaybackStateCompat.STATE_PAUSED) {
                 _currentPosition.value = mediaController.playbackState.position
             }
         }

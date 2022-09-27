@@ -116,7 +116,7 @@ class MediaPlaybackService : MediaBrowserServiceCompat() {
         super.onDestroy()
         kv.apply {
             currentSongList?.let { encode("lastPlaySongList", it.songListId) }
-            currentPlaySong?.let { encode("lastPlaySong",it.songId) }
+            currentPlaySong?.let { encode("lastPlaySong", it.songId) }
         }
         mExoPlayer.release()
         scope.cancel()
@@ -188,7 +188,7 @@ class MediaPlaybackService : MediaBrowserServiceCompat() {
             .putLong(MediaMetadataCompat.METADATA_KEY_DURATION, duration.toLong())
             .putString(MediaMetadataCompat.METADATA_KEY_ALBUM_ART_URI, songAlbumFileUri)
             .putString(MediaMetadataCompat.METADATA_KEY_MEDIA_URI, mediaFileUri)
-            .putString(MediaMetadataCompat.METADATA_KEY_COMPILATION,neteaseId.toString())
+            .putString(MediaMetadataCompat.METADATA_KEY_COMPILATION, neteaseId.toString())
             .build()
     }
 
