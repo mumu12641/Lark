@@ -21,7 +21,6 @@ import javax.inject.Inject
 @HiltViewModel
 class ArtistViewModel @Inject constructor() : ViewModel() {
 
-    private val TAG = "ArtistViewModel"
 
     private val _artistUiState = MutableStateFlow(ArtistUiState())
     val artistUiState = _artistUiState

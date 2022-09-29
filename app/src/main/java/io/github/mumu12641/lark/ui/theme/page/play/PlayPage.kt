@@ -48,11 +48,10 @@ import io.github.mumu12641.lark.entity.*
 import io.github.mumu12641.lark.room.DataBaseUtils
 import io.github.mumu12641.lark.service.MediaServiceConnection.Companion.EMPTY_PLAYBACK_STATE
 import io.github.mumu12641.lark.ui.theme.PlayPageTheme
-import io.github.mumu12641.lark.ui.theme.component.AsyncImage
-import io.github.mumu12641.lark.ui.theme.component.LarkSmallTopBar
-import io.github.mumu12641.lark.ui.theme.component.WavySeekbar
-import io.github.mumu12641.lark.ui.theme.component.adapterSystemBar
+import io.github.mumu12641.lark.ui.theme.component.*
 import io.github.mumu12641.lark.ui.theme.page.details.ShowSongs
+import io.github.mumu12641.lark.ui.theme.page.function.AddToSongListDialog
+import io.github.mumu12641.lark.ui.theme.page.function.CreateSongListDialog
 import io.github.mumu12641.lark.ui.theme.page.home.MainViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -68,6 +67,8 @@ fun PlayPage(
     mainViewModel: MainViewModel,
     playViewModel: PlayViewModel
 ) {
+    val homeUiState by mainViewModel.homeScreenUiState.collectAsState()
+    val allSongList by homeUiState.allSongList.collectAsState(initial = emptyList())
     val playState by mainViewModel.playState.collectAsState()
     val currentPlaySongs by playState.currentPlaySongs.collectAsState(initial = emptyList())
     val currentSongList by playState.currentSongList.collectAsState(initial = INIT_SONG_LIST)
@@ -75,6 +76,9 @@ fun PlayPage(
     val currentPosition by mainViewModel.currentPosition.collectAsState(initial = 0)
     val currentPlayState by playState.currentPlayState.collectAsState(initial = EMPTY_PLAYBACK_STATE)
     val playUiState by playViewModel.playUiState.collectAsState()
+    var showDialog by remember { mutableStateOf(false) }
+    var showAddDialog by remember { mutableStateOf(false) }
+    var text by remember { mutableStateOf("") }
     val pagerState = rememberPagerState()
     val bottomSheetScaffoldState = rememberBottomSheetScaffoldState(
         bottomSheetState = BottomSheetState(BottomSheetValue.Collapsed)
@@ -126,6 +130,17 @@ fun PlayPage(
                                 expanded = actionMenu,
                                 onDismissRequest = { actionMenu = false }) {
                                 DropdownMenuItem(
+                                    text = { Text(text = stringResource(id = R.string.add_to_favourite_text)) },
+                                    onClick = {
+                                        addSongToLike(scope,currentPlaySong)
+                                    }
+                                )
+                                DropdownMenuItem(
+                                    text = { Text(text = stringResource(id = R.string.add_to_song_list_text)) },
+                                    onClick = { showDialog = true }
+                                )
+                                Divider()
+                                DropdownMenuItem(
                                     text = {
                                         Text(
                                             text = stringResource(
@@ -134,6 +149,7 @@ fun PlayPage(
                                         )
                                     }, onClick = {
                                         scope.launch(Dispatchers.IO) {
+                                            actionMenu = false
                                             val songListId = DataBaseUtils.querySongListId(
                                                 currentPlaySong.songSinger
                                                     .split(",")[0],
@@ -164,6 +180,7 @@ fun PlayPage(
                                             pagerState.scrollToPage(0)
                                         }
                                     })
+
                             }
                         }
                     )
@@ -190,6 +207,19 @@ fun PlayPage(
                 sheetBackgroundColor = MaterialTheme.colorScheme.secondaryContainer,
                 sheetShape = RoundedCornerShape(topStart = 20.dp, topEnd = 20.dp),
                 content = { paddingValues ->
+                    if (showDialog) {
+                        AddToSongListDialog(
+                            { allSongList },
+                            currentPlaySong,
+                            showAddDialogFunction = { showAddDialog = it },
+                            showDialogFunction = { showDialog = it }
+                        )
+                    } else if (showAddDialog) {
+                        CreateSongListDialog(
+                            text,
+                            showAddDialogFunction = { showAddDialog = it },
+                            changeText = { text = it })
+                    }
                     PlayPageContent(
                         modifier = Modifier
                             .padding(paddingValues)

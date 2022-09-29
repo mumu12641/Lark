@@ -61,10 +61,10 @@ const val PREFILL_SONGLIST_TYPE = 1
 const val CREATE_SONGLIST_TYPE = 2
 const val ARTIST_SONGLIST_TYPE = 3
 
-val INIT_SONG = Song(0L, "暂无歌曲", "未知艺术家", "11", "11", 100)
+val INIT_SONG = Song(0L, "暂无歌曲", "未知艺术家", "", "", 0)
 val BUFFER_SONG = Song(-1L, "", "", "", "", 0)
 val INIT_SONG_LIST = SongList(0L, "", "", 0, "", "", 2)
 
 // tabRow
-val NEXT_TO_PLAY_PAGE = 0
-val LYRICS_PAGE = 1
+const val NEXT_TO_PLAY_PAGE = 0
+const val LYRICS_PAGE = 1

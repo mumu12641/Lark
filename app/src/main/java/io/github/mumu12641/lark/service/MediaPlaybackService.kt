@@ -61,6 +61,7 @@ class MediaPlaybackService : MediaBrowserServiceCompat() {
     private var currentPlaySong: Song? = null
 
     private var isBuffering = false
+    private var isError = false
 
     private val scope =
         CoroutineScope(Job() + Dispatchers.IO + CoroutineExceptionHandler { _, _ -> })
@@ -205,6 +206,7 @@ class MediaPlaybackService : MediaBrowserServiceCompat() {
 
     @RequiresApi(Build.VERSION_CODES.M)
     private fun updateAllData() {
+        Log.d(TAG, "updateAllData: " + currentPlayList[mExoPlayer.currentMediaItemIndex].songTitle)
         updatePlayBackState(PlaybackStateCompat.STATE_PLAYING)
         updateMetadata(createMetadataFromSong(currentPlayList[mExoPlayer.currentMediaItemIndex]))
         createNotification(
@@ -214,7 +216,11 @@ class MediaPlaybackService : MediaBrowserServiceCompat() {
     }
 
     @RequiresApi(Build.VERSION_CODES.M)
-    private fun updateQueue(songList: List<Song>, song: Song? = null) {
+    private fun updateQueue(
+        songList: List<Song>,
+        song: Song? = null,
+        setBuffer: (() -> Unit)? = null
+    ) {
         Log.d(TAG, "updateQueue")
         mExoPlayer.clearMediaItems()
         songList.apply {
@@ -227,10 +233,14 @@ class MediaPlaybackService : MediaBrowserServiceCompat() {
         }
         mExoPlayer.prepare()
         song?.let {
+
             mExoPlayer.seekTo(currentPlayList.indexOf(it), 0L)
-            updateMetadata(createMetadataFromSong(song))
-            updatePlayBackState(PlaybackStateCompat.STATE_PLAYING)
-            createNotification(PlaybackStateCompat.STATE_PLAYING, it)
+//            updateMetadata(createMetadataFromSong(song))
+//            updatePlayBackState(PlaybackStateCompat.STATE_PLAYING)
+//            createNotification(PlaybackStateCompat.STATE_PLAYING, it)
+            setBuffer?.let {
+                it()
+            }
         }
 
     }
@@ -243,7 +253,7 @@ class MediaPlaybackService : MediaBrowserServiceCompat() {
                 super.onPlayerError(error)
                 Log.d(TAG, "onPlayerError: error $error")
                 val index = mExoPlayer.currentMediaItemIndex
-                if (currentPlayList[index].isBuffered >= NOT_BUFFERED) {
+                if (currentPlayList[index].isBuffered > NOT_BUFFERED) {
                     bufferSong(currentPlayList[index], index)
                 }
             }
@@ -253,7 +263,7 @@ class MediaPlaybackService : MediaBrowserServiceCompat() {
                 super.onMediaItemTransition(mediaItem, reason)
                 val song = currentPlayList[mExoPlayer.currentMediaItemIndex]
                 val index = mExoPlayer.currentMediaItemIndex
-                Log.d(TAG, "updateAllData(): $song")
+                Log.d(TAG, "onMediaItemTransition(): ${song.songTitle}")
                 when (song.isBuffered) {
                     NOT_BUFFERED -> {
                         bufferSong(song, index)
@@ -265,7 +275,6 @@ class MediaPlaybackService : MediaBrowserServiceCompat() {
                         }
                     }
                 }
-
             }
         }
 
@@ -279,12 +288,10 @@ class MediaPlaybackService : MediaBrowserServiceCompat() {
             currentPlaySong = currentPlayList[index + 1]
             updateQueue(currentPlayList, currentPlaySong)
             isBuffering = false
-
         }) {
             withContext(Dispatchers.Main) {
                 isBuffering = true
                 updateMetadata(createMetadataFromSong(BUFFER_SONG))
-
             }
             val searchSong = networkService.getSongUrl(song1.neteaseId)
             val detail = networkService.getSongDetail(song1.neteaseId.toString())
@@ -300,8 +307,10 @@ class MediaPlaybackService : MediaBrowserServiceCompat() {
                 withContext(Dispatchers.Main) {
                     currentPlayList[index] = song1
                     currentPlaySong = song1
-                    updateQueue(currentPlayList, song1)
-                    isBuffering = false
+                    updateQueue(currentPlayList, song1) {
+                        isBuffering = false
+//                        isError = false
+                    }
                 }
             } else {
                 withContext(Dispatchers.Main) {

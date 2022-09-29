@@ -28,6 +28,7 @@ import io.github.mumu12641.lark.entity.Song
 import io.github.mumu12641.lark.service.MediaServiceConnection.Companion.EMPTY_PLAYBACK_STATE
 import io.github.mumu12641.lark.ui.theme.page.home.MainViewModel
 
+
 @Composable
 fun FloatingPlayMediaButton(
     mainViewModel: MainViewModel,
@@ -114,7 +115,6 @@ private fun ControlPlayBar(
             .background(MaterialTheme.colorScheme.secondaryContainer)
             .clickable(onClick = onClickToPlayPage),
         contentAlignment = Alignment.Center
-
     ) {
         Column(Modifier.padding(5.dp)) {
             Row(
@@ -168,7 +168,6 @@ private fun ControlPlayBar(
                     contentDescription = null
                 )
             }
-
         }
     }
 }

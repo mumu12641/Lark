@@ -135,10 +135,15 @@ class MainViewModel @Inject constructor() : ViewModel() {
         viewModelScope.launch(Dispatchers.IO + CoroutineExceptionHandler { _, e ->
             e.message?.let { Log.d(TAG, it) }
         }) {
+            Log.d(TAG, "test ")
             _bannerState.value = networkService.getBanner().banners.filter {
                 it.targetType == 1
             }
+
+
         }
+
+
     }
 
     fun refreshArtist() {
@@ -221,9 +226,9 @@ class MainViewModel @Inject constructor() : ViewModel() {
                 _loadState.update {
                     it.copy(
                         loadState = io.github.mumu12641.lark.entity.LoadState.Loading(
-                            tracks.songs.indexOf(
+                            (tracks.songs.indexOf(
                                 i
-                            ).toString()
+                            ) + 1).toString()
                         )
                     )
                 }

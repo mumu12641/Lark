@@ -110,11 +110,9 @@ class MediaServiceConnection(context: Context, componentName: ComponentName) {
                             .toLong()
                     )
                 }
+                Log.d(TAG, "onMetadataChanged: " + _currentPlaySong.value.songTitle)
             }
-            Log.d(
-                TAG,
-                "onMetadataChanged: " + metadata?.getString(MediaMetadataCompat.METADATA_KEY_COMPILATION)
-            )
+
             updateCurrentAlbumColor(metadata)
             updateWidgetMetadata(metadata)
             updateWidgetPlayState(mediaController.playbackState)

@@ -4,6 +4,7 @@ import android.annotation.SuppressLint
 import android.os.Build
 import android.util.Log
 import android.widget.Toast
+import androidx.activity.compose.BackHandler
 import androidx.annotation.RequiresApi
 import androidx.compose.animation.*
 import androidx.compose.foundation.background
@@ -75,6 +76,16 @@ fun FunctionPage(
         rememberTopAppBarState(),
         canScroll = { true }
     )
+
+    BackHandler {
+        if (!bottomSheetScaffoldState.bottomSheetState.isCollapsed) {
+            coroutineScope.launch {
+                bottomSheetScaffoldState.bottomSheetState.collapse()
+            }
+        } else {
+            navController.popBackStack()
+        }
+    }
 
     Box(
         modifier = Modifier.fillMaxSize()

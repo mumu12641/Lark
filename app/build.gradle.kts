@@ -21,8 +21,8 @@ android {
         applicationId = "io.github.mumu12641.lark"
         minSdk = 21
         targetSdk = 33
-        versionCode = 6
-        versionName = "0.6.0-alpha"
+        versionCode = 7
+        versionName = "0.7.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables {
@@ -133,5 +133,8 @@ dependencies {
 
 
     implementation("androidx.glance:glance:1.0.0-alpha04")
+
+//    implementation("io.github.hokofly:hoko-blur:1.3.7")
+//    implementation("com.github.caiyonglong:musicapi:1.1.4")
 
 }

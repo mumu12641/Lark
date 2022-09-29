@@ -24,6 +24,7 @@ import io.github.mumu12641.lark.entity.LikeSongListId
 import io.github.mumu12641.lark.entity.PlaylistSongCrossRef
 import io.github.mumu12641.lark.entity.Song
 import io.github.mumu12641.lark.room.DataBaseUtils
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -58,35 +59,7 @@ fun SongDetailBottomSheet(
             androidx.compose.material3.OutlinedButton(
                 modifier = Modifier.weight(1f),
                 onClick = {
-                    scope.launch(Dispatchers.IO) {
-                        var id = song.songId
-                        if (song.songId == 0L) {
-                            id = DataBaseUtils.insertSong(song)
-                        }
-                        if (!DataBaseUtils.isRefExist(LikeSongListId, id)) {
-                            DataBaseUtils.insertRef(
-                                PlaylistSongCrossRef(
-                                    LikeSongListId,
-                                    id
-                                )
-                            )
-                            withContext(Dispatchers.Main) {
-                                Toast.makeText(
-                                    context,
-                                    context.getString(R.string.add_successful_text),
-                                    Toast.LENGTH_LONG
-                                ).show()
-                            }
-                        } else {
-                            withContext(Dispatchers.Main) {
-                                Toast.makeText(
-                                    context,
-                                    context.getString(R.string.already_added_text),
-                                    Toast.LENGTH_LONG
-                                ).show()
-                            }
-                        }
-                    }
+                    addSongToLike(scope, song)
                 }) {
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     androidx.compose.material3.Icon(
@@ -108,6 +81,41 @@ fun SongDetailBottomSheet(
                     )
                     Text(text = stringResource(id = R.string.add_to_song_list_text))
                 }
+            }
+        }
+    }
+}
+
+fun addSongToLike(
+    scope: CoroutineScope,
+    song: Song
+) {
+    scope.launch(Dispatchers.IO) {
+        var id = song.songId
+        if (song.songId == 0L) {
+            id = DataBaseUtils.insertSong(song)
+        }
+        if (!DataBaseUtils.isRefExist(LikeSongListId, id)) {
+            DataBaseUtils.insertRef(
+                PlaylistSongCrossRef(
+                    LikeSongListId,
+                    id
+                )
+            )
+            withContext(Dispatchers.Main) {
+                Toast.makeText(
+                    context,
+                    context.getString(R.string.add_successful_text),
+                    Toast.LENGTH_LONG
+                ).show()
+            }
+        } else {
+            withContext(Dispatchers.Main) {
+                Toast.makeText(
+                    context,
+                    context.getString(R.string.already_added_text),
+                    Toast.LENGTH_LONG
+                ).show()
             }
         }
     }
