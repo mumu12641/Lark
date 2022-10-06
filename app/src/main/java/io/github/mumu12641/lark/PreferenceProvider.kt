@@ -23,7 +23,7 @@ val CurrentAlbumColor = compositionLocalOf { DEFAULT_SEED_COLOR }
 val FollowAlbumSwitch = compositionLocalOf { ON }
 
 @SuppressLint("CompositionLocalNaming")
-val DynamicColorSwitch = compositionLocalOf { PreferenceUtil.DynamicPreference() }
+val DynamicColorSwitch = compositionLocalOf { PreferenceUtil.DynamicColorPreference() }
 val displayPreferenceFlow = PreferenceUtil.displayPreferenceFlow
 
 @Composable

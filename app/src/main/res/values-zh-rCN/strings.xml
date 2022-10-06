@@ -48,7 +48,7 @@
     <string name="follow_system_text">跟随系统</string>
     <string name="select_color_text">选择颜色</string>
     <string name="dynamic_text">动态色彩</string>
-    <string name="dynamic_color_des_text">要求Android12及以上</string>
+    <string name="dynamic_color_des_text">根据手机壁纸更改主题</string>
     <string name="github_text">Github</string>
     <string name="github_des_text">查看Github仓库</string>
     <string name="thanks_text">致谢</string>

@@ -48,7 +48,7 @@
     <string name="follow_system_text">Follow system</string>
     <string name="select_color_text">Select color</string>
     <string name="dynamic_text">Dynamic color</string>
-    <string name="dynamic_color_des_text">Requires Android 12 and above</string>
+    <string name="dynamic_color_des_text">Apply colors from wallpeapers to the app theme</string>
     <string name="github_text">Github</string>
     <string name="github_des_text">View the project in the GitHub repository</string>
     <string name="thanks_text">Thanks</string>

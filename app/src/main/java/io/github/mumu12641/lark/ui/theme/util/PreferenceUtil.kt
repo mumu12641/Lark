@@ -34,7 +34,7 @@ object PreferenceUtil {
         DisplayPreference(
             kv.decodeInt(DARK_MODE, FOLLOW_SYSTEM),
             kv.decodeInt(SEED_COLOR, DEFAULT_SEED_COLOR),
-            DynamicPreference(dynamicColorSwitch = kv.decodeInt(DYNAMIC_COLOR, OFF)),
+            DynamicColorPreference(dynamicColorSwitch = kv.decodeInt(DYNAMIC_COLOR, OFF)),
             followAlbumSwitch = kv.decodeInt(FOLLOW_ALBUM_COLOR_SWITCH, ON)
         )
     )
@@ -43,12 +43,12 @@ object PreferenceUtil {
     data class DisplayPreference(
         val darkModePreference: Int = FOLLOW_SYSTEM,
         val seedColor: Int = DEFAULT_SEED_COLOR,
-        val dynamicPreference: DynamicPreference = DynamicPreference(),
+        val dynamicPreference: DynamicColorPreference = DynamicColorPreference(),
         val currentAlbumColor: Int = DEFAULT_SEED_COLOR,
         val followAlbumSwitch: Int = ON
     )
 
-    data class DynamicPreference(
+    data class DynamicColorPreference(
         val enable: Boolean = Build.VERSION.SDK_INT >= Build.VERSION_CODES.S,
         val dynamicColorSwitch: Int = OFF
     )
@@ -83,7 +83,7 @@ object PreferenceUtil {
     fun switchDynamicColor(mode: Int) {
         applicationScope.launch(Dispatchers.IO) {
             _disaplayPreferenceFlow.update {
-                it.copy(dynamicPreference = DynamicPreference(dynamicColorSwitch = mode))
+                it.copy(dynamicPreference = DynamicColorPreference(dynamicColorSwitch = mode))
             }
             kv.encode(DYNAMIC_COLOR, mode)
         }

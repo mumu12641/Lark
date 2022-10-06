@@ -163,15 +163,16 @@ fun DisplayPageContent(modifier: Modifier) {
             }
         }
         item {
-            SettingSwitchItem(
-                title = stringResource(id = R.string.dynamic_text),
-                description = stringResource(id = R.string.dynamic_color_des_text),
-                icon = Icons.Filled.Brightness6,
-                isChecked = DynamicColorSwitch.current.dynamicColorSwitch == ON,
-                switchChange = switchDynamicColor,
-                enable = DynamicColorSwitch.current.enable
-            ) {
-
+            if (DynamicColorSwitch.current.enable) {
+                SettingSwitchItem(
+                    title = stringResource(id = R.string.dynamic_text),
+                    description = stringResource(id = R.string.dynamic_color_des_text),
+                    icon = Icons.Filled.Brightness6,
+                    isChecked = DynamicColorSwitch.current.dynamicColorSwitch == ON,
+                    switchChange = switchDynamicColor,
+                    enable = DynamicColorSwitch.current.enable
+                ) {
+                }
             }
         }
         item {

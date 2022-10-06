@@ -24,7 +24,6 @@ import io.github.mumu12641.lark.BaseApplication.Companion.kv
 import io.github.mumu12641.lark.MainActivity
 import io.github.mumu12641.lark.R
 import io.github.mumu12641.lark.entity.*
-import io.github.mumu12641.lark.network.NetworkCreator.networkService
 import io.github.mumu12641.lark.room.DataBaseUtils
 import io.github.mumu12641.lark.ui.theme.util.PreferenceUtil
 import io.github.mumu12641.lark.ui.theme.util.PreferenceUtil.SEED_COLOR
@@ -234,6 +233,7 @@ class MediaServiceConnection(context: Context, componentName: ComponentName) {
         while (job.isActive) {
             if (mediaController.playbackState.state == PlaybackStateCompat.STATE_PLAYING || mediaController.playbackState.state == PlaybackStateCompat.STATE_PAUSED) {
                 _currentPosition.value = mediaController.playbackState.position
+
             }
         }
     }
@@ -378,6 +378,7 @@ class MediaServiceConnection(context: Context, componentName: ComponentName) {
             .putString(METADATA_KEY_ARTIST, "未知艺术家")
             .build()
         val regex = Regex("(\\[\\d{2}:\\d{2}.\\d{2,}\\])(.*?)")
+        val regexTime = Regex("(\\[(\\d{2}:\\d{2}.\\d{2,})\\]).*?")
 
     }
 

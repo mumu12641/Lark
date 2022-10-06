@@ -1,7 +1,9 @@
 package io.github.mumu12641.lark.ui.theme.page.play
 
+import android.os.Build
 import android.support.v4.media.session.PlaybackStateCompat
 import androidx.activity.compose.BackHandler
+import androidx.annotation.RequiresApi
 import androidx.compose.animation.*
 import androidx.compose.animation.core.animateIntAsState
 import androidx.compose.animation.core.tween
@@ -9,7 +11,8 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.LazyListState
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -57,8 +60,11 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
+@RequiresApi(Build.VERSION_CODES.N)
 @OptIn(
-    ExperimentalMaterialApi::class, ExperimentalMaterial3Api::class, ExperimentalPagerApi::class,
+    ExperimentalMaterialApi::class,
+    ExperimentalMaterial3Api::class,
+    ExperimentalPagerApi::class,
     ExperimentalMaterialApi::class
 )
 @Composable
@@ -192,6 +198,7 @@ fun PlayPage(
                         mainViewModel,
                         { currentSongList },
                         { currentPlaySong },
+                        { currentPosition },
                         { playUiState },
                         { pagerState },
                         { playViewModel.initData(it) },
@@ -250,17 +257,21 @@ private fun SheetContent(
     mainViewModel: MainViewModel,
     currentSongListProvider: () -> SongList,
     currentPlaySongProvider: () -> Song,
+    currentPositionProvider: () -> Long,
     playUiStateProvider: () -> PlayViewModel.PlayUiState,
     pageStateProvider: () -> PagerState,
     getLyrics: (Long) -> Unit,
     showBottomSheet: () -> Unit,
 ) {
+    var lyricsIndex by remember { mutableStateOf(0) }
     val currentPlaySong = currentPlaySongProvider()
     val currentSongList = currentSongListProvider()
     val currentPlaySongs = currentPlaySongsProvider()
+    val currentPosition = currentPositionProvider()
     val playUiState = playUiStateProvider()
     val lyrics = playUiState.lyrics
     val loading = playUiState.isLoading
+    val timing = playUiState.lyricsTiming
     val pagerState = pageStateProvider()
     val pages = listOf(
         context.getString(R.string.next_to_play_text),
@@ -268,6 +279,17 @@ private fun SheetContent(
     )
     val scope = rememberCoroutineScope()
     val state = rememberLazyListState()
+    val lyricsState = rememberLazyListState()
+
+    LaunchedEffect(currentPosition) {
+        val fixPosition = (currentPosition / 1000L) * 1000L
+        if (timing.contains(fixPosition)) {
+            scope.launch {
+                lyricsState.animateScrollToItem(timing.indexOf(fixPosition) + 1)
+            }
+            lyricsIndex = timing.indexOf(fixPosition)
+        }
+    }
 
     LaunchedEffect(currentPlaySong.neteaseId) {
         getLyrics(currentPlaySong.neteaseId)
@@ -364,26 +386,46 @@ private fun SheetContent(
                                             modifier = Modifier.fillMaxSize(),
                                             contentAlignment = Alignment.Center
                                         ) {
-                                    CircularProgressIndicator()
-                                }
+                                            CircularProgressIndicator()
+                                        }
                                     false ->
-                                        LazyColumn {
-                                            items(lyrics) { item ->
-                                                if (lyrics.indexOf(item) >= 1) {
-                                                    Text(
-                                                        text = item,
-                                                        modifier = Modifier.padding(10.dp),
-                                                        color = MaterialTheme.colorScheme.onSecondaryContainer,
-                                                        style = MaterialTheme.typography.titleMedium
-                                                    )
-                                                }
-                                            }
+                                        LyricsContent(lyricsState, lyrics, lyricsIndex) {
+                                            mainViewModel.onSeekTo(timing[it])
                                         }
                                 }
                             }
                         }
                     }
                 }
+            }
+        }
+    }
+}
+
+@Composable
+private fun LyricsContent(
+    lyricsState: LazyListState,
+    lyrics: List<String>,
+    lyricsIndex: Int,
+    clickToSeek: (Int) -> Unit
+) {
+    LazyColumn(state = lyricsState) {
+        itemsIndexed(lyrics) { index, item ->
+            val color by animateColorAsState(
+                targetValue = if (index == lyricsIndex + 1) MaterialTheme.colorScheme.primary else
+                    MaterialTheme.colorScheme.onSecondaryContainer
+            )
+            if (index >= 1 && item != "") {
+                Text(
+                    text = item,
+                    modifier = Modifier
+                        .padding(10.dp)
+                        .clickable {
+                            clickToSeek(index - 1)
+                        },
+                    color = color,
+                    style = if (index == lyricsIndex + 1) MaterialTheme.typography.displaySmall else MaterialTheme.typography.titleMedium
+                )
             }
         }
     }

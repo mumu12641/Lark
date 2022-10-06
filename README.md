@@ -1,9 +1,10 @@
 <p align="center"> 
-	<img src="assert/icon.png " width=160 height=160>
+	<img src="assert/icon.png "  >
 </p>
 <h1 align="center">
 	Lark
 </h1>
+
 
 <p align="center">
   Netease Cloud Music and Local Music Player,developed using Jetpack Compose

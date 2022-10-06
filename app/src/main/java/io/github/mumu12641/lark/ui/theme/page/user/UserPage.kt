@@ -227,13 +227,14 @@ fun UserContent(
         Column(
             modifier = Modifier.padding(15.dp)
         ) {
-            GlideAsyncImage(modifier = Modifier
-                .fillMaxWidth()
-                .height(200.dp)
-                .clip(RoundedCornerShape(50.dp))
-                .clickable {
-                    launcherBackground.launch("image/*")
-                }, imageModel = user.backgroundImageUri, failure = R.drawable.userbackground
+            GlideAsyncImage(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(200.dp)
+                    .clip(RoundedCornerShape(50.dp))
+                    .clickable {
+                        launcherBackground.launch("image/*")
+                    }, imageModel = user.backgroundImageUri, failure = R.drawable.sample
             )
 
             Row(
