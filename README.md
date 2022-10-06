@@ -4,8 +4,6 @@
 <h1 align="center">
 	Lark
 </h1>
-
-
 <p align="center">
   Netease Cloud Music and Local Music Player,developed using Jetpack Compose
 </p>
@@ -27,9 +25,9 @@
 ## :book:Features
 
 - :floppy_disk:Fetch local music to play
-- :rocket:Import songlists from Netease Music
+- :rocket:Import songlists from Netease Cloud Music
 - :bulb:Adaptive play theme with currently playing song
-- :art: [Material Design 3](https://m3.material.io/) style UI, with [dynamic color](https://m3.material.io/foundations/customization) theme、custom theme and play page that changes with the album cover
+- :art: [Material Design 3](https://m3.material.io/) style UI, with [dynamic color](https://m3.material.io/foundations/customization) theme
 
 ## :pushpin:What's Next
 
@@ -43,7 +41,7 @@ Please download apk from [releases](https://github.com/mumu12641/Lark/releases)
 
 ## :hearts:Thanks
 
-Some code is borrowed from [Seal](https://github.com/JunkFood02/Seal),and UI design inspired by [RetroMusicPlayer](https://github.com/RetroMusicPlayer/RetroMusicPlayer) and [Howl](https://github.com/Iamlooker/Howl).
+Some code is borrowed from [Seal](https://github.com/JunkFood02/Seal), and UI design inspired by [RetroMusicPlayer](https://github.com/RetroMusicPlayer/RetroMusicPlayer) and [Howl](https://github.com/Iamlooker/Howl).
 
 API service from [NeteaseCloudMusicApi](https://github.com/Binaryify/NeteaseCloudMusicApi).
 
