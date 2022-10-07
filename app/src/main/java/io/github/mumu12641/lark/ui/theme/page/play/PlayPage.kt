@@ -126,7 +126,11 @@ fun PlayPage(
                         navIcon = Icons.Filled.ExpandMore,
                         navIconClick = { navController.popBackStack() },
                         actions = {
-                            IconButton(onClick = { actionMenu = !actionMenu }) {
+                            IconButton(onClick = {
+                                if (currentPlaySong != INIT_SONG) {
+                                    actionMenu = !actionMenu
+                                }
+                            }) {
                                 Icon(
                                     Icons.Filled.Menu,
                                     contentDescription = null
@@ -424,7 +428,7 @@ private fun LyricsContent(
                             clickToSeek(index - 1)
                         },
                     color = color,
-                    style = if (index == lyricsIndex + 1) MaterialTheme.typography.displaySmall else MaterialTheme.typography.titleMedium
+                    style = if (index == lyricsIndex + 1) MaterialTheme.typography.titleLarge else MaterialTheme.typography.titleMedium
                 )
             }
         }

@@ -150,8 +150,6 @@ class FunctionViewModel @Inject constructor() : ViewModel() {
             }
         }
     }
-
-
 }
 
 fun getAlbumImageUri(id: Long): Uri {

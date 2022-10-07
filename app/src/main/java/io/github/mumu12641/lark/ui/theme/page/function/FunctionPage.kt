@@ -2,7 +2,6 @@ package io.github.mumu12641.lark.ui.theme.page.function
 
 import android.annotation.SuppressLint
 import android.os.Build
-import android.util.Log
 import android.widget.Toast
 import androidx.activity.compose.BackHandler
 import androidx.annotation.RequiresApi
@@ -221,7 +220,6 @@ fun LocalContent(
 
     val localMusicList by uiState.localMusicList.collectAsState(initial = emptyList())
     val loadLocal = loadStateProvider()
-    Log.d(TAG, "LocalContent: $localMusicList")
     AnimatedContent(
         modifier = Modifier
             .fillMaxSize()

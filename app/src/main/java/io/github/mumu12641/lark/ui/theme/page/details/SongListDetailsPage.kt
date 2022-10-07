@@ -130,6 +130,7 @@ fun SongListDetailsContent(
 ) {
     val isLoading = isLoadingProvider()
     val songList = songListProvider()
+
     val songs = songsProvider()
     val launcherBackground = rememberLauncherForActivityResult(
         contract =
@@ -202,17 +203,23 @@ fun SongListDetailsContent(
                     .padding(start = 20.dp, bottom = 20.dp),
                 maxLines = 1
             )
-            Text(
-                text = songList.description,
-                style = MaterialTheme.typography.titleMedium,
-                color = MaterialTheme.colorScheme.primary,
-                modifier = Modifier
-                    .padding(start = 20.dp, bottom = 20.dp)
-                    .clickable { showDialog = true },
-                softWrap = false,
-                overflow = TextOverflow.Ellipsis,
-                maxLines = 1
-            )
+            if (songList.description.toList().size <= 14) {
+                Text(
+                    songList.description,
+                    modifier = Modifier
+                        .padding(start = 20.dp, bottom = 20.dp, end = 20.dp)
+                        .clickable { showDialog = true },
+                    color = MaterialTheme.colorScheme.primary
+                )
+            } else {
+                MarqueeText(
+                    songList.description,
+                    modifier = Modifier
+                        .padding(start = 20.dp, bottom = 20.dp, end = 20.dp)
+                        .clickable { showDialog = true },
+                    color = MaterialTheme.colorScheme.primary
+                )
+            }
             PlayButton(playMedia, songList, songs)
             if (showDialog) {
                 TextFieldDialog(

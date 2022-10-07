@@ -234,7 +234,7 @@ fun UserContent(
                     .clip(RoundedCornerShape(50.dp))
                     .clickable {
                         launcherBackground.launch("image/*")
-                    }, imageModel = user.backgroundImageUri, failure = R.drawable.sample
+                    }, imageModel = user.backgroundImageUri, failure = R.drawable.userbackground
             )
 
             Row(
