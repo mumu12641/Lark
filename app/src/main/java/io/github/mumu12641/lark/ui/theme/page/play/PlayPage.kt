@@ -198,13 +198,13 @@ fun PlayPage(
                 scaffoldState = bottomSheetScaffoldState,
                 sheetContent = {
                     SheetContent(
-                        { currentPlaySongs },
+                         currentPlaySongs ,
                         mainViewModel,
-                        { currentSongList },
-                        { currentPlaySong },
-                        { currentPosition },
-                        { playUiState },
-                        { pagerState },
+                         currentSongList ,
+                         currentPlaySong ,
+                         currentPosition ,
+                         playUiState ,
+                         pagerState ,
                         { playViewModel.initData(it) },
                     ) {
                         if (bottomSheetScaffoldState.bottomSheetState.isCollapsed) {
@@ -220,7 +220,7 @@ fun PlayPage(
                 content = { paddingValues ->
                     if (showDialog) {
                         AddToSongListDialog(
-                            { allSongList },
+                             allSongList ,
                             currentPlaySong,
                             showAddDialogFunction = { showAddDialog = it },
                             showDialogFunction = { showDialog = it }
@@ -237,9 +237,9 @@ fun PlayPage(
                             .fillMaxSize()
                             .background(MaterialTheme.colorScheme.background),
                         navController,
-                        { currentPlaySong },
-                        { currentPlayState },
-                        { currentPosition },
+                         currentPlaySong ,
+                         currentPlayState ,
+                         currentPosition ,
                         onClickNext = { mainViewModel.onSkipToNext() },
                         onClickPause = { mainViewModel.onPause() },
                         onClickPlay = { mainViewModel.onPlay() },
@@ -257,26 +257,20 @@ fun PlayPage(
 )
 @Composable
 private fun SheetContent(
-    currentPlaySongsProvider: () -> List<Song>,
+    currentPlaySongs: List<Song>,
     mainViewModel: MainViewModel,
-    currentSongListProvider: () -> SongList,
-    currentPlaySongProvider: () -> Song,
-    currentPositionProvider: () -> Long,
-    playUiStateProvider: () -> PlayViewModel.PlayUiState,
-    pageStateProvider: () -> PagerState,
+    currentSongList:SongList,
+    currentPlaySong: Song,
+    currentPosition: Long,
+    playUiState:  PlayViewModel.PlayUiState,
+    pagerState:  PagerState,
     getLyrics: (Long) -> Unit,
     showBottomSheet: () -> Unit,
 ) {
     var lyricsIndex by remember { mutableStateOf(0) }
-    val currentPlaySong = currentPlaySongProvider()
-    val currentSongList = currentSongListProvider()
-    val currentPlaySongs = currentPlaySongsProvider()
-    val currentPosition = currentPositionProvider()
-    val playUiState = playUiStateProvider()
     val lyrics = playUiState.lyrics
     val loading = playUiState.isLoading
     val timing = playUiState.lyricsTiming
-    val pagerState = pageStateProvider()
     val pages = listOf(
         context.getString(R.string.next_to_play_text),
         context.getString(R.string.lyrics_text)
@@ -355,13 +349,13 @@ private fun SheetContent(
                                 )
                             }) {
                             ShowSongs(
-                                songsProvider = { currentPlaySongs },
+                                songs =  currentPlaySongs ,
                                 modifier = Modifier,
                                 top = 0,
                                 state = state,
                                 clipShape = RoundedCornerShape(0.dp),
                                 seekToSong = { songId: Long -> mainViewModel.seekToSong(songId) },
-                                songListProvider = { currentSongList }
+                                songList =  currentSongList
                             )
                         }
                     }
@@ -440,17 +434,15 @@ private fun LyricsContent(
 fun PlayPageContent(
     modifier: Modifier,
     navController: NavController,
-    currentPlaySongProvider: () -> Song,
-    currentPlayStateProvider: () -> PlaybackStateCompat,
-    currentPositionProvider: () -> Long,
+    currentPlaySong:  Song,
+    currentPlayState: PlaybackStateCompat,
+    currentPosition: Long,
     onClickPrevious: () -> Unit,
     onClickPlay: () -> Unit,
     onClickPause: () -> Unit,
     onClickNext: () -> Unit,
     onSeekTo: (Long) -> Unit
 ) {
-    val currentPlayState = currentPlayStateProvider()
-    val currentPlaySong = currentPlaySongProvider()
     val cornerAlbum: Int by animateIntAsState(if (currentPlayState.state == PlaybackStateCompat.STATE_PLAYING) 100 else 50)
     val cornerButton: Int by animateIntAsState(if (currentPlayState.state == PlaybackStateCompat.STATE_PLAYING) 80 else 28)
     val scope = rememberCoroutineScope()
@@ -597,7 +589,7 @@ fun PlayPageContent(
                 }
                 WavySeekbar(
                     modifier = Modifier.padding(start = 5.dp),
-                    valueProvider = { currentPositionProvider().toFloat() },
+                    valueProvider = { currentPosition.toFloat() },
                     onValueChange = {
                         onSeekTo(it.toLong())
                     },

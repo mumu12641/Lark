@@ -198,16 +198,16 @@ fun HomeContent(
             .verticalScroll(rememberScrollState())
     ) {
         WelcomeUser(navController)
-        Banner({ banner }) {
+        Banner(banner) {
             mainViewModel.addSongToCurrentList(it)
         }
         FunctionTab(navController)
         SongListRow(
-            { allSongList },
+            allSongList,
             addSongList = { mainViewModel.addSongList(it) },
             { mainViewModel.getNeteaseSongList(it) }
         ) { navController.navigate(Route.ROUTE_SONG_LIST_DETAILS + it.toString()) }
-        ArtistRow(navController) { artistSongList }
+        ArtistRow(navController, artistSongList)
     }
     if (loadState.loadState is LoadState.Loading) {
         AlertDialog(onDismissRequest = { }, confirmButton = {
@@ -228,10 +228,9 @@ fun HomeContent(
 @OptIn(ExperimentalPagerApi::class)
 @Composable
 private fun Banner(
-    bannerProvider: () -> List<BannerX>,
+    banner: List<BannerX>,
     addBannerSongToList: (Long) -> Unit,
 ) {
-    val banner = bannerProvider()
     val pagerState = rememberPagerState(
         initialPage = 0
     )
@@ -348,8 +347,7 @@ private fun Banner(
 }
 
 @Composable
-private fun ArtistRow(navController: NavController, listProvider: () -> List<SongList>) {
-    val list = listProvider()
+private fun ArtistRow(navController: NavController, list: List<SongList>) {
     Column(
         modifier = Modifier.fillMaxWidth()
     ) {
@@ -389,12 +387,11 @@ private fun ArtistRow(navController: NavController, listProvider: () -> List<Son
 
 @Composable
 private fun SongListRow(
-    listProvider: () -> List<SongList>,
+    list: List<SongList>,
     addSongList: (SongList) -> Unit,
     getNeteaseSongList: (Long) -> Unit,
     navigationToDetails: (Long) -> Unit
 ) {
-    val list = listProvider()
     var showDialog by remember { mutableStateOf(false) }
     var showNeteaseDialog by remember { mutableStateOf(false) }
     var text by remember { mutableStateOf("") }
