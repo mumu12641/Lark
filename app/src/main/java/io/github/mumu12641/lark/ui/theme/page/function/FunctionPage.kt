@@ -118,7 +118,7 @@ fun FunctionPage(
                     { paddingValues ->
                         if (showDialog) {
                             AddToSongListDialog(
-                                { allSongList },
+                                 allSongList ,
                                 currentShowSong!!,
                                 showAddDialogFunction = { showAddDialog = it },
                                 showDialogFunction = { showDialog = it }
@@ -134,7 +134,7 @@ fun FunctionPage(
                             modifier = Modifier.padding(paddingValues),
                             LocalSongListId,
                             functionUiState,
-                            { loadState },
+                             loadState ,
                             { song ->
                                 viewModel.changeCurrentShowSong(song)
                                 coroutineScope.launch {
@@ -155,7 +155,7 @@ fun FunctionPage(
                             modifier = Modifier.padding(it),
                             HistorySongListId,
                             functionUiState,
-                            { loadState },
+                             loadState ,
                             playMedia = playMedia
                         )
                     }
@@ -213,18 +213,17 @@ fun LocalContent(
     modifier: Modifier,
     songListID: Long,
     uiState: FunctionViewModel.FunctionUiState,
-    loadStateProvider: () -> Int,
+    loadState:  Int,
     showBottomSheet: ((Song) -> Unit)? = null,
     playMedia: (Long, Long) -> Unit
 ) {
 
     val localMusicList by uiState.localMusicList.collectAsState(initial = emptyList())
-    val loadLocal = loadStateProvider()
     AnimatedContent(
         modifier = Modifier
             .fillMaxSize()
             .background(MaterialTheme.colorScheme.background),
-        targetState = loadLocal,
+        targetState = loadState,
         transitionSpec = {
             slideInVertically { height -> height } + fadeIn() with
                     slideOutVertically { height -> -height } + fadeOut()
@@ -264,18 +263,17 @@ fun HistoryContent(
     modifier: Modifier,
     songListID: Long,
     uiState: FunctionViewModel.FunctionUiState,
-    loadStateProvider: () -> Int,
+    loadState:  Int,
     showBottomSheet: ((Song) -> Unit)? = null,
     playMedia: (Long, Long) -> Unit
 ) {
     val historySongList by uiState.historySongList.collectAsState(initial = emptyList())
-    val loadLocal = loadStateProvider()
 
     AnimatedContent(
         modifier = Modifier
             .fillMaxSize()
             .background(MaterialTheme.colorScheme.background),
-        targetState = loadLocal,
+        targetState = loadState,
         transitionSpec = {
             slideInVertically { height -> height } + fadeIn() with
                     slideOutVertically { height -> -height } + fadeOut()
@@ -361,12 +359,11 @@ fun CreateSongListDialog(
 
 @Composable
 fun AddToSongListDialog(
-    allSongListProvider: () -> List<SongList>,
+    allSongList: List<SongList>,
     currentShowSong: Song,
     showDialogFunction: (Boolean) -> Unit,
     showAddDialogFunction: (Boolean) -> Unit
 ) {
-    val allSongList = allSongListProvider()
     LarkAlertDialog(
         onDismissRequest = { showDialogFunction(false) },
         title = stringResource(id = R.string.add_to_song_list_text),

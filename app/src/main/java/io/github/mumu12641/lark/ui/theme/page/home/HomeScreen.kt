@@ -139,15 +139,15 @@ fun HomeSetup(
                 Column(modifier = Modifier.verticalScroll(rememberScrollState())) {
                     IconDescription(
                         icon = Icons.Filled.MusicNote,
-                        description = "您可以获取并且播放本地以及网络歌曲。"
+                        description = stringResource(id = R.string.welcome_dialog_1_desc)
                     )
                     IconDescription(
                         icon = Icons.Filled.Backup,
-                        description = "登录您的网易云账号，获取个人歌单以及个性化推荐。"
+                        description = stringResource(id = R.string.welcome_dialog_2_desc),
                     )
                     IconDescription(
                         icon = Icons.Filled.PlayArrow,
-                        description = "简洁美观的播放界面，无广告无其他冗余功能，带给你最舒适、最纯粹的体验"
+                        description = stringResource(id = R.string.welcome_dialog_3_desc),
                     )
                 }
             },
@@ -320,7 +320,11 @@ private fun Banner(
                                 .clickable(onClick = {
                                     onClick(page)
                                     Toast
-                                        .makeText(context, "成功添加到播放列表", Toast.LENGTH_LONG)
+                                        .makeText(
+                                            context,
+                                            context.getString(R.string.success_add_to_songlist_text),
+                                            Toast.LENGTH_LONG
+                                        )
                                         .show()
                                 })
                         ) {

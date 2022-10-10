@@ -16,6 +16,7 @@ import androidx.compose.material.icons.filled.Brightness6
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.Colorize
 import androidx.compose.material.icons.sharp.Bedtime
+import androidx.compose.material.icons.sharp.Language
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -38,14 +39,14 @@ import io.github.mumu12641.lark.ui.theme.component.LarkTopBar
 import io.github.mumu12641.lark.ui.theme.component.SettingItem
 import io.github.mumu12641.lark.ui.theme.component.SettingSwitchItem
 import io.github.mumu12641.lark.ui.theme.util.PreferenceUtil
-import io.github.mumu12641.lark.ui.theme.util.PreferenceUtil.DARK_MODE_CLOSE
-import io.github.mumu12641.lark.ui.theme.util.PreferenceUtil.DARK_MODE_FOLLOW_SYSTEM
-import io.github.mumu12641.lark.ui.theme.util.PreferenceUtil.DARK_MODE_OPEN
 import io.github.mumu12641.lark.ui.theme.util.PreferenceUtil.DEFAULT_SEED_COLOR
 import io.github.mumu12641.lark.ui.theme.util.PreferenceUtil.EMPTY_SEED_COLOR
 import io.github.mumu12641.lark.ui.theme.util.PreferenceUtil.FOLLOW_SYSTEM
 import io.github.mumu12641.lark.ui.theme.util.PreferenceUtil.OFF
 import io.github.mumu12641.lark.ui.theme.util.PreferenceUtil.ON
+import io.github.mumu12641.lark.ui.theme.util.PreferenceUtil.getLanguageConfiguration
+import io.github.mumu12641.lark.ui.theme.util.PreferenceUtil.getLanguageDesc
+import io.github.mumu12641.lark.ui.theme.util.PreferenceUtil.getLanguageNumber
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -80,9 +81,27 @@ fun DisplayPageContent(modifier: Modifier) {
     var showSwitchDarkModeDialog by remember {
         mutableStateOf(false)
     }
+    var showSwitchLanguageDialog by remember {
+        mutableStateOf(false)
+    }
 
-    val radioOptions = listOf(DARK_MODE_FOLLOW_SYSTEM, DARK_MODE_OPEN, DARK_MODE_CLOSE)
-    val (selectedOption, onOptionSelected) = remember { mutableStateOf(radioOptions[0]) }
+    val radioOptions = listOf(
+        stringResource(id = R.string.follow_system_text),
+        stringResource(id = R.string.on_text),
+        stringResource(id = R.string.off_text)
+    )
+    val (selectedOption, onOptionSelected) = remember { mutableStateOf(radioOptions[PreferenceUtil.getDarkMode()]) }
+
+    val languageOptions = listOf(
+        stringResource(id = R.string.follow_system_text), stringResource(id = R.string.la_zh_CN),
+        stringResource(id = R.string.la_en_US)
+    )
+    val (selectedLanguageOption, onOptionLanguageSelected) = remember {
+        mutableStateOf(
+            languageOptions[getLanguageNumber()]
+        )
+    }
+
     val switchDynamicColor: (Boolean) -> Unit = {
         if (it) {
             PreferenceUtil.switchDynamicColor(ON)
@@ -91,6 +110,11 @@ fun DisplayPageContent(modifier: Modifier) {
             PreferenceUtil.switchDynamicColor(OFF)
             PreferenceUtil.changeSeedColor(DEFAULT_SEED_COLOR)
         }
+    }
+
+    fun setLanguage(selectedLanguage: Int) {
+        PreferenceUtil.setLanguage(selectedLanguage)
+        MainActivity.setLanguage(getLanguageConfiguration())
     }
 
     LazyColumn(modifier) {
@@ -194,65 +218,112 @@ fun DisplayPageContent(modifier: Modifier) {
             SettingItem(
                 title = stringResource(id = R.string.dark_mode_text),
                 description = when (LocalDarkTheme.current) {
-                    FOLLOW_SYSTEM -> DARK_MODE_FOLLOW_SYSTEM
-                    ON -> DARK_MODE_OPEN
-                    else -> DARK_MODE_CLOSE
+                    FOLLOW_SYSTEM -> stringResource(id = R.string.follow_system_text)
+                    ON -> stringResource(id = R.string.on_text)
+                    else -> stringResource(id = R.string.off_text)
                 },
                 icon = Icons.Sharp.Bedtime
             ) {
                 showSwitchDarkModeDialog = true
             }
         }
+        item {
+            SettingItem(
+                title = stringResource(id = R.string.language_desc),
+                description = getLanguageDesc(),
+                icon = Icons.Sharp.Language
+            ) {
+                showSwitchLanguageDialog = true
+            }
+        }
     }
     if (showSwitchDarkModeDialog) {
-        LarkAlertDialog(
-            onDismissRequest = { showSwitchDarkModeDialog = false },
-            confirmText = stringResource(id = R.string.confirm_text),
-            confirmOnClick = {
-                showSwitchDarkModeDialog = false
-                PreferenceUtil.switchDarkMode(radioOptions.indexOf(selectedOption))
-            },
-            dismissButton = {
-                TextButton(
-                    onClick = {
-                        showSwitchDarkModeDialog = false
-                    }
-                ) {
-                    Text(stringResource(id = R.string.cancel_text))
-                }
-            },
+        RadioOptionsDialog(
             title = stringResource(id = R.string.dark_mode_text),
-            text = {
-                Column(Modifier.selectableGroup()) {
-                    radioOptions.forEach { text ->
-                        Row(
-                            Modifier
-                                .fillMaxWidth()
-                                .height(56.dp)
-                                .selectable(
-                                    selected = (text == radioOptions[LocalDarkTheme.current]),
-                                    onClick = {
-                                        onOptionSelected(text)
-                                    },
-                                    role = Role.RadioButton
-                                )
-                                .padding(horizontal = 16.dp),
-                            verticalAlignment = Alignment.CenterVertically
-                        ) {
-                            RadioButton(
-                                selected = (text == selectedOption),
-                                onClick = null
-                            )
-                            Text(
-                                text = text,
-                                style = MaterialTheme.typography.bodyLarge,
-                                modifier = Modifier.padding(start = 16.dp)
-                            )
-                        }
-                    }
+            radioOptions = radioOptions,
+            selectedOption = selectedOption,
+            onOptionSelected = onOptionSelected,
+            cancelDialog = { showSwitchDarkModeDialog = false }) {
+            showSwitchDarkModeDialog = false
+            PreferenceUtil.switchDarkMode(radioOptions.indexOf(selectedOption))
+        }
+    }
+
+    if (showSwitchLanguageDialog) {
+        RadioOptionsDialog(
+            title = stringResource(id = R.string.language_desc),
+            radioOptions = languageOptions,
+            selectedOption = selectedLanguageOption,
+            onOptionSelected = onOptionLanguageSelected,
+            cancelDialog = { showSwitchLanguageDialog = false }) {
+
+            showSwitchLanguageDialog = false
+            setLanguage(languageOptions.indexOf(selectedLanguageOption))
+        }
+    }
+}
+
+@Composable
+private fun RadioOptionsDialog(
+    title: String, radioOptions: List<String>,
+    selectedOption: String,
+    onOptionSelected: (String) -> Unit,
+    cancelDialog: () -> Unit,
+    confirmOnClick: () -> Unit,
+) {
+    LarkAlertDialog(
+        onDismissRequest = { cancelDialog() },
+        title = title,
+        text = {
+            RadioOptions(radioOptions, onOptionSelected, selectedOption)
+        },
+        confirmOnClick = { confirmOnClick() },
+        confirmText = stringResource(id = R.string.confirm_text),
+        dismissButton = {
+            TextButton(
+                onClick = {
+                    cancelDialog()
                 }
+            ) {
+                Text(stringResource(id = R.string.cancel_text))
             }
-        )
+        },
+    )
+}
+
+@Composable
+private fun RadioOptions(
+    radioOptions: List<String>,
+    onOptionSelected: (String) -> Unit,
+    selectedOption: String
+) {
+    Column(Modifier.selectableGroup()) {
+        radioOptions.forEach { text ->
+            Row(
+                Modifier
+                    .fillMaxWidth()
+                    .height(56.dp)
+                    .selectable(
+                        selected = (text == radioOptions[LocalDarkTheme.current]),
+                        onClick = {
+                            onOptionSelected(text)
+                        },
+                        role = Role.RadioButton
+                    )
+                    .padding(horizontal = 16.dp),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                RadioButton(
+                    selected = (text == selectedOption),
+                    onClick = null
+                )
+                Text(
+                    text = text,
+                    style = MaterialTheme.typography.bodyLarge,
+                    modifier = Modifier.padding(start = 16.dp)
+                )
+            }
+        }
     }
 }
 

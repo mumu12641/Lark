@@ -4,6 +4,7 @@ import androidx.compose.animation.core.*
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.LocalTextStyle
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
@@ -33,7 +34,7 @@ fun MarqueeText(
     text: String,
     modifier: Modifier = Modifier,
     textModifier: Modifier = Modifier,
-    gradientEdgeColor: Color = Color.White,
+    gradientEdgeColor: Color = MaterialTheme.colorScheme.background,
     color: Color = Color.Unspecified,
     fontSize: TextUnit = TextUnit.Unspecified,
     fontStyle: FontStyle? = null,

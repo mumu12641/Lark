@@ -84,13 +84,13 @@ fun SongListDetailsPage(
             scaffoldState = bottomSheetScaffoldState,
             sheetContent = {
                 ShowSongs(
-                    songsProvider = { songs },
+                    songs =  songs ,
                     modifier = Modifier,
                     top = 0,
                     playMedia = { songListId: Long, songId: Long ->
                         playMedia(songListId, songId)
                     },
-                    songListProvider = { songList }
+                    songList =  songList
                 )
             },
             sheetPeekHeight = 260.dp,
@@ -103,9 +103,9 @@ fun SongListDetailsPage(
             content = { paddingValues ->
                 SongListDetailsContent(
                     modifier = Modifier.padding(paddingValues),
-                    songListProvider = { songList },
-                    songsProvider = { songs },
-                    isLoadingProvider = { uiState.isLoading },
+                    songList =  songList ,
+                    songs =  songs ,
+                    isLoading =  uiState.isLoading ,
                     changeSongListImage = { uri ->
                         viewModel.changeSongListImage(uri)
                     },
@@ -121,17 +121,13 @@ fun SongListDetailsPage(
 @Composable
 fun SongListDetailsContent(
     modifier: Modifier,
-    songListProvider: () -> SongList?,
-    songsProvider: () -> List<Song>,
-    isLoadingProvider: () -> Boolean,
+    songList: SongList?,
+    songs: List<Song>,
+    isLoading: Boolean,
     changeSongListImage: (String) -> Unit,
     updateDescription: (String) -> Unit,
     playMedia: (Long, Long) -> Unit
 ) {
-    val isLoading = isLoadingProvider()
-    val songList = songListProvider()
-
-    val songs = songsProvider()
     val launcherBackground = rememberLauncherForActivityResult(
         contract =
         ActivityResultContracts.GetContent()
@@ -287,18 +283,16 @@ fun PlayButton(
 
 @Composable
 fun ShowSongs(
-    songsProvider: () -> List<Song>,
+    songs: List<Song>,
     modifier: Modifier,
     top: Int,
     state: LazyListState = rememberLazyListState(),
     clipShape: RoundedCornerShape = RoundedCornerShape(topStart = 20.dp, topEnd = 20.dp),
     playMedia: ((Long, Long) -> Unit)? = null,
     seekToSong: ((Long) -> Unit)? = null,
-    songListProvider: () -> SongList,
+    songList: SongList,
     key: (Song) -> Long = { it.songId }
 ) {
-    val songList = songListProvider()
-    val songs = songsProvider()
     val onClick: (Song) -> Unit = if (playMedia != null) { song: Song ->
         playMedia(songList.songListId, song.songId)
     } else { song: Song ->

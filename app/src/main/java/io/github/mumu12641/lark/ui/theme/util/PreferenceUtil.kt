@@ -2,6 +2,9 @@ package io.github.mumu12641.lark.ui.theme.util
 
 import android.os.Build
 import android.util.Log
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.res.stringResource
+import androidx.core.os.LocaleListCompat
 import com.tencent.mmkv.MMKV
 import io.github.mumu12641.lark.BaseApplication.Companion.applicationScope
 import io.github.mumu12641.lark.BaseApplication.Companion.context
@@ -18,17 +21,57 @@ object PreferenceUtil {
     const val DEFAULT_SEED_COLOR = 0xFF00221A.toInt()
     const val EMPTY_SEED_COLOR = 0
 
-    val DARK_MODE_FOLLOW_SYSTEM = context.getString(R.string.follow_system_text)
-    val DARK_MODE_OPEN = context.getString(R.string.on_text)
-    val DARK_MODE_CLOSE = context.getString(R.string.off_text)
     const val FOLLOW_SYSTEM = 0
     const val ON = 1
     const val OFF = 2
+
+    private const val SYSTEM_DEFAULT = 0
+    private const val SIMPLIFIED_CHINESE = 1
+    private const val ENGLISH = 2
 
     private const val DARK_MODE = "dark mode value"
     const val SEED_COLOR = "seed color value"
     private const val DYNAMIC_COLOR = "dynamic color preference"
     private const val FOLLOW_ALBUM_COLOR_SWITCH = "FOLLOW_ALBUM_COLOR_SWITCH"
+    private const val LANGUAGE = "language"
+
+    private val languageMap: Map<Int, String> = mapOf(
+        Pair(SIMPLIFIED_CHINESE, "zh-CN"),
+        Pair(ENGLISH, "en-US"),
+    )
+
+    fun setLanguage(number: Int) {
+        kv.encode(LANGUAGE, number)
+    }
+
+    fun getLanguageConfiguration(languageNumber: Int = kv.decodeInt(LANGUAGE)): String {
+        return if (languageMap.containsKey(languageNumber)) languageMap[languageNumber].toString() else ""
+    }
+
+    private fun getLanguageNumberByCode(languageCode: String): Int {
+        languageMap.entries.forEach {
+            if (it.value == languageCode) return it.key
+        }
+        return SYSTEM_DEFAULT
+    }
+
+    fun getLanguageNumber(): Int {
+        return if (Build.VERSION.SDK_INT >= 33)
+            getLanguageNumberByCode(
+                LocaleListCompat.getAdjustedDefault()[0]?.toLanguageTag().toString()
+            )
+        else kv.getInt(LANGUAGE, 0)
+    }
+
+    @Composable
+    fun getLanguageDesc(languageNumber: Int = getLanguageNumber()): String {
+        return when (languageNumber) {
+            SIMPLIFIED_CHINESE -> stringResource(R.string.la_zh_CN)
+            ENGLISH -> stringResource(R.string.la_en_US)
+            else -> stringResource(id = R.string.follow_system_text)
+        }
+    }
+
 
     private val _disaplayPreferenceFlow = MutableStateFlow(
         DisplayPreference(
@@ -52,6 +95,10 @@ object PreferenceUtil {
         val enable: Boolean = Build.VERSION.SDK_INT >= Build.VERSION_CODES.S,
         val dynamicColorSwitch: Int = OFF
     )
+
+    fun getDarkMode(): Int {
+        return kv.decodeInt(DARK_MODE)
+    }
 
     fun switchDarkMode(mode: Int) {
         applicationScope.launch(Dispatchers.IO) {

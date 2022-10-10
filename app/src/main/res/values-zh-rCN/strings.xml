@@ -82,4 +82,13 @@
     <string name="view_playlist_text">查看播放列表</string>
     <string name="view_artist_text">查看艺术家</string>
     <string name="importing_text">正在导入中</string>
+    <string name="welcome_dialog_1_desc">您可以获取并且播放本地以及网络歌曲</string>
+    <string name="welcome_dialog_2_desc">登录您的网易云账号，获取个人歌单以及个性化推荐。</string>
+    <string name="welcome_dialog_3_desc">简洁美观的播放界面，无广告无其他冗余功能，带给你最舒适、最纯粹的体验</string>
+    <string name="success_add_to_songlist_text">成功添加到播放列表</string>
+    <string name="already_login_text">已登录</string>
+    <string name="no_songs_yet">暂无歌曲</string>
+    <string name="no_artist_yet">暂无艺术家</string>
+    <string name="language_desc">界面语言</string>
+
 </resources>

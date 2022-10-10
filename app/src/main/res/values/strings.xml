@@ -71,7 +71,7 @@
     <string name="import_text">Import</string>
     <string name="not_match_text">Playlist link not matched in clipboard</string>
     <string name="import_playlist_text">Import playlist</string>
-    <string name="share_text">Import from NetEase cloud playlist sharing link</string>
+    <string name="share_text">NetEase cloud playlist link</string>
     <string name="build_own_text">Build your own playlist</string>
     <string name="sry_no_netease_text">Sorry, the NetEase cloud playlist information could not be obtained</string>
     <string name="sry_no_url_text">Sorry, failed to get url info from clipboard</string>
@@ -82,4 +82,15 @@
     <string name="view_playlist_text">View playlist</string>
     <string name="view_artist_text">View artist</string>
     <string name="importing_text">Importing</string>
+    <string name="welcome_dialog_1_desc">You can fetch and play local and network songs</string>
+    <string name="welcome_dialog_2_desc">Log in to your NetEase Cloud account to get personal playlists and personalized recommendations.</string>
+    <string name="welcome_dialog_3_desc">Simple and beautiful playback interface, no ads and no other redundant functions, bringing you the most comfortable and purest experience</string>
+    <string name="success_add_to_songlist_text">Successfully added to playlist</string>
+    <string name="already_login_text">Logged in</string>
+    <string name="no_songs_yet">No songs yet</string>
+    <string name="no_artist_yet">No artist yet</string>
+    <string name="language_desc">Display language</string>
+
+    <string name="la_zh_CN" translatable="false">简体中文</string>
+    <string name="la_en_US" translatable="false">English</string>
 </resources>

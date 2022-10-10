@@ -61,7 +61,14 @@ const val PREFILL_SONGLIST_TYPE = 1
 const val CREATE_SONGLIST_TYPE = 2
 const val ARTIST_SONGLIST_TYPE = 3
 
-val INIT_SONG = Song(0L, "暂无歌曲", "未知艺术家", "", "", 0)
+val INIT_SONG = Song(
+    0L,
+    context.getString(R.string.no_songs_yet),
+    context.getString(R.string.no_artist_yet),
+    "",
+    "",
+    0
+)
 val BUFFER_SONG = Song(-1L, "", "", "", "", 0)
 val INIT_SONG_LIST = SongList(0L, "", "", 0, "", "", 2)
 

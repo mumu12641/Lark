@@ -90,7 +90,11 @@ fun UserPage(
                             .size(60.dp),
                         onClick = {
                             if (kv.decodeLong("neteaseId") != 0L) {
-                                Toast.makeText(context, "你已经登录过了", Toast.LENGTH_LONG).show()
+                                Toast.makeText(
+                                    context,
+                                    context.getString(R.string.already_login_text),
+                                    Toast.LENGTH_LONG
+                                ).show()
                             } else {
                                 showLoginDialog = true
                             }
