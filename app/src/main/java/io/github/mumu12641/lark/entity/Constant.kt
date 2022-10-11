@@ -19,6 +19,14 @@ object Route {
     val ROUTE_ABOUT = context.getString(R.string.about_text)
     val ROUTE_SEARCH = context.getString(R.string.search_text)
     val ROUTE_SUGGESTION = context.getString(R.string.suggestion_text)
+
+    val FUNCTION_ROUTE: Map<String, Int> = mapOf(
+        Pair(ROUTE_LOCAL, R.string.local_text),
+        Pair(ROUTE_HISTORY, R.string.history_text),
+        Pair(ROUTE_DOWNLOAD, R.string.download_text),
+        Pair(ROUTE_SUGGESTION, R.string.suggestion_text),
+        Pair(ROUTE_CLOUD, R.string.cloud_text)
+    )
 }
 
 object Load {

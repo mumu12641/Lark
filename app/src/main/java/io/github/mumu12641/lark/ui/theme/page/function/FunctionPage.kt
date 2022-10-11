@@ -20,14 +20,12 @@ import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.PlayArrow
 import androidx.compose.material.icons.filled.Refresh
+import androidx.compose.material3.*
 import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
-import androidx.compose.material3.TopAppBarDefaults
-import androidx.compose.material3.rememberTopAppBarState
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -39,13 +37,13 @@ import io.github.mumu12641.lark.BaseApplication.Companion.applicationScope
 import io.github.mumu12641.lark.MainActivity.Companion.context
 import io.github.mumu12641.lark.R
 import io.github.mumu12641.lark.entity.*
+import io.github.mumu12641.lark.entity.Route.FUNCTION_ROUTE
 import io.github.mumu12641.lark.room.DataBaseUtils
 import io.github.mumu12641.lark.ui.theme.component.*
+import io.github.mumu12641.lark.ui.theme.page.details.JumpToPlayPageSnackbar
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-
-private const val TAG = "FunctionPage"
 
 @SuppressLint("UnrememberedMutableState", "RememberReturnType")
 @RequiresApi(Build.VERSION_CODES.Q)
@@ -69,7 +67,7 @@ fun FunctionPage(
     var showDialog by remember { mutableStateOf(false) }
     var showAddDialog by remember { mutableStateOf(false) }
     var text by remember { mutableStateOf("") }
-
+    val snackbarHostState = remember { androidx.compose.material3.SnackbarHostState() }
 
     val scrollBehavior = TopAppBarDefaults.exitUntilCollapsedScrollBehavior(
         rememberTopAppBarState(),
@@ -90,6 +88,16 @@ fun FunctionPage(
         modifier = Modifier.fillMaxSize()
     ) {
         BottomSheetScaffold(
+            snackbarHost = {
+                SnackbarHost(snackbarHostState) { data ->
+                    JumpToPlayPageSnackbar(
+                        navController,
+                        data,
+                        stringResource(id = R.string.now_playing_text)
+                    )
+                }
+            },
+
             backgroundColor = MaterialTheme.colorScheme.background,
             scaffoldState = bottomSheetScaffoldState,
             sheetContent = {
@@ -106,7 +114,7 @@ fun FunctionPage(
 
             topBar = {
                 LarkTopBar(
-                    title = route,
+                    title = stringResource(id = FUNCTION_ROUTE[route]!!),
                     navIcon = Icons.Filled.ArrowBack,
                     scrollBehavior = scrollBehavior,
                 ) {
@@ -118,7 +126,7 @@ fun FunctionPage(
                     { paddingValues ->
                         if (showDialog) {
                             AddToSongListDialog(
-                                 allSongList ,
+                                allSongList,
                                 currentShowSong!!,
                                 showAddDialogFunction = { showAddDialog = it },
                                 showDialogFunction = { showDialog = it }
@@ -134,7 +142,12 @@ fun FunctionPage(
                             modifier = Modifier.padding(paddingValues),
                             LocalSongListId,
                             functionUiState,
-                             loadState ,
+                            loadState,
+                            showSnackbar = {
+                                coroutineScope.launch {
+                                    snackbarHostState.showSnackbar(CustomSnackbarVisuals(it.songTitle))
+                                }
+                            },
                             { song ->
                                 viewModel.changeCurrentShowSong(song)
                                 coroutineScope.launch {
@@ -155,7 +168,7 @@ fun FunctionPage(
                             modifier = Modifier.padding(it),
                             HistorySongListId,
                             functionUiState,
-                             loadState ,
+                            loadState,
                             playMedia = playMedia
                         )
                     }
@@ -213,7 +226,8 @@ fun LocalContent(
     modifier: Modifier,
     songListID: Long,
     uiState: FunctionViewModel.FunctionUiState,
-    loadState:  Int,
+    loadState: Int,
+    showSnackbar: (Song) -> Unit,
     showBottomSheet: ((Song) -> Unit)? = null,
     playMedia: (Long, Long) -> Unit
 ) {
@@ -241,10 +255,12 @@ fun LocalContent(
                         }) { song: Song ->
                             if (showBottomSheet != null) {
                                 SongItem(song = song, showBottomSheet = showBottomSheet) {
+                                    showSnackbar(song)
                                     playMedia(songListID, song.songId)
                                 }
                             } else {
                                 SongItem(song = song, showBottomSheet = null) {
+                                    showSnackbar(song)
                                     playMedia(songListID, song.songId)
                                 }
                             }
@@ -263,7 +279,7 @@ fun HistoryContent(
     modifier: Modifier,
     songListID: Long,
     uiState: FunctionViewModel.FunctionUiState,
-    loadState:  Int,
+    loadState: Int,
     showBottomSheet: ((Song) -> Unit)? = null,
     playMedia: (Long, Long) -> Unit
 ) {
@@ -411,4 +427,16 @@ fun AddToSongListDialog(
         },
         confirmText = stringResource(id = R.string.create_song_Llst_text)
     )
+}
+
+class CustomSnackbarVisuals(
+    override val message: String,
+    private val extraMessage: String? = null,
+) : SnackbarVisuals {
+    override val actionLabel: String?
+        get() = extraMessage
+    override val withDismissAction: Boolean
+        get() = false
+    override val duration: androidx.compose.material3.SnackbarDuration
+        get() = androidx.compose.material3.SnackbarDuration.Short
 }

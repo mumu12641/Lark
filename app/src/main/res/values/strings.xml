@@ -67,7 +67,7 @@
     <string name="welcome_play_des_text">Simple and beautiful playback interface, no ads and no other redundant functions, bringing you the most comfortable and purest experience.</string>
     <string name="welcome_cloud_des_text">Log in to your NetEase Cloud account to get personal playlists and personalized recommendations.</string>
     <string name="adaptive_color_text">Adaptive color</string>
-    <string name="adaptive_color_des_text">The background of the playback interface and the color of the controls change with the album cover</string>
+    <string name="adaptive_color_des_text">Play page theme adapted to album cover color</string>
     <string name="import_text">Import</string>
     <string name="not_match_text">Playlist link not matched in clipboard</string>
     <string name="import_playlist_text">Import playlist</string>
@@ -93,4 +93,8 @@
 
     <string name="la_zh_CN" translatable="false">简体中文</string>
     <string name="la_en_US" translatable="false">English</string>
+    <string name="now_playing_text">Now playing</string>
+    <string name="jump_text">Jump</string>
+    <string name="play_in_order_text">Play all in</string>
+    <string name="load_to_end_text">Loaded to the end</string>
 </resources>

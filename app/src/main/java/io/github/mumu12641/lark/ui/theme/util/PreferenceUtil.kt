@@ -7,7 +7,6 @@ import androidx.compose.ui.res.stringResource
 import androidx.core.os.LocaleListCompat
 import com.tencent.mmkv.MMKV
 import io.github.mumu12641.lark.BaseApplication.Companion.applicationScope
-import io.github.mumu12641.lark.BaseApplication.Companion.context
 import io.github.mumu12641.lark.R
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow

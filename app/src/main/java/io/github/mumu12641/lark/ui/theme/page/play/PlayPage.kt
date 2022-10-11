@@ -142,7 +142,7 @@ fun PlayPage(
                                 DropdownMenuItem(
                                     text = { Text(text = stringResource(id = R.string.add_to_favourite_text)) },
                                     onClick = {
-                                        addSongToLike(scope,currentPlaySong)
+                                        addSongToLike(scope, currentPlaySong)
                                     }
                                 )
                                 DropdownMenuItem(
@@ -198,13 +198,13 @@ fun PlayPage(
                 scaffoldState = bottomSheetScaffoldState,
                 sheetContent = {
                     SheetContent(
-                         currentPlaySongs ,
+                        currentPlaySongs,
                         mainViewModel,
-                         currentSongList ,
-                         currentPlaySong ,
-                         currentPosition ,
-                         playUiState ,
-                         pagerState ,
+                        currentSongList,
+                        currentPlaySong,
+                        currentPosition,
+                        playUiState,
+                        pagerState,
                         { playViewModel.initData(it) },
                     ) {
                         if (bottomSheetScaffoldState.bottomSheetState.isCollapsed) {
@@ -220,7 +220,7 @@ fun PlayPage(
                 content = { paddingValues ->
                     if (showDialog) {
                         AddToSongListDialog(
-                             allSongList ,
+                            allSongList,
                             currentPlaySong,
                             showAddDialogFunction = { showAddDialog = it },
                             showDialogFunction = { showDialog = it }
@@ -237,9 +237,9 @@ fun PlayPage(
                             .fillMaxSize()
                             .background(MaterialTheme.colorScheme.background),
                         navController,
-                         currentPlaySong ,
-                         currentPlayState ,
-                         currentPosition ,
+                        currentPlaySong,
+                        currentPlayState,
+                        currentPosition,
                         onClickNext = { mainViewModel.onSkipToNext() },
                         onClickPause = { mainViewModel.onPause() },
                         onClickPlay = { mainViewModel.onPlay() },
@@ -259,11 +259,11 @@ fun PlayPage(
 private fun SheetContent(
     currentPlaySongs: List<Song>,
     mainViewModel: MainViewModel,
-    currentSongList:SongList,
+    currentSongList: SongList,
     currentPlaySong: Song,
     currentPosition: Long,
-    playUiState:  PlayViewModel.PlayUiState,
-    pagerState:  PagerState,
+    playUiState: PlayViewModel.PlayUiState,
+    pagerState: PagerState,
     getLyrics: (Long) -> Unit,
     showBottomSheet: () -> Unit,
 ) {
@@ -349,13 +349,13 @@ private fun SheetContent(
                                 )
                             }) {
                             ShowSongs(
-                                songs =  currentPlaySongs ,
+                                songs = currentPlaySongs,
                                 modifier = Modifier,
                                 top = 0,
                                 state = state,
                                 clipShape = RoundedCornerShape(0.dp),
                                 seekToSong = { songId: Long -> mainViewModel.seekToSong(songId) },
-                                songList =  currentSongList
+                                songList = currentSongList
                             )
                         }
                     }
@@ -434,7 +434,7 @@ private fun LyricsContent(
 fun PlayPageContent(
     modifier: Modifier,
     navController: NavController,
-    currentPlaySong:  Song,
+    currentPlaySong: Song,
     currentPlayState: PlaybackStateCompat,
     currentPosition: Long,
     onClickPrevious: () -> Unit,

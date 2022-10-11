@@ -29,8 +29,11 @@ import io.github.mumu12641.lark.entity.SongList
 import io.github.mumu12641.lark.ui.theme.component.AsyncImage
 import io.github.mumu12641.lark.ui.theme.component.LarkSmallTopBar
 import io.github.mumu12641.lark.ui.theme.component.TextFieldDialog
+import io.github.mumu12641.lark.ui.theme.page.details.JumpToPlayPageSnackbar
 import io.github.mumu12641.lark.ui.theme.page.details.PlayButton
 import io.github.mumu12641.lark.ui.theme.page.details.ShowArtistSongs
+import io.github.mumu12641.lark.ui.theme.page.function.CustomSnackbarVisuals
+import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -43,6 +46,8 @@ fun ArtistDetailPage(
     var showResetArtistDialog by remember {
         mutableStateOf(false)
     }
+    val snackbarHostState = remember { androidx.compose.material3.SnackbarHostState() }
+    val scope = rememberCoroutineScope()
     val scrollBehavior = pinnedScrollBehavior(rememberTopAppBarState())
     LaunchedEffect(Unit) {
         navController.currentBackStackEntryFlow.collect {
@@ -53,6 +58,16 @@ fun ArtistDetailPage(
     }
 
     Scaffold(
+        snackbarHost =
+        {
+            androidx.compose.material3.SnackbarHost(snackbarHostState) { data ->
+                JumpToPlayPageSnackbar(
+                    navController,
+                    data,
+                    data.visuals.actionLabel.toString()
+                )
+            }
+        },
         modifier = Modifier
             .nestedScroll(scrollBehavior.nestedScrollConnection),
         topBar = {
@@ -70,6 +85,16 @@ fun ArtistDetailPage(
                 modifier = Modifier.padding(paddingValues),
                 artistViewModel,
                 showResetArtistDialog,
+                showSnackbar = { songList, s ->
+                    scope.launch {
+                        snackbarHostState.showSnackbar(
+                            CustomSnackbarVisuals(
+                                songList.songListTitle,
+                                s
+                            )
+                        )
+                    }
+                },
                 playMedia,
                 { showResetArtistDialog = it },
             ) {
@@ -85,6 +110,7 @@ fun ArtistDetailContent(
     modifier: Modifier,
     artistViewModel: ArtistViewModel,
     showResetArtistDialog: Boolean,
+    showSnackbar: (SongList, String) -> Unit,
     playMedia: (Long, Long) -> Unit,
     setShowResetArtistDialog: (Boolean) -> Unit,
     updateArtistDetail: (String) -> Unit,
@@ -108,7 +134,7 @@ fun ArtistDetailContent(
                 Toast.makeText(context, loadState.msg, Toast.LENGTH_LONG).show()
             }
             songList?.let {
-                ArtistContent(modifier, songList, playMedia, songs)
+                ArtistContent(modifier, songList, showSnackbar, playMedia, songs)
             } ?: run {
                 Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
                     CircularProgressIndicator()
@@ -148,6 +174,7 @@ fun ArtistDetailContent(
 private fun ArtistContent(
     modifier: Modifier,
     songList: SongList,
+    showSnackbar: (SongList, String) -> Unit,
     playMedia: (Long, Long) -> Unit,
     songs: List<Song>,
 ) {
@@ -185,7 +212,7 @@ private fun ArtistContent(
             )
         }
         item {
-            PlayButton(playMedia, songList = songList, songs = songs)
+            PlayButton(showSnackbar, playMedia = playMedia, songList = songList, songs = songs)
         }
         item {
             Text(

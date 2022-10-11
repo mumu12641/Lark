@@ -1,16 +1,18 @@
 package io.github.mumu12641.lark.ui.theme.component
 
-import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.material3.*
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.size
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.unit.dp
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun CardIcon(
     icon: ImageVector,
@@ -21,29 +23,34 @@ fun CardIcon(
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        Card(
-            modifier = Modifier
-                .padding(bottom = 2.dp)
-                .size(50.dp),
-            shape = CircleShape,
-
-            ) {
-            Column(
+//        Card(
+//            modifier = Modifier
+//                .padding(bottom = 2.dp)
+//                .size(50.dp),
+//            shape = CircleShape,
+//            ) {
+//            Column(
+//                modifier = Modifier
+//                    .fillMaxWidth()
+//                    .clickable(onClick = onClick),
+//                horizontalAlignment = Alignment.CenterHorizontally
+//            ) {
+//                Icon(
+//                    icon,
+//                    contentDescription = contentDescription,
+//                    modifier = Modifier
+//                        .size(50.dp)
+//                        .padding(5.dp)
+//                )
+//
+//            }
+//        }
+        IconButton(onClick) {
+            Icon(
+                icon, contentDescription = contentDescription,
                 modifier = Modifier
-                    .fillMaxWidth()
-                    .clickable(onClick = onClick),
-                horizontalAlignment = Alignment.CenterHorizontally
-            ) {
-                Icon(
-                    icon,
-                    contentDescription = contentDescription,
-                    modifier = Modifier
-                        .size(50.dp)
-                        .padding(5.dp)
-                )
-
-            }
-
+                    .size(50.dp)
+            )
         }
         Text(
             text = contentDescription,

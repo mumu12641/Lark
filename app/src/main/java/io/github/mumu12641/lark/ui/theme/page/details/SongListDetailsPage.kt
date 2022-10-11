@@ -24,6 +24,7 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
+import androidx.compose.material3.SnackbarData
 import androidx.compose.material3.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -40,6 +41,7 @@ import androidx.navigation.NavController
 import io.github.mumu12641.lark.R
 import io.github.mumu12641.lark.entity.*
 import io.github.mumu12641.lark.ui.theme.component.*
+import io.github.mumu12641.lark.ui.theme.page.function.CustomSnackbarVisuals
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterialApi::class, ExperimentalMaterial3Api::class)
@@ -58,6 +60,7 @@ fun SongListDetailsPage(
         bottomSheetState = BottomSheetState(BottomSheetValue.Collapsed)
     )
     val scope = rememberCoroutineScope()
+    val snackbarHostState = remember { androidx.compose.material3.SnackbarHostState() }
 
     LaunchedEffect(Unit) {
         navController.currentBackStackEntryFlow.collect {
@@ -79,18 +82,28 @@ fun SongListDetailsPage(
         modifier = Modifier.fillMaxSize()
     ) {
         BottomSheetScaffold(
+            snackbarHost = {
+                androidx.compose.material3.SnackbarHost(snackbarHostState) { data ->
+                    JumpToPlayPageSnackbar(
+                        navController,
+                        data,
+                        data.visuals.actionLabel.toString()
+                    )
+                }
+            },
+
             modifier = Modifier.adapterSystemBar(),
             backgroundColor = MaterialTheme.colorScheme.background,
             scaffoldState = bottomSheetScaffoldState,
             sheetContent = {
                 ShowSongs(
-                    songs =  songs ,
+                    songs = songs,
                     modifier = Modifier,
                     top = 0,
                     playMedia = { songListId: Long, songId: Long ->
                         playMedia(songListId, songId)
                     },
-                    songList =  songList
+                    songList = songList
                 )
             },
             sheetPeekHeight = 260.dp,
@@ -103,9 +116,19 @@ fun SongListDetailsPage(
             content = { paddingValues ->
                 SongListDetailsContent(
                     modifier = Modifier.padding(paddingValues),
-                    songList =  songList ,
-                    songs =  songs ,
-                    isLoading =  uiState.isLoading ,
+                    songList = songList,
+                    songs = songs,
+                    isLoading = uiState.isLoading,
+                    showSnackbar = { songList, string ->
+                        scope.launch {
+                            snackbarHostState.showSnackbar(
+                                CustomSnackbarVisuals(
+                                    songList.songListTitle,
+                                    extraMessage = string
+                                )
+                            )
+                        }
+                    },
                     changeSongListImage = { uri ->
                         viewModel.changeSongListImage(uri)
                     },
@@ -118,12 +141,34 @@ fun SongListDetailsPage(
 
 }
 
+
+@Composable
+fun JumpToPlayPageSnackbar(
+    navController: NavController,
+    data: SnackbarData,
+    string: String
+) {
+    androidx.compose.material3.Snackbar(
+        modifier = Modifier.padding(12.dp),
+        action = {
+            androidx.compose.material3.TextButton(onClick = {
+                navController.popBackStack()
+                navController.navigate(Route.ROUTE_PLAY_PAGE)
+            }) {
+                Text(stringResource(id = R.string.jump_text))
+            }
+        }) {
+        Text(text = string + " " + data.visuals.message)
+    }
+}
+
 @Composable
 fun SongListDetailsContent(
     modifier: Modifier,
     songList: SongList?,
     songs: List<Song>,
     isLoading: Boolean,
+    showSnackbar: (SongList, String) -> Unit,
     changeSongListImage: (String) -> Unit,
     updateDescription: (String) -> Unit,
     playMedia: (Long, Long) -> Unit
@@ -216,7 +261,7 @@ fun SongListDetailsContent(
                     color = MaterialTheme.colorScheme.primary
                 )
             }
-            PlayButton(playMedia, songList, songs)
+            PlayButton(showSnackbar, playMedia, songList, songs)
             if (showDialog) {
                 TextFieldDialog(
                     onDismissRequest = { showDialog = false },
@@ -239,10 +284,13 @@ fun SongListDetailsContent(
 
 @Composable
 fun PlayButton(
+    showSnackbar: (SongList, String) -> Unit,
     playMedia: (Long, Long) -> Unit,
     songList: SongList,
     songs: List<Song>
 ) {
+    val playInOrder = stringResource(id = R.string.play_in_order_text)
+    val playShuffle = stringResource(id = R.string.shuffle_text)
     Row(
         modifier = Modifier
             .padding(start = 20.dp, end = 20.dp)
@@ -253,6 +301,7 @@ fun PlayButton(
             modifier = Modifier.weight(1f),
             onClick = {
                 if (songs.isNotEmpty()) {
+                    showSnackbar(songList, playInOrder)
                     playMedia(songList.songListId, songs[0].songId)
                 }
             }) {
@@ -264,6 +313,7 @@ fun PlayButton(
         Spacer(modifier = Modifier.weight(0.25f))
         Button(modifier = Modifier.weight(1f), onClick = {
             if (songs.isNotEmpty()) {
+                showSnackbar(songList, playShuffle)
                 playMedia(
                     songList.songListId,
                     CHANGE_PLAT_LIST_SHUFFLE
@@ -317,7 +367,7 @@ fun ShowSongs(
         if (songs.isEmpty()) {
             Box(modifier = modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
                 Text(
-                    text = "暂无歌曲~",
+                    text = stringResource(id = R.string.no_songs_yet),
                     color = MaterialTheme.colorScheme.onSecondaryContainer,
                     style = MaterialTheme.typography.titleLarge
                 )
@@ -333,7 +383,7 @@ fun ShowSongs(
                 }
             }
             Text(
-                text = "加载到底啦~",
+                text = stringResource(id = R.string.load_to_end_text),
                 color = MaterialTheme.colorScheme.onSecondaryContainer,
                 style = MaterialTheme.typography.bodySmall
             )

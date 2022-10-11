@@ -72,7 +72,7 @@ fun SearchPage(
             content = { paddingValues ->
                 if (showDialog) {
                     AddToSongListDialog(
-                         allSongList ,
+                        allSongList,
                         currentShowSong,
                         showAddDialogFunction = { showAddDialog = it },
                         showDialogFunction = { showDialog = it }

@@ -90,5 +90,9 @@
     <string name="no_songs_yet">暂无歌曲</string>
     <string name="no_artist_yet">暂无艺术家</string>
     <string name="language_desc">界面语言</string>
+    <string name="now_playing_text">正在播放</string>
+    <string name="jump_text">跳转</string>
+    <string name="play_in_order_text">顺序播放</string>
+    <string name="load_to_end_text">加载到底了</string>
 
 </resources>
