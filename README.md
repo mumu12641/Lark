@@ -5,8 +5,9 @@
 	Lark
 </h1>
 <p align="center">
-  Netease Cloud Music and Local Music Player,developed using Jetpack Compose
+  Netease Cloud Music and Local Music Player,developed by using Jetpack Compose
 </p>
+
 
 ## :framed_picture: ScreenShot
 
@@ -31,8 +32,8 @@
 
 ## :pushpin:What's Next
 
-- :sparkles:UI development
-- :mag_right:Search songs from Netease Music
+- :sparkles:UI improvement
+- :mag_right:Search songs from Netease Cloud Music
 - :link:More sound source
 
 ## :open_file_folder:Download

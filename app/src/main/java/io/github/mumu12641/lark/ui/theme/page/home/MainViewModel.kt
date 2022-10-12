@@ -140,7 +140,6 @@ class MainViewModel @Inject constructor() : ViewModel() {
                 it.targetType == 1
             }
 
-
         }
 
 

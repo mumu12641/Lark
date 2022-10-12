@@ -412,17 +412,22 @@ class MediaPlaybackService : MediaBrowserServiceCompat() {
                             val songId = extras?.getLong("songId")
                             val song = songId?.let { DataBaseUtils.querySongById(it) }
                             withContext(Dispatchers.Main) {
-                                currentPlayList.add(mExoPlayer.currentMediaItemIndex + 1, song!!)
-                                mediaSession.setQueue(currentPlayList.map {
-                                    MediaSessionCompat.QueueItem(
-                                        createMetadataFromSong(it).description,
-                                        it.songId
+                                if(!currentPlayList.contains(song)) {
+                                    currentPlayList.add(
+                                        mExoPlayer.currentMediaItemIndex + 1,
+                                        song!!
                                     )
-                                })
-                                mExoPlayer.addMediaItem(
-                                    mExoPlayer.currentMediaItemIndex + 1,
-                                    MediaItem.fromUri(song.mediaFileUri)
-                                )
+                                    mediaSession.setQueue(currentPlayList.map {
+                                        MediaSessionCompat.QueueItem(
+                                            createMetadataFromSong(it).description,
+                                            it.songId
+                                        )
+                                    })
+                                    mExoPlayer.addMediaItem(
+                                        mExoPlayer.currentMediaItemIndex + 1,
+                                        MediaItem.fromUri(song.mediaFileUri)
+                                    )
+                                }
                             }
                         }
                     }

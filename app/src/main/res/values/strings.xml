@@ -97,4 +97,5 @@
     <string name="jump_text">Jump</string>
     <string name="play_in_order_text">Play all in</string>
     <string name="load_to_end_text">Loaded to the end</string>
+    <string name="successful_add_text">Successfully add</string>
 </resources>

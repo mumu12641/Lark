@@ -1,5 +1,6 @@
 package io.github.mumu12641.lark.room
 
+import android.util.Log
 import io.github.mumu12641.lark.BaseApplication
 import io.github.mumu12641.lark.BaseApplication.Companion.applicationScope
 import io.github.mumu12641.lark.R
@@ -167,10 +168,19 @@ class DataBaseUtils {
             musicDao.updateSong(song)
         }
 
-        suspend fun deleteRef(songListId: Long,songId: Long){
-            musicDao.deleteRef(PlaylistSongCrossRef(songListId,songId))
+        suspend fun deleteRef(songListId: Long,songId: Long) {
+            musicDao.deleteRef(PlaylistSongCrossRef(songListId, songId))
+            Log.d("TAG", "deleteRef: $songListId")
+            if (songListId == LikeSongListId) {
+                updateSongList(
+                    querySongListById(songListId).copy(
+                        imageFileUri = querySongListWithSongsBySongListId(
+                            songListId
+                        ).songs[0].songAlbumFileUri
+                    )
+                )
+
+            }
         }
-
     }
-
 }

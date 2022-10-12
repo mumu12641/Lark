@@ -94,5 +94,6 @@
     <string name="jump_text">跳转</string>
     <string name="play_in_order_text">顺序播放</string>
     <string name="load_to_end_text">加载到底了</string>
+    <string name="successful_add_text">成功添加</string>
 
 </resources>

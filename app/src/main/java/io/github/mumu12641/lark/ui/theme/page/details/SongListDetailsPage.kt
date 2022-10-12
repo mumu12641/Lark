@@ -87,6 +87,7 @@ fun SongListDetailsPage(
         if (!bottomSheetScaffoldState.bottomSheetState.isCollapsed) {
             if (isSelectEnabled) {
                 isSelectEnabled = false
+                selectedIdList.clear()
             }else {
                 scope.launch {
                     bottomSheetScaffoldState.bottomSheetState.collapse()
@@ -195,7 +196,8 @@ fun SongListDetailsPage(
 fun JumpToPlayPageSnackbar(
     navController: NavController,
     data: SnackbarData,
-    string: String
+    string: String,
+    popBackStack: Boolean = true
 ) {
     androidx.compose.material3.Snackbar(
         modifier = Modifier.padding(12.dp),
@@ -203,7 +205,9 @@ fun JumpToPlayPageSnackbar(
         contentColor = MaterialTheme.colorScheme.onSecondaryContainer,
         action = {
             androidx.compose.material3.TextButton(onClick = {
-                navController.popBackStack()
+                if (popBackStack) {
+                    navController.popBackStack()
+                }
                 navController.navigate(Route.ROUTE_PLAY_PAGE)
             }) {
                 Text(stringResource(id = R.string.jump_text))

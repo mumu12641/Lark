@@ -44,6 +44,8 @@ import io.github.mumu12641.lark.entity.network.Banner.BannerX
 import io.github.mumu12641.lark.network.NetworkCreator.networkService
 import io.github.mumu12641.lark.room.DataBaseUtils
 import io.github.mumu12641.lark.ui.theme.component.*
+import io.github.mumu12641.lark.ui.theme.page.details.JumpToPlayPageSnackbar
+import io.github.mumu12641.lark.ui.theme.page.function.CustomSnackbarVisuals
 import io.github.mumu12641.lark.ui.theme.util.StringUtil
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
@@ -57,10 +59,22 @@ fun HomeScreen(
     navController: NavController,
     mainViewModel: MainViewModel,
 ) {
+    val scope = rememberCoroutineScope()
+    val snackbarHostState = remember { SnackbarHostState() }
     Box(
         modifier = Modifier.fillMaxSize()
     ) {
         Scaffold(
+            snackbarHost = {
+                SnackbarHost(snackbarHostState) { data ->
+                    JumpToPlayPageSnackbar(
+                        navController,
+                        data,
+                        stringResource(id = R.string.successful_add_text),
+                        popBackStack = false
+                    )
+                }
+            },
             topBar = {
                 LarkSmallTopBar(
                     paddingValues = adapterSystemPadding(),
@@ -76,7 +90,12 @@ fun HomeScreen(
                 HomeSetup(
                     modifier = Modifier.padding(paddingValues),
                     mainViewModel,
-                    navController
+                    navController,
+                    showSnackbar = {
+                        scope.launch {
+                            snackbarHostState.showSnackbar(CustomSnackbarVisuals(it.songTitle))
+                        }
+                    }
                 )
             },
             floatingActionButton = {
@@ -98,7 +117,8 @@ fun HomeScreen(
 fun HomeSetup(
     modifier: Modifier,
     mainViewModel: MainViewModel,
-    navController: NavController
+    navController: NavController,
+    showSnackbar: (Song) -> Unit,
 ) {
     var showDialog by remember {
         mutableStateOf(true)
@@ -126,7 +146,8 @@ fun HomeSetup(
         HomeContent(
             modifier,
             mainViewModel,
-            navController
+            navController,
+            showSnackbar
         )
     } else {
         showDialog = true
@@ -184,7 +205,8 @@ fun IconDescription(modifier: Modifier = Modifier, icon: ImageVector, descriptio
 fun HomeContent(
     modifier: Modifier,
     mainViewModel: MainViewModel,
-    navController: NavController
+    navController: NavController,
+    showSnackbar: (Song) -> Unit,
 ) {
     val loadState by mainViewModel.loadState.collectAsState()
     val uiState by mainViewModel.homeScreenUiState.collectAsState()
@@ -198,7 +220,7 @@ fun HomeContent(
             .verticalScroll(rememberScrollState())
     ) {
         WelcomeUser(navController)
-        Banner(banner) {
+        Banner(banner, showSnackbar) {
             mainViewModel.addSongToCurrentList(it)
         }
         FunctionTab(navController)
@@ -229,6 +251,7 @@ fun HomeContent(
 @Composable
 private fun Banner(
     banner: List<BannerX>,
+    showSnackbar: (Song) -> Unit,
     addBannerSongToList: (Long) -> Unit,
 ) {
     val pagerState = rememberPagerState(
@@ -263,6 +286,7 @@ private fun Banner(
             }
             async.await()
             addBannerSongToList(DataBaseUtils.querySongIdByNeteaseId(song.neteaseId))
+            showSnackbar(song)
         }
     }
 
@@ -318,13 +342,14 @@ private fun Banner(
                                 .padding(10.dp)
                                 .clickable(onClick = {
                                     onClick(page)
-                                    Toast
-                                        .makeText(
-                                            context,
-                                            context.getString(R.string.success_add_to_songlist_text),
-                                            Toast.LENGTH_LONG
-                                        )
-                                        .show()
+//                                    Toast
+//                                        .makeText(
+//                                            context,
+//                                            context.getString(R.string.success_add_to_songlist_text),
+//                                            Toast.LENGTH_LONG
+//                                        )
+//                                        .show()
+
                                 })
                         ) {
                             Row(
