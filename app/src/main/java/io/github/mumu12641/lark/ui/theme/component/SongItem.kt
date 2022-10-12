@@ -1,5 +1,6 @@
 package io.github.mumu12641.lark.ui.theme.component
 
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
@@ -7,7 +8,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material3.*
-import androidx.compose.runtime.Composable
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -18,7 +19,6 @@ import androidx.compose.ui.unit.dp
 import io.github.mumu12641.lark.R
 import io.github.mumu12641.lark.entity.Song
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SongItem(
     song: Song,
@@ -32,13 +32,16 @@ fun SongItem(
             .padding(start = 10.dp, end = 10.dp, top = 5.dp, bottom = 5.dp),
         colors = CardDefaults.outlinedCardColors()
     ) {
-        SongItemRow(song, showBottomSheet, onClick)
+        SongItemRow(song, showBottomSheet = showBottomSheet, onClick = onClick)
     }
 }
 
 @Composable
 fun SongItemRow(
     song: Song,
+    isSelectEnabled: Boolean = false,
+    isSelected:Boolean = false,
+    onCheckChange:((Boolean) -> Unit)? = null,
     showBottomSheet: ((Song) -> Unit)?,
     onClick: () -> Unit
 ) {
@@ -52,6 +55,12 @@ fun SongItemRow(
             .clip(RoundedCornerShape(5.dp))
             .clickable(onClick = onClick)
     ) {
+        AnimatedVisibility(visible = isSelectEnabled) {
+            Checkbox(checked = isSelected, onCheckedChange = {
+//                isSelected = !isSelected
+                onCheckChange?.let { it1 -> it1(it) }
+            })
+        }
         AsyncImage(
             modifier = Modifier
                 .padding(start = 5.dp)

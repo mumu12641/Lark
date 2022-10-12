@@ -54,6 +54,12 @@ class SongListDetailsViewModel @Inject constructor() : ViewModel() {
         }
     }
 
+    fun deletePlaylistSongCrossRef(songId:Long){
+        viewModelScope.launch (Dispatchers.IO){
+            DataBaseUtils.deleteRef(_songListDetailUiState.value.currentSongListId,songId)
+        }
+    }
+
     data class SongListDetailUiState(
         val currentSongListId: Long = 1L,
         val isLoading: Boolean = true,

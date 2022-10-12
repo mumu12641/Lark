@@ -49,7 +49,8 @@ fun CardIcon(
             Icon(
                 icon, contentDescription = contentDescription,
                 modifier = Modifier
-                    .size(50.dp)
+                    .size(50.dp),
+                tint = MaterialTheme.colorScheme.secondary
             )
         }
         Text(

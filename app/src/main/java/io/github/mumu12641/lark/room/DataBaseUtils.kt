@@ -167,6 +167,10 @@ class DataBaseUtils {
             musicDao.updateSong(song)
         }
 
+        suspend fun deleteRef(songListId: Long,songId: Long){
+            musicDao.deleteRef(PlaylistSongCrossRef(songListId,songId))
+        }
+
     }
 
 }

@@ -1,10 +1,12 @@
 Android 13 的通知有点糊
 
-英文字符串
+
 
 滚动侧边栏
 
-删除歌单中的歌
+删除歌单中的歌		那艺术家中的歌曲要不要删除呢？
+
+snackbar中的背景色 	done
 
 
 
@@ -69,6 +71,10 @@ Youtube API
 Client ID `358b9fc9bc3b4bc992325fef89633663`
 
 Client Secret `efa34c3bc2924bd2ac2ba22cecea8114`
+
+英文字符串 done
+
+
 
 Media Session	done
 

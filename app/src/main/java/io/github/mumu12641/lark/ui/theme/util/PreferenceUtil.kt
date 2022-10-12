@@ -21,6 +21,7 @@ object PreferenceUtil {
     const val EMPTY_SEED_COLOR = 0
 
     const val FOLLOW_SYSTEM = 0
+
     const val ON = 1
     const val OFF = 2
 
@@ -77,7 +78,7 @@ object PreferenceUtil {
             kv.decodeInt(DARK_MODE, FOLLOW_SYSTEM),
             kv.decodeInt(SEED_COLOR, DEFAULT_SEED_COLOR),
             DynamicColorPreference(dynamicColorSwitch = kv.decodeInt(DYNAMIC_COLOR, OFF)),
-            followAlbumSwitch = kv.decodeInt(FOLLOW_ALBUM_COLOR_SWITCH, ON)
+            followAlbumSwitch = kv.decodeInt(FOLLOW_ALBUM_COLOR_SWITCH, OFF)
         )
     )
     val displayPreferenceFlow = _disaplayPreferenceFlow

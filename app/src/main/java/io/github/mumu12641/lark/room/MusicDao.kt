@@ -82,4 +82,7 @@ interface MusicDao {
 
     @Update
     suspend fun updateSong(song: Song)
+
+    @Delete
+    suspend fun deleteRef(ref:PlaylistSongCrossRef)
 }

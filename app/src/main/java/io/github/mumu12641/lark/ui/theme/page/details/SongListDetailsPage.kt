@@ -6,6 +6,8 @@ import android.util.Log
 import androidx.activity.compose.BackHandler
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.animation.AnimatedContent
+import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
@@ -17,10 +19,13 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Checklist
+import androidx.compose.material.icons.filled.DeleteSweep
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.PlayArrow
 import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.FabPosition
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
@@ -42,9 +47,13 @@ import io.github.mumu12641.lark.R
 import io.github.mumu12641.lark.entity.*
 import io.github.mumu12641.lark.ui.theme.component.*
 import io.github.mumu12641.lark.ui.theme.page.function.CustomSnackbarVisuals
+import io.github.mumu12641.lark.ui.theme.page.play.ScaffoldWithFab
 import kotlinx.coroutines.launch
 
-@OptIn(ExperimentalMaterialApi::class, ExperimentalMaterial3Api::class)
+@OptIn(
+    ExperimentalMaterialApi::class, ExperimentalMaterial3Api::class,
+    ExperimentalAnimationApi::class
+)
 @SuppressLint("StateFlowValueCalledInComposition")
 @Composable
 fun SongListDetailsPage(
@@ -62,6 +71,11 @@ fun SongListDetailsPage(
     val scope = rememberCoroutineScope()
     val snackbarHostState = remember { androidx.compose.material3.SnackbarHostState() }
 
+    var isSelectEnabled by remember { mutableStateOf(false) }
+    val selectedIdList = remember {
+        mutableStateListOf<Long>()
+    }
+
     LaunchedEffect(Unit) {
         navController.currentBackStackEntryFlow.collect {
             it.arguments?.getString("songListId")?.let { songListId ->
@@ -71,8 +85,12 @@ fun SongListDetailsPage(
     }
     BackHandler {
         if (!bottomSheetScaffoldState.bottomSheetState.isCollapsed) {
-            scope.launch {
-                bottomSheetScaffoldState.bottomSheetState.collapse()
+            if (isSelectEnabled) {
+                isSelectEnabled = false
+            }else {
+                scope.launch {
+                    bottomSheetScaffoldState.bottomSheetState.collapse()
+                }
             }
         } else {
             navController.popBackStack()
@@ -96,15 +114,46 @@ fun SongListDetailsPage(
             backgroundColor = MaterialTheme.colorScheme.background,
             scaffoldState = bottomSheetScaffoldState,
             sheetContent = {
-                ShowSongs(
-                    songs = songs,
-                    modifier = Modifier,
-                    top = 0,
-                    playMedia = { songListId: Long, songId: Long ->
-                        playMedia(songListId, songId)
+                ScaffoldWithFab(
+                    fabPosition = FabPosition.End,
+                    onClick = {
+                        if (isSelectEnabled && selectedIdList.size > 0) {
+                            for (i in selectedIdList) {
+                                viewModel.deletePlaylistSongCrossRef(i)
+                            }
+                        }
+                        isSelectEnabled = !isSelectEnabled
                     },
-                    songList = songList
-                )
+                    FabContent = {
+                        AnimatedContent(targetState = isSelectEnabled) { targetState ->
+                            if (!targetState) {
+                                Icon(Icons.Filled.Checklist, contentDescription = null)
+                            } else {
+                                Icon(Icons.Filled.DeleteSweep, contentDescription = null)
+                            }
+                        }
+                    }
+                ) {
+                    ShowSongs(
+                        songs = songs,
+                        modifier = Modifier.padding(it),
+                        isSelectEnabled = isSelectEnabled,
+                        selectedIdList = selectedIdList,
+                        changeSelectedIdList = { selected, id ->
+                            if (selected) {
+                                selectedIdList.add(id)
+                            } else {
+                                selectedIdList.remove(id)
+                            }
+                        },
+                        playMedia = { songListId: Long, songId: Long ->
+                            playMedia(songListId, songId)
+                        },
+                        songList = songList
+                    )
+                }
+
+
             },
             sheetPeekHeight = 260.dp,
             sheetBackgroundColor = MaterialTheme.colorScheme.secondaryContainer,
@@ -150,6 +199,8 @@ fun JumpToPlayPageSnackbar(
 ) {
     androidx.compose.material3.Snackbar(
         modifier = Modifier.padding(12.dp),
+        containerColor = MaterialTheme.colorScheme.secondaryContainer,
+        contentColor = MaterialTheme.colorScheme.onSecondaryContainer,
         action = {
             androidx.compose.material3.TextButton(onClick = {
                 navController.popBackStack()
@@ -335,9 +386,12 @@ fun PlayButton(
 fun ShowSongs(
     songs: List<Song>,
     modifier: Modifier,
-    top: Int,
+    top: Int = 0,
+    isSelectEnabled: Boolean = false,
+    selectedIdList: List<Long> = emptyList(),
     state: LazyListState = rememberLazyListState(),
     clipShape: RoundedCornerShape = RoundedCornerShape(topStart = 20.dp, topEnd = 20.dp),
+    changeSelectedIdList: ((Boolean, Long) -> Unit)? = null,
     playMedia: ((Long, Long) -> Unit)? = null,
     seekToSong: ((Long) -> Unit)? = null,
     songList: SongList,
@@ -348,6 +402,7 @@ fun ShowSongs(
     } else { song: Song ->
         seekToSong?.let { it(song.songId) }
     }
+//    val startPadding = animateDpAsState(targetValue = if (isSelectEnabled) 20.dp else 0.dp)
     Column(
         modifier = Modifier
             .fillMaxWidth()
@@ -376,7 +431,16 @@ fun ShowSongs(
             LazyColumn(state = state) {
                 items(songs, key = key) { item ->
                     SongItemRow(
-                        item, null, onClick = {
+                        item,
+                        isSelectEnabled = isSelectEnabled,
+                        isSelected = selectedIdList.contains(item.songId),
+                        onCheckChange = {
+                            if (changeSelectedIdList != null) {
+                                changeSelectedIdList(it, item.songId)
+                            }
+                        },
+                        showBottomSheet = null,
+                        onClick = {
                             onClick(item)
                         }
                     )

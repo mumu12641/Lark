@@ -46,7 +46,7 @@ fun ArtistDetailPage(
     var showResetArtistDialog by remember {
         mutableStateOf(false)
     }
-    val snackbarHostState = remember { androidx.compose.material3.SnackbarHostState() }
+    val snackbarHostState = remember { SnackbarHostState() }
     val scope = rememberCoroutineScope()
     val scrollBehavior = pinnedScrollBehavior(rememberTopAppBarState())
     LaunchedEffect(Unit) {
@@ -60,7 +60,7 @@ fun ArtistDetailPage(
     Scaffold(
         snackbarHost =
         {
-            androidx.compose.material3.SnackbarHost(snackbarHostState) { data ->
+            SnackbarHost(snackbarHostState) { data ->
                 JumpToPlayPageSnackbar(
                     navController,
                     data,
