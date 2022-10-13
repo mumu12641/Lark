@@ -8,6 +8,7 @@ import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.ExperimentalAnimationApi
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
@@ -390,6 +391,8 @@ fun PlayButton(
 fun ShowSongs(
     songs: List<Song>,
     modifier: Modifier,
+    currentPlaySong:Song? = null,
+    isPlaying:Boolean = false,
     top: Int = 0,
     isSelectEnabled: Boolean = false,
     selectedIdList: List<Long> = emptyList(),
@@ -406,7 +409,6 @@ fun ShowSongs(
     } else { song: Song ->
         seekToSong?.let { it(song.songId) }
     }
-//    val startPadding = animateDpAsState(targetValue = if (isSelectEnabled) 20.dp else 0.dp)
     Column(
         modifier = Modifier
             .fillMaxWidth()
@@ -432,10 +434,12 @@ fun ShowSongs(
                 )
             }
         } else {
-            LazyColumn(state = state) {
+            LazyColumn(state = state, modifier = Modifier.Scrollbar(state)) {
                 items(songs, key = key) { item ->
                     SongItemRow(
                         item,
+                        isCurrentSong = currentPlaySong == item,
+                        isPlaying = isPlaying,
                         isSelectEnabled = isSelectEnabled,
                         isSelected = selectedIdList.contains(item.songId),
                         onCheckChange = {

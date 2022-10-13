@@ -5,6 +5,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
+import androidx.compose.foundation.lazy.grid.rememberLazyGridState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.material3.*
@@ -19,6 +20,7 @@ import androidx.navigation.NavController
 import io.github.mumu12641.lark.R
 import io.github.mumu12641.lark.ui.theme.component.ArtistIcon
 import io.github.mumu12641.lark.ui.theme.component.LarkSmallTopBar
+import io.github.mumu12641.lark.ui.theme.component.Scrollbar
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -57,13 +59,16 @@ fun ArtistPage(
 
 @Composable
 fun ArtistPageContent(
-    modifier: Modifier, artistViewModel: ArtistViewModel, navigateToDetail: (Long) -> Unit
+    modifier: Modifier,
+    artistViewModel: ArtistViewModel,
+    navigateToDetail: (Long) -> Unit
 ) {
     val allArtistUiState by artistViewModel.allArtistUiState.collectAsState()
     val list by allArtistUiState.artistSongList.collectAsState(initial = emptyList())
-
+    val state = rememberLazyGridState()
     LazyVerticalGrid(
-        modifier = modifier,
+        state = state,
+        modifier = modifier.Scrollbar(state),
         contentPadding = PaddingValues(5.dp),
         columns = GridCells.Fixed(2),
         content = {

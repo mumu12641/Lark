@@ -24,7 +24,7 @@ android {
         applicationId = "io.github.mumu12641.lark"
         minSdk = 21
         targetSdk = 33
-        versionCode = 8
+        versionCode = 9
         versionName = "0.7.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"

@@ -9,6 +9,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -16,6 +17,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import com.airbnb.lottie.compose.*
 import io.github.mumu12641.lark.R
 import io.github.mumu12641.lark.entity.Song
 
@@ -39,15 +41,29 @@ fun SongItem(
 @Composable
 fun SongItemRow(
     song: Song,
+    modifier: Modifier = Modifier,
+    isCurrentSong: Boolean = false,
+    isPlaying:Boolean = false,
     isSelectEnabled: Boolean = false,
-    isSelected:Boolean = false,
-    onCheckChange:((Boolean) -> Unit)? = null,
+    isSelected: Boolean = false,
+    onCheckChange: ((Boolean) -> Unit)? = null,
     showBottomSheet: ((Song) -> Unit)?,
     onClick: () -> Unit
 ) {
+    val lottieComposition by rememberLottieComposition(
+        spec = LottieCompositionSpec.RawRes(R.raw.music_play),
+    )
+    val lottieAnimationState by animateLottieCompositionAsState(
+        composition = lottieComposition,
+        iterations = LottieConstants.IterateForever,
+        isPlaying = isPlaying,
+        speed = 1f,
+        restartOnPlay = false
+    )
+
     Row(
         verticalAlignment = Alignment.CenterVertically,
-        modifier = Modifier
+        modifier = modifier
             .fillMaxWidth()
             .height(80.dp)
             .padding(end = 5.dp, top = 5.dp, bottom = 5.dp)
@@ -75,6 +91,7 @@ fun SongItemRow(
             imageModel = song.songAlbumFileUri,
             failure = R.drawable.ic_baseline_music_note_24
         )
+
         Column(
             modifier = Modifier
                 .padding(10.dp)
@@ -87,6 +104,14 @@ fun SongItemRow(
                 overflow = TextOverflow.Ellipsis
             )
             Text(text = song.songSinger, style = MaterialTheme.typography.bodySmall)
+        }
+        AnimatedVisibility(visible = isCurrentSong,modifier = Modifier.weight(0.15f)) {
+                LottieAnimation(
+                    lottieComposition,
+                    lottieAnimationState,
+                    modifier = Modifier.fillMaxSize()
+                )
+
         }
         showBottomSheet?.let {
             IconButton(onClick = {

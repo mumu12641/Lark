@@ -203,6 +203,7 @@ fun PlayPage(
                         currentSongList,
                         currentPlaySong,
                         currentPosition,
+                        currentPlayState,
                         playUiState,
                         pagerState,
                         { playViewModel.initData(it) },
@@ -262,6 +263,7 @@ private fun SheetContent(
     currentSongList: SongList,
     currentPlaySong: Song,
     currentPosition: Long,
+    currentPlayState: PlaybackStateCompat,
     playUiState: PlayViewModel.PlayUiState,
     pagerState: PagerState,
     getLyrics: (Long) -> Unit,
@@ -350,6 +352,8 @@ private fun SheetContent(
                             }) {
                             ShowSongs(
                                 songs = currentPlaySongs,
+                                currentPlaySong = currentPlaySong,
+                                isPlaying = currentPlayState.state == PlaybackStateCompat.STATE_PLAYING,
                                 modifier = Modifier,
                                 top = 0,
                                 state = state,

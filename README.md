@@ -1,13 +1,19 @@
 <p align="center"> 
 	<img src="assert/icon.png "  >
 </p>
+<div align="center">
+    <img alt="GitHub" src="https://img.shields.io/github/license/mumu12641/Lark?color=brigntgreen&style=flat-square">
+     <img alt="Version" src="https://img.shields.io/github/v/release/mumu12641/Lark?color=brigntgreen&style=flat-square">
+    <img alt="GitHub last commit" src="https://img.shields.io/github/last-commit/mumu12641/Lark?color=brigntgreen&style=flat-square">
+</div>
+
+
 <h1 align="center">
 	Lark
 </h1>
 <p align="center">
   Netease Cloud Music and Local Music Player,developed by using Jetpack Compose
 </p>
-
 
 ## :framed_picture: ScreenShot
 

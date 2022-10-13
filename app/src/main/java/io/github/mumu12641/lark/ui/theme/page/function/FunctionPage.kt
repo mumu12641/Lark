@@ -13,6 +13,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
@@ -231,7 +232,7 @@ fun LocalContent(
     showBottomSheet: ((Song) -> Unit)? = null,
     playMedia: (Long, Long) -> Unit
 ) {
-
+    val state = rememberLazyListState()
     val localMusicList by uiState.localMusicList.collectAsState(initial = emptyList())
     AnimatedContent(
         modifier = Modifier
@@ -249,7 +250,7 @@ fun LocalContent(
             }
             else -> {
                 Box(modifier = modifier) {
-                    LazyColumn {
+                    LazyColumn(state = state, modifier = Modifier.Scrollbar(state)) {
                         items(items = localMusicList, key = {
                             it.songId
                         }) { song: Song ->
