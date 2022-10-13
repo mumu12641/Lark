@@ -170,16 +170,19 @@ class DataBaseUtils {
 
         suspend fun deleteRef(songListId: Long,songId: Long) {
             musicDao.deleteRef(PlaylistSongCrossRef(songListId, songId))
-            Log.d("TAG", "deleteRef: $songListId")
             if (songListId == LikeSongListId) {
+                val songs = querySongListWithSongsBySongListId(
+                    songListId
+                ).songs
+                var imageFileUri = ""
+                if (songs.isNotEmpty()) {
+                    imageFileUri = songs[0].songAlbumFileUri
+                }
                 updateSongList(
                     querySongListById(songListId).copy(
-                        imageFileUri = querySongListWithSongsBySongListId(
-                            songListId
-                        ).songs[0].songAlbumFileUri
+                        imageFileUri = imageFileUri
                     )
                 )
-
             }
         }
     }
