@@ -98,4 +98,5 @@
     <string name="play_in_order_text">Play all in</string>
     <string name="load_to_end_text">Loaded to the end</string>
     <string name="successful_add_text">Successfully add</string>
+    <string name="got_to_update_text">Go to Update</string>
 </resources>

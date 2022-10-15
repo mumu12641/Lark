@@ -24,6 +24,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.util.lerp
@@ -47,6 +48,7 @@ import io.github.mumu12641.lark.ui.theme.component.*
 import io.github.mumu12641.lark.ui.theme.page.details.JumpToPlayPageSnackbar
 import io.github.mumu12641.lark.ui.theme.page.function.CustomSnackbarVisuals
 import io.github.mumu12641.lark.ui.theme.util.StringUtil
+import io.github.mumu12641.lark.ui.theme.util.UpdateUtil.RELEASE_URL
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
@@ -214,6 +216,9 @@ fun HomeContent(
     val artistSongList by uiState.artistSongList.collectAsState(initial = emptyList())
     val banner by mainViewModel.bannerState.collectAsState(initial = emptyList())
 
+    val uriHandler = LocalUriHandler.current
+    val checkUpdateState by mainViewModel.checkForUpdate.collectAsState()
+
     Column(
         modifier = modifier
             .padding(horizontal = 10.dp, vertical = 10.dp)
@@ -244,6 +249,21 @@ fun HomeContent(
                 Text(text = loadState.loadState.msg + "/" + loadState.num.toString())
             }
         })
+    }
+    if (checkUpdateState.showDialog) {
+        LarkAlertDialog(
+            onDismissRequest = { mainViewModel.setUpdateDialog() },
+            title = checkUpdateState.info.name,
+            text = {
+                Text(
+                    checkUpdateState.info.body
+                )
+            },
+            confirmOnClick = {
+                uriHandler.openUri(RELEASE_URL)
+            },
+            confirmText = stringResource(id = R.string.got_to_update_text),
+        )
     }
 }
 

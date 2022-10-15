@@ -1,34 +1,38 @@
+代码重构 media3 playbackService 
+
+
+
+app内更新
+
+
+
 推荐歌曲
 
 下载
 
 云盘
 
-在play page 正在播放的歌曲有特殊标志
-
-
-
-Android 13 的通知有点糊
-
-
-
-滚动侧边栏
-
-删除歌单中的歌		那艺术家中的歌曲要不要删除呢？
-
-snackbar中的背景色 	done
-
-
-
-
-
 **搜索！（艺术家）**
+
+
+
+
+
+
 
 **歌词**	done
 
 歌词获取	done
 
+在play page 正在播放的歌曲有特殊标志	done
 
+Android 13 的通知有点糊	没办法
+
+滚动侧边栏 done
+
+删除歌单中的歌		那艺术家中的歌曲要不要删除呢？ 不用
+
+snackbar中的背景色 	done
 
 播放的歌词页面
 

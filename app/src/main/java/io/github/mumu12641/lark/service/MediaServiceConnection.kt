@@ -8,6 +8,7 @@ import android.content.Intent
 import android.graphics.Bitmap
 import android.media.MediaMetadata.METADATA_KEY_ARTIST
 import android.os.Build
+import android.os.Bundle
 import android.support.v4.media.MediaBrowserCompat
 import android.support.v4.media.MediaMetadataCompat
 import android.support.v4.media.session.MediaControllerCompat
@@ -98,12 +99,25 @@ class MediaServiceConnection(context: Context, componentName: ComponentName) {
         override fun onMetadataChanged(metadata: MediaMetadataCompat?) {
             _playMetadata.value = metadata ?: NOTHING_PLAYING
 
-            applicationScope.launch(Dispatchers.IO) {
+            applicationScope.launch(Dispatchers.IO + CoroutineExceptionHandler { _, _ ->
+//                Toast.makeText(context,"Something went wrong",Toast.LENGTH_SHORT).show()
+//                transportControls.sendCustomAction(
+//                    CHANGE_PLAY_LIST,
+//                    Bundle().apply {
+//                        putLong("songListId", LocalSongListId)
+//                        putLong("songId", CHANGE_PLAT_LIST_SHUFFLE)
+//                    })
+                transportControls.sendCustomAction(SET_EMPTY, Bundle())
+            }) {
                 if (_playMetadata.value.getString(MediaMetadataCompat.METADATA_KEY_MEDIA_ID)
                         .toLong() == -1L
                 ) {
                     _currentPlaySong.value = BUFFER_SONG
                 } else {
+                    Log.d(
+                        TAG,
+                        "onMetadataChanged: " + _playMetadata.value.getString(MediaMetadataCompat.METADATA_KEY_MEDIA_ID)
+                    )
                     _currentPlaySong.value = DataBaseUtils.querySongById(
                         _playMetadata.value.getString(MediaMetadataCompat.METADATA_KEY_MEDIA_ID)
                             .toLong()
@@ -115,7 +129,6 @@ class MediaServiceConnection(context: Context, componentName: ComponentName) {
             updateCurrentAlbumColor(metadata)
             updateWidgetMetadata(metadata)
             updateWidgetPlayState(mediaController.playbackState)
-
             applicationScope.launch(Dispatchers.IO + CoroutineExceptionHandler { _, _ -> }) {
                 val id =
                     metadata?.getString(MediaMetadataCompat.METADATA_KEY_MEDIA_ID)?.toLong()
@@ -237,6 +250,7 @@ class MediaServiceConnection(context: Context, componentName: ComponentName) {
             }
         }
     }
+
 
     @RequiresApi(Build.VERSION_CODES.M)
     fun updateWidgetMetadata(metadata: MediaMetadataCompat?) {

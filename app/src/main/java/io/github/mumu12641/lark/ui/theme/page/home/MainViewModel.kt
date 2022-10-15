@@ -13,11 +13,14 @@ import io.github.mumu12641.lark.BaseApplication.Companion.context
 import io.github.mumu12641.lark.R
 import io.github.mumu12641.lark.entity.*
 import io.github.mumu12641.lark.entity.network.Banner
+import io.github.mumu12641.lark.entity.network.UpdateInfo
 import io.github.mumu12641.lark.network.NetworkCreator.networkService
 import io.github.mumu12641.lark.room.DataBaseUtils
 import io.github.mumu12641.lark.service.MediaPlaybackService
 import io.github.mumu12641.lark.service.MediaServiceConnection
 import io.github.mumu12641.lark.service.MediaServiceConnection.Companion.EMPTY_PLAYBACK_STATE
+import io.github.mumu12641.lark.ui.theme.util.UpdateUtil.checkForUpdate
+import io.github.mumu12641.lark.ui.theme.util.UpdateUtil.getUpdateInfo
 import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
@@ -37,6 +40,9 @@ class MainViewModel @Inject constructor() : ViewModel() {
         ComponentName(context, MediaPlaybackService::class.java)
     )
 
+    private val _checkForUpdate = MutableStateFlow(CheckUpdateState())
+    val checkForUpdate = _checkForUpdate
+
     private val currentPlayState by lazy { mediaServiceConnection.playState }
 
     private val _loadState = MutableStateFlow(LoadState())
@@ -49,6 +55,30 @@ class MainViewModel @Inject constructor() : ViewModel() {
 
     private val _playState = MutableStateFlow(PlayState(mediaServiceConnection))
     val playState = _playState
+
+    init {
+        viewModelScope.launch(Dispatchers.IO + CoroutineExceptionHandler { _, e ->
+            e.message?.let { Log.d(TAG, it) }
+        }) {
+            _bannerState.value = networkService.getBanner().banners.filter {
+                it.targetType == 1
+            }
+//            _checkForUpdate.value.info = UpdateUtil.getUpdateInfo()
+//
+//            _checkForUpdate.value.showDialog = UpdateUtil.checkForUpdate(_checkForUpdate.value.info)
+            Log.d(TAG, getUpdateInfo().toString())
+            _checkForUpdate.update {
+                val info = getUpdateInfo()
+                it.copy(info = info, showDialog = checkForUpdate(info))
+            }
+            Log.d(TAG, _checkForUpdate.value.toString())
+        }
+    }
+
+    data class CheckUpdateState(
+        val info: UpdateInfo = UpdateInfo(),
+        val showDialog: Boolean = false,
+    )
 
     data class LoadState(
         val num: Int = 0,
@@ -98,6 +128,14 @@ class MainViewModel @Inject constructor() : ViewModel() {
         }
     }
 
+    fun setUpdateDialog() {
+//        _checkForUpdate.value = false
+//        _checkForUpdate.value.showDialog = false
+        _checkForUpdate.update {
+            it.copy(showDialog = false)
+        }
+    }
+
     private fun checkPlayState(): Boolean = currentPlayState.value != EMPTY_PLAYBACK_STATE
 
     fun onPlay() {
@@ -131,18 +169,37 @@ class MainViewModel @Inject constructor() : ViewModel() {
     }
 
 
-    init {
-        viewModelScope.launch(Dispatchers.IO + CoroutineExceptionHandler { _, e ->
-            e.message?.let { Log.d(TAG, it) }
-        }) {
-            Log.d(TAG, "test ")
-            _bannerState.value = networkService.getBanner().banners.filter {
-                it.targetType == 1
-            }
-
+    fun playMedia(songListId: Long, songId: Long) {
+        val bundle = Bundle()
+        bundle.apply {
+            putLong("songListId", songListId)
+            putLong("songId", songId)
         }
+        mediaServiceConnection.transportControls.sendCustomAction(CHANGE_PLAY_LIST, bundle)
+    }
+
+    fun addSongToCurrentList(songId: Long) {
+        val bundle = Bundle()
+        bundle.apply {
+            putLong("songId", songId)
+        }
+        mediaServiceConnection.transportControls.sendCustomAction(ADD_SONG_TO_LIST, bundle)
+    }
+
+    fun seekToSong(songId: Long) {
+        val bundle = Bundle()
+        bundle.apply {
+            putLong("songId", songId)
+        }
+        mediaServiceConnection.transportControls.sendCustomAction(SEEK_TO_SONG, bundle)
+    }
 
 
+    @RequiresApi(Build.VERSION_CODES.M)
+    override fun onCleared() {
+        super.onCleared()
+        Log.d(TAG, "onCleared: ")
+        mediaServiceConnection.disConnected()
     }
 
     fun refreshArtist() {
@@ -239,37 +296,4 @@ class MainViewModel @Inject constructor() : ViewModel() {
         }
     }
 
-
-    fun playMedia(songListId: Long, songId: Long) {
-        val bundle = Bundle()
-        bundle.apply {
-            putLong("songListId", songListId)
-            putLong("songId", songId)
-        }
-        mediaServiceConnection.transportControls.sendCustomAction(CHANGE_PLAY_LIST, bundle)
-    }
-
-    fun addSongToCurrentList(songId: Long) {
-        val bundle = Bundle()
-        bundle.apply {
-            putLong("songId", songId)
-        }
-        mediaServiceConnection.transportControls.sendCustomAction(ADD_SONG_TO_LIST, bundle)
-    }
-
-    fun seekToSong(songId: Long) {
-        val bundle = Bundle()
-        bundle.apply {
-            putLong("songId", songId)
-        }
-        mediaServiceConnection.transportControls.sendCustomAction(SEEK_TO_SONG, bundle)
-    }
-
-
-    @RequiresApi(Build.VERSION_CODES.M)
-    override fun onCleared() {
-        super.onCleared()
-        Log.d(TAG, "onCleared: ")
-        mediaServiceConnection.disConnected()
-    }
 }

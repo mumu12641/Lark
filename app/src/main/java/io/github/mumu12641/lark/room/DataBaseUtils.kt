@@ -1,6 +1,5 @@
 package io.github.mumu12641.lark.room
 
-import android.util.Log
 import io.github.mumu12641.lark.BaseApplication
 import io.github.mumu12641.lark.BaseApplication.Companion.applicationScope
 import io.github.mumu12641.lark.R
@@ -12,6 +11,7 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.launch
 
 class DataBaseUtils {
+
     companion object {
         private val DataBase: MusicDataBase = MusicDataBase.getInstance()
         private val musicDao: MusicDao = DataBase.musicDao

@@ -4,6 +4,7 @@ plugins {
     id("kotlin-kapt")
     id("kotlin-android")
     id("dagger.hilt.android.plugin")
+    kotlin("plugin.serialization") version "1.7.10"
 }
 
 val composeVersion = "1.2.0"
@@ -25,7 +26,7 @@ android {
         minSdk = 21
         targetSdk = 33
         versionCode = 10
-        versionName = "0.7.0"
+        versionName = "0.6.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables {
@@ -137,6 +138,9 @@ dependencies {
 
 
     implementation("androidx.glance:glance:1.0.0-alpha04")
+
+    implementation("com.squareup.okhttp3:okhttp:5.0.0-alpha.10")
+    implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.4.0")
 
 //    implementation("io.github.hokofly:hoko-blur:1.3.7")
 //    implementation("com.github.caiyonglong:musicapi:1.1.4")

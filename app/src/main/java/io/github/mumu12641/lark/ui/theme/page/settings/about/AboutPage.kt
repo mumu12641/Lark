@@ -79,7 +79,7 @@ fun AboutContent(modifier: Modifier) {
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Image(
-                    painter = painterResource(id = R.drawable.lark),
+                    painter = painterResource(id = R.drawable.icon),
                     contentDescription = "icon",
                     modifier = Modifier
                         .padding(10.dp)
