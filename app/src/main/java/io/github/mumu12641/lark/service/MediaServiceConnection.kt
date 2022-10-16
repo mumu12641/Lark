@@ -27,6 +27,7 @@ import io.github.mumu12641.lark.R
 import io.github.mumu12641.lark.entity.*
 import io.github.mumu12641.lark.room.DataBaseUtils
 import io.github.mumu12641.lark.ui.theme.util.PreferenceUtil
+import io.github.mumu12641.lark.ui.theme.util.PreferenceUtil.DEFAULT_SEED_COLOR
 import io.github.mumu12641.lark.ui.theme.util.PreferenceUtil.SEED_COLOR
 import io.github.mumu12641.lark.widget.LarkWidgetProvider
 import kotlinx.coroutines.*
@@ -181,7 +182,7 @@ class MediaServiceConnection(context: Context, componentName: ComponentName) {
             Palette.from(bitmap).generate {
                 it?.getDominantColor(
                     kv.decodeInt(
-                        SEED_COLOR
+                        SEED_COLOR, DEFAULT_SEED_COLOR
                     )
                 )?.let { it1 ->
                     PreferenceUtil.changeCurrentAlbumColor(

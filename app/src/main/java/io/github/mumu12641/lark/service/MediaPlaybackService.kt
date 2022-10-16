@@ -211,12 +211,13 @@ class MediaPlaybackService : MediaBrowserServiceCompat() {
             @RequiresApi(Build.VERSION_CODES.M)
             override fun onPlay() {
                 super.onPlay()
-                if (currentPlayList.isNotEmpty() && mPlaybackState.state == PlaybackStateCompat.STATE_PAUSED || mPlaybackState.state == PlaybackStateCompat.STATE_NONE
+                if (mPlaybackState.state == PlaybackStateCompat.STATE_PAUSED || mPlaybackState.state == PlaybackStateCompat.STATE_NONE
                     || mPlaybackState.state == PlaybackStateCompat.STATE_SKIPPING_TO_NEXT || mPlaybackState.state == PlaybackStateCompat.STATE_PLAYING
                 ) {
                     mExoPlayer.play()
-                    updateAllData()
-
+                    if (currentPlayList.isNotEmpty()) {
+                        updateAllData()
+                    }
                 }
             }
 

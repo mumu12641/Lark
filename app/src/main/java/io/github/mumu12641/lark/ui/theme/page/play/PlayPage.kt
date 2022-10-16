@@ -177,7 +177,8 @@ fun PlayPage(
                                         scope.launch {
                                             actionMenu = false
                                             bottomSheetScaffoldState.bottomSheetState.expand()
-                                            pagerState.scrollToPage(1)
+//                                            pagerState.scrollToPage(1)
+                                            pagerState.animateScrollToPage(1)
                                         }
                                     })
                                 DropdownMenuItem(
@@ -187,7 +188,8 @@ fun PlayPage(
                                         scope.launch {
                                             actionMenu = false
                                             bottomSheetScaffoldState.bottomSheetState.expand()
-                                            pagerState.scrollToPage(0)
+//                                            pagerState.scrollToPage(0)
+                                            pagerState.animateScrollToPage(0)
                                         }
                                     })
 
@@ -202,7 +204,7 @@ fun PlayPage(
                         mainViewModel,
                         currentSongList,
                         currentPlaySong,
-                        currentPosition,
+                        { currentPosition },
                         currentPlayState,
                         playUiState,
                         pagerState,
@@ -240,7 +242,7 @@ fun PlayPage(
                         navController,
                         currentPlaySong,
                         currentPlayState,
-                        currentPosition,
+                        { currentPosition },
                         onClickNext = { mainViewModel.onSkipToNext() },
                         onClickPause = { mainViewModel.onPause() },
                         onClickPlay = { mainViewModel.onPlay() },
@@ -262,38 +264,20 @@ private fun SheetContent(
     mainViewModel: MainViewModel,
     currentSongList: SongList,
     currentPlaySong: Song,
-    currentPosition: Long,
+    currentPositionProvider: () -> Long,
     currentPlayState: PlaybackStateCompat,
     playUiState: PlayViewModel.PlayUiState,
     pagerState: PagerState,
     getLyrics: (Long) -> Unit,
     showBottomSheet: () -> Unit,
 ) {
-    var lyricsIndex by remember { mutableStateOf(0) }
-    val lyrics = playUiState.lyrics
-    val loading = playUiState.isLoading
-    val timing = playUiState.lyricsTiming
+
     val pages = listOf(
         context.getString(R.string.next_to_play_text),
         context.getString(R.string.lyrics_text)
     )
     val scope = rememberCoroutineScope()
     val state = rememberLazyListState()
-    val lyricsState = rememberLazyListState()
-
-    LaunchedEffect(currentPosition) {
-        val fixPosition = (currentPosition / 1000L) * 1000L
-        if (timing.contains(fixPosition)) {
-            scope.launch {
-                lyricsState.animateScrollToItem(timing.indexOf(fixPosition) + 1)
-            }
-            lyricsIndex = timing.indexOf(fixPosition)
-        }
-    }
-
-    LaunchedEffect(currentPlaySong.neteaseId) {
-        getLyrics(currentPlaySong.neteaseId)
-    }
 
     Column {
         Row(
@@ -341,7 +325,12 @@ private fun SheetContent(
                             fabPosition = FabPosition.End,
                             onClick = {
                                 scope.launch {
-                                    state.scrollToItem(currentPlaySongs.indexOf(currentPlaySong))
+//                                    state.scrollToItem(currentPlaySongs.indexOf(currentPlaySong))
+                                    state.animateScrollToItem(
+                                        currentPlaySongs.indexOf(
+                                            currentPlaySong
+                                        )
+                                    )
                                 }
                             },
                             FabContent = {
@@ -365,39 +354,78 @@ private fun SheetContent(
                     }
                 }
                 LYRICS_PAGE -> {
-                    ScaffoldWithFab(
-                        fabPosition = FabPosition.End,
-                        onClick = { getLyrics(currentPlaySong.neteaseId) },
-                        FabContent = { Icon(Icons.Filled.Refresh, contentDescription = null) }) {
-                        Box(
-                            modifier = Modifier
-                                .fillMaxSize()
-                                .background(
-                                    brush = Brush.verticalGradient(
-                                        listOf(
-                                            MaterialTheme.colorScheme.secondaryContainer,
-                                            MaterialTheme.colorScheme.background
-                                        )
-                                    )
-                                )
-                        ) {
-                            AnimatedContent(targetState = loading) { targetState ->
-                                when (targetState) {
-                                    true ->
-                                        Box(
-                                            modifier = Modifier.fillMaxSize(),
-                                            contentAlignment = Alignment.Center
-                                        ) {
-                                            CircularProgressIndicator()
-                                        }
-                                    false ->
-                                        LyricsContent(lyricsState, lyrics, lyricsIndex) {
-                                            mainViewModel.onSeekTo(timing[it])
-                                        }
-                                }
-                            }
-                        }
+                    LyricsPage(
+                        getLyrics = getLyrics,
+                        currentPlaySong = currentPlaySong,
+                        playUiState = playUiState,
+                        currentPositionProvider = currentPositionProvider
+                    ) {
+                        mainViewModel.onSeekTo(it)
                     }
+                }
+            }
+        }
+    }
+}
+
+@Composable
+@OptIn(ExperimentalAnimationApi::class, ExperimentalMaterial3Api::class)
+private fun LyricsPage(
+    currentPlaySong: Song,
+    playUiState: PlayViewModel.PlayUiState,
+    currentPositionProvider: () -> Long,
+    getLyrics: (Long) -> Unit,
+    seekTo: (Long) -> Unit
+) {
+    val lyricsState = rememberLazyListState()
+    val lyrics = playUiState.lyrics
+    val loading = playUiState.isLoading
+    val timing = playUiState.lyricsTiming
+    val scope = rememberCoroutineScope()
+    var lyricsIndex by remember { mutableStateOf(0) }
+
+    LaunchedEffect(currentPlaySong.neteaseId) {
+        getLyrics(currentPlaySong.neteaseId)
+    }
+
+    LaunchedEffect((currentPositionProvider() / 1000L) * 1000L) {
+        val fixPosition = (currentPositionProvider() / 1000L) * 1000L
+        if (timing.contains(fixPosition)) {
+            scope.launch {
+                lyricsState.animateScrollToItem(timing.indexOf(fixPosition) + 1)
+            }
+            lyricsIndex = timing.indexOf(fixPosition)
+        }
+    }
+    ScaffoldWithFab(
+        fabPosition = FabPosition.End,
+        onClick = { getLyrics(currentPlaySong.neteaseId) },
+        FabContent = { Icon(Icons.Filled.Refresh, contentDescription = null) }) {
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .background(
+                    brush = Brush.verticalGradient(
+                        listOf(
+                            MaterialTheme.colorScheme.secondaryContainer,
+                            MaterialTheme.colorScheme.background
+                        )
+                    )
+                )
+        ) {
+            AnimatedContent(targetState = loading) { targetState ->
+                when (targetState) {
+                    true ->
+                        Box(
+                            modifier = Modifier.fillMaxSize(),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            CircularProgressIndicator()
+                        }
+                    false ->
+                        LyricsContent(lyricsState, lyrics, lyricsIndex) {
+                            seekTo(timing[it])
+                        }
                 }
             }
         }
@@ -440,7 +468,7 @@ fun PlayPageContent(
     navController: NavController,
     currentPlaySong: Song,
     currentPlayState: PlaybackStateCompat,
-    currentPosition: Long,
+    currentPosition: () -> Long,
     onClickPrevious: () -> Unit,
     onClickPlay: () -> Unit,
     onClickPause: () -> Unit,
@@ -593,7 +621,7 @@ fun PlayPageContent(
                 }
                 WavySeekbar(
                     modifier = Modifier.padding(start = 5.dp),
-                    valueProvider = { currentPosition.toFloat() },
+                    valueProvider = { currentPosition().toFloat() },
                     onValueChange = {
                         onSeekTo(it.toLong())
                     },

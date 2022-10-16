@@ -34,7 +34,6 @@ class PlayViewModel @Inject constructor() : ViewModel() {
             it.copy(isLoading = true, currentPlayId = id)
         }
         viewModelScope.launch(Dispatchers.IO + CoroutineExceptionHandler { _, e ->
-            Log.d(TAG, "initData: " + e.message)
             _playUiState.update {
                 it.copy(lyrics = listOf("", ""), isLoading = false)
             }

@@ -1,7 +1,6 @@
 package io.github.mumu12641.lark.ui.theme.page.settings.diaplay
 
 import android.annotation.SuppressLint
-import android.os.Build
 import androidx.compose.animation.*
 import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
@@ -25,7 +24,6 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.input.nestedscroll.nestedScroll
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.Role
@@ -173,10 +171,6 @@ fun DisplayPageContent(modifier: Modifier) {
                         .horizontalScroll(rememberScrollState())
                         .padding(horizontal = 20.dp, vertical = 12.dp)
                 ) {
-                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
-                        ColorCard(color = dynamicDarkColorScheme(LocalContext.current).primary)
-                        ColorCard(color = dynamicDarkColorScheme(LocalContext.current).tertiary)
-                    }
                     ColorCard(Color(DEFAULT_SEED_COLOR))
                     ColorCard(Color(0, 68, 155))
                     ColorCard(Color(220, 123, 88))
@@ -333,7 +327,6 @@ private fun ColorCard(color: Color) {
 
     val corePalette = CorePalette.of(color.toArgb())
     val lightColor = corePalette.a2.tone(80)
-    val seedColor = corePalette.a2.tone(60)
     val darkColor = corePalette.a2.tone(60)
     val showColor =
         if (LocalDarkTheme.current == ON || (LocalDarkTheme.current == FOLLOW_SYSTEM && isSystemInDarkTheme())) darkColor else lightColor

@@ -31,6 +31,7 @@ import io.github.mumu12641.lark.BaseApplication.Companion.context
 import io.github.mumu12641.lark.BaseApplication.Companion.kv
 import io.github.mumu12641.lark.R
 import io.github.mumu12641.lark.entity.LoadState
+import io.github.mumu12641.lark.ui.theme.component.AsyncImage
 import io.github.mumu12641.lark.ui.theme.component.GlideAsyncImage
 import io.github.mumu12641.lark.ui.theme.component.LarkAlertDialog
 import io.github.mumu12641.lark.ui.theme.component.LarkTopBar
@@ -224,6 +225,13 @@ fun UserContent(
             viewModel.changeIconValue(it)
         }
     }
+    val imageModifier = Modifier
+        .fillMaxWidth()
+        .height(200.dp)
+        .clip(RoundedCornerShape(50.dp))
+        .clickable {
+            launcherBackground.launch("image/*")
+        }
 
     Box(
         modifier = modifier.fillMaxSize()
@@ -231,15 +239,19 @@ fun UserContent(
         Column(
             modifier = Modifier.padding(15.dp)
         ) {
-            GlideAsyncImage(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(200.dp)
-                    .clip(RoundedCornerShape(50.dp))
-                    .clickable {
-                        launcherBackground.launch("image/*")
-                    }, imageModel = user.backgroundImageUri, failure = R.drawable.userbackground
-            )
+            user.backgroundImageUri?.let {
+                GlideAsyncImage(
+                    modifier = imageModifier,
+                    imageModel = user.backgroundImageUri,
+                    failure = R.drawable.user_background
+                )
+            } ?: run {
+                AsyncImage(
+                    modifier = imageModifier,
+                    imageModel = R.drawable.user_background,
+                    failure = R.drawable.user_background
+                )
+            }
 
             Row(
                 modifier = Modifier.padding(top = 20.dp),
