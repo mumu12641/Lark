@@ -96,5 +96,7 @@
     <string name="load_to_end_text">加载到底了</string>
     <string name="successful_add_text">成功添加</string>
     <string name="got_to_update_text">前往更新</string>
+    <string name="single_cycle_text">单曲循环该歌曲</string>
+    <string name="cancel_single_loop_text">取消单曲循环</string>
 
 </resources>

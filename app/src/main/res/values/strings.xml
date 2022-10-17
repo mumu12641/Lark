@@ -99,4 +99,6 @@
     <string name="load_to_end_text">Loaded to the end</string>
     <string name="successful_add_text">Successfully add</string>
     <string name="got_to_update_text">Go to Update</string>
+    <string name="single_cycle_text">Single loop the song</string>
+    <string name="cancel_single_loop_text">Cancel single loop</string>
 </resources>

@@ -25,6 +25,7 @@ import com.google.android.exoplayer2.ExoPlayer
 import com.google.android.exoplayer2.MediaItem
 import com.google.android.exoplayer2.PlaybackException
 import com.google.android.exoplayer2.Player
+import com.google.android.exoplayer2.Player.REPEAT_MODE_ALL
 import io.github.mumu12641.lark.BaseApplication.Companion.applicationScope
 import io.github.mumu12641.lark.BaseApplication.Companion.kv
 import io.github.mumu12641.lark.MainActivity
@@ -89,6 +90,8 @@ class MediaPlaybackService : MediaBrowserServiceCompat() {
 
         mExoPlayer = ExoPlayer.Builder(this).build()
         mExoPlayer.addListener(mExoPlayerListener)
+        mExoPlayer.repeatMode = REPEAT_MODE_ALL
+//        mExoPlayer.shuffleModeEnabled = true
 
         manager = getSystemService(NOTIFICATION_SERVICE) as NotificationManager
         channelId = "Lark"
@@ -276,11 +279,17 @@ class MediaPlaybackService : MediaBrowserServiceCompat() {
                     }
                 }
             }
+
+            override fun onSetRepeatMode(repeatMode: Int) {
+                super.onSetRepeatMode(repeatMode)
+                mExoPlayer.repeatMode = repeatMode
+            }
         }
 
 
     @RequiresApi(Build.VERSION_CODES.M)
     private fun changePlayList(extras: Bundle?) {
+        mExoPlayer.shuffleModeEnabled = false
         scope.launch {
             val songId = extras?.getLong("songId")
             kv.apply {
@@ -290,21 +299,27 @@ class MediaPlaybackService : MediaBrowserServiceCompat() {
                 }
             }
             extras?.apply {
+                Log.d(TAG, "changePlayList: $songId")
                 isBuffering = true
+                currentSongList =
+                    DataBaseUtils.querySongListById(getLong("songListId"))
                 currentPlayList = DataBaseUtils.querySongListWithSongsBySongListId(
                     getLong("songListId")
                 ).songs.toMutableList()
-                currentPlaySong = if (songId != CHANGE_PLAT_LIST_SHUFFLE) {
-                    DataBaseUtils.querySongById(getLong("songId"))
-                } else {
-                    currentPlayList.shuffle()
-                    currentPlayList[0]
-                }
-                currentSongList =
-                    DataBaseUtils.querySongListById(getLong("songListId"))
-                withContext(Dispatchers.Main) {
-                    updateQueue(currentPlayList, currentPlaySong) {
-                        isBuffering = false
+
+                if (songId != CHANGE_PLAT_LIST_SHUFFLE) {
+                    currentPlaySong = DataBaseUtils.querySongById(getLong("songId"))
+                    withContext(Dispatchers.Main) {
+                        updateQueue(currentPlayList, currentPlaySong) {
+                            isBuffering = false
+                        }
+                    }
+                } else if (songId == CHANGE_PLAT_LIST_SHUFFLE) {
+                    withContext(Dispatchers.Main) {
+                        Log.d(TAG, "changePlayList: shuffle Play" + mExoPlayer.shuffleModeEnabled)
+                        updateQueue(currentPlayList, setBuffer = { isBuffering = false }) {
+                            mExoPlayer.shuffleModeEnabled = true
+                        }
                     }
                 }
             }
@@ -313,8 +328,11 @@ class MediaPlaybackService : MediaBrowserServiceCompat() {
 
     private fun setEmptyPlayList() {
         toast.cancel()
-        toast.setText("Something went wrong and the playlist has been emptied")
-        toast.show()
+        Toast.makeText(
+            context,
+            "Something went wrong and the playlist has been emptied",
+            Toast.LENGTH_SHORT
+        ).show()
         manager.cancel(NOTIFICATION_ID)
         isBuffering = true
         mExoPlayer.clearMediaItems()
@@ -418,7 +436,8 @@ class MediaPlaybackService : MediaBrowserServiceCompat() {
     private fun updateQueue(
         songList: List<Song>,
         song: Song? = null,
-        setBuffer: (() -> Unit)? = null
+        setBuffer: (() -> Unit)? = null,
+        setShuffleMode: (() -> Unit)? = null
     ) {
         mExoPlayer.clearMediaItems()
         songList.apply {
@@ -429,9 +448,14 @@ class MediaPlaybackService : MediaBrowserServiceCompat() {
                 MediaItem.fromUri(it.mediaFileUri)
             })
         }
+        setShuffleMode?.let { it() } ?: run {
+            mExoPlayer.shuffleModeEnabled = false
+        }
         mExoPlayer.prepare()
         song?.let {
             mExoPlayer.seekTo(currentPlayList.indexOf(it), 0L)
+        } ?: run {
+            mExoPlayer.seekTo(0, 0L)
         }
         setBuffer?.let {
             it()

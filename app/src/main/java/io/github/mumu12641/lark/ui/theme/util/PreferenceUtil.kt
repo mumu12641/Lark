@@ -29,11 +29,14 @@ object PreferenceUtil {
     private const val SIMPLIFIED_CHINESE = 1
     private const val ENGLISH = 2
 
-    private const val DARK_MODE = "dark mode value"
     const val SEED_COLOR = "seed color value"
+    const val REPEAT_MODE = "repeat mode"
+
+    private const val DARK_MODE = "dark mode value"
     private const val DYNAMIC_COLOR = "dynamic color preference"
     private const val FOLLOW_ALBUM_COLOR_SWITCH = "FOLLOW_ALBUM_COLOR_SWITCH"
     private const val LANGUAGE = "language"
+
 
     private val languageMap: Map<Int, String> = mapOf(
         Pair(SIMPLIFIED_CHINESE, "zh-CN"),

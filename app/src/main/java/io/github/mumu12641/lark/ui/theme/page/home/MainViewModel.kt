@@ -8,8 +8,10 @@ import android.util.Log
 import androidx.annotation.RequiresApi
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.google.android.exoplayer2.Player.REPEAT_MODE_ALL
 import dagger.hilt.android.lifecycle.HiltViewModel
 import io.github.mumu12641.lark.BaseApplication.Companion.context
+import io.github.mumu12641.lark.BaseApplication.Companion.kv
 import io.github.mumu12641.lark.R
 import io.github.mumu12641.lark.entity.*
 import io.github.mumu12641.lark.entity.network.Banner
@@ -19,6 +21,7 @@ import io.github.mumu12641.lark.room.DataBaseUtils
 import io.github.mumu12641.lark.service.MediaPlaybackService
 import io.github.mumu12641.lark.service.MediaServiceConnection
 import io.github.mumu12641.lark.service.MediaServiceConnection.Companion.EMPTY_PLAYBACK_STATE
+import io.github.mumu12641.lark.ui.theme.util.PreferenceUtil.REPEAT_MODE
 import io.github.mumu12641.lark.ui.theme.util.UpdateUtil.checkForUpdate
 import io.github.mumu12641.lark.ui.theme.util.UpdateUtil.getUpdateInfo
 import kotlinx.coroutines.CoroutineExceptionHandler
@@ -168,6 +171,10 @@ class MainViewModel @Inject constructor() : ViewModel() {
         }
     }
 
+    fun onSetRepeatMode(repeatMode:Int){
+        mediaServiceConnection.transportControls.setRepeatMode(repeatMode)
+        kv.encode(REPEAT_MODE,repeatMode)
+    }
 
     fun playMedia(songListId: Long, songId: Long) {
         val bundle = Bundle()
@@ -175,6 +182,7 @@ class MainViewModel @Inject constructor() : ViewModel() {
             putLong("songListId", songListId)
             putLong("songId", songId)
         }
+        Log.d(TAG, "playMedia: $songId")
         mediaServiceConnection.transportControls.sendCustomAction(CHANGE_PLAY_LIST, bundle)
     }
 

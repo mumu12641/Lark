@@ -37,6 +37,7 @@ import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.unit.DpOffset
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.zIndex
 import androidx.navigation.NavController
@@ -44,8 +45,11 @@ import com.google.accompanist.pager.ExperimentalPagerApi
 import com.google.accompanist.pager.HorizontalPager
 import com.google.accompanist.pager.PagerState
 import com.google.accompanist.pager.rememberPagerState
+import com.google.android.exoplayer2.Player.REPEAT_MODE_ALL
+import com.google.android.exoplayer2.Player.REPEAT_MODE_ONE
 import io.github.mumu12641.lark.*
 import io.github.mumu12641.lark.BaseApplication.Companion.context
+import io.github.mumu12641.lark.BaseApplication.Companion.kv
 import io.github.mumu12641.lark.R
 import io.github.mumu12641.lark.entity.*
 import io.github.mumu12641.lark.room.DataBaseUtils
@@ -56,6 +60,8 @@ import io.github.mumu12641.lark.ui.theme.page.details.ShowSongs
 import io.github.mumu12641.lark.ui.theme.page.function.AddToSongListDialog
 import io.github.mumu12641.lark.ui.theme.page.function.CreateSongListDialog
 import io.github.mumu12641.lark.ui.theme.page.home.MainViewModel
+import io.github.mumu12641.lark.ui.theme.util.PreferenceUtil.REPEAT_MODE
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -136,64 +142,17 @@ fun PlayPage(
                                     contentDescription = null
                                 )
                             }
-                            DropdownMenu(
-                                expanded = actionMenu,
-                                onDismissRequest = { actionMenu = false }) {
-                                DropdownMenuItem(
-                                    text = { Text(text = stringResource(id = R.string.add_to_favourite_text)) },
-                                    onClick = {
-                                        addSongToLike(scope, currentPlaySong)
-                                    }
-                                )
-                                DropdownMenuItem(
-                                    text = { Text(text = stringResource(id = R.string.add_to_song_list_text)) },
-                                    onClick = { showDialog = true }
-                                )
-                                Divider()
-                                DropdownMenuItem(
-                                    text = {
-                                        Text(
-                                            text = stringResource(
-                                                id = R.string.view_artist_text
-                                            )
-                                        )
-                                    }, onClick = {
-                                        scope.launch(Dispatchers.IO) {
-                                            actionMenu = false
-                                            val songListId = DataBaseUtils.querySongListId(
-                                                currentPlaySong.songSinger
-                                                    .split(",")[0],
-                                                ARTIST_SONGLIST_TYPE
-                                            )
-                                            withContext(Dispatchers.Main) {
-                                                navController.navigate(Route.ROUTE_ARTIST_DETAIL_PAGE + songListId)
-                                            }
-                                        }
-                                    })
-                                DropdownMenuItem(
-                                    text = {
-                                        Text(text = stringResource(id = R.string.view_lyrics_text))
-                                    }, onClick = {
-                                        scope.launch {
-                                            actionMenu = false
-                                            bottomSheetScaffoldState.bottomSheetState.expand()
-//                                            pagerState.scrollToPage(1)
-                                            pagerState.animateScrollToPage(1)
-                                        }
-                                    })
-                                DropdownMenuItem(
-                                    text = {
-                                        Text(text = stringResource(id = R.string.view_playlist_text))
-                                    }, onClick = {
-                                        scope.launch {
-                                            actionMenu = false
-                                            bottomSheetScaffoldState.bottomSheetState.expand()
-//                                            pagerState.scrollToPage(0)
-                                            pagerState.animateScrollToPage(0)
-                                        }
-                                    })
-
-                            }
+                            PlayPageMenu(
+                                actionMenu,
+                                scope,
+                                currentPlaySong,
+                                navController,
+                                bottomSheetScaffoldState,
+                                pagerState,
+                                { actionMenu = it },
+                                { showDialog = it },
+                                { mainViewModel.onSetRepeatMode(it) }
+                            )
                         }
                     )
                 },
@@ -254,9 +213,105 @@ fun PlayPage(
     }
 }
 
+@OptIn(ExperimentalMaterialApi::class, ExperimentalPagerApi::class)
+@Composable
+private fun PlayPageMenu(
+    actionMenu: Boolean,
+    scope: CoroutineScope,
+    currentPlaySong: Song,
+    navController: NavController,
+    bottomSheetScaffoldState: BottomSheetScaffoldState,
+    pagerState: PagerState,
+    setActionMenu: (Boolean) -> Unit,
+    setShowDialog: (Boolean) -> Unit,
+    setRepeatMode: (Int) -> Unit
+) {
+    MaterialTheme(
+        shapes = MaterialTheme.shapes.copy(
+            extraSmall = RoundedCornerShape(18.dp)
+        )
+    ) {
+        DropdownMenu(
+            offset = DpOffset(10.dp, 0.dp),
+            expanded = actionMenu,
+            onDismissRequest = { setActionMenu(false) }) {
+            DropdownMenuItem(
+                text = { Text(text = stringResource(id = R.string.add_to_favourite_text)) },
+                onClick = {
+                    addSongToLike(scope, currentPlaySong)
+                }
+            )
+            DropdownMenuItem(
+                text = { Text(text = stringResource(id = R.string.add_to_song_list_text)) },
+                onClick = { setShowDialog(true) }
+            )
+            Divider()
+            DropdownMenuItem(
+                text = {
+                    Text(
+                        text = stringResource(
+                            id = R.string.view_artist_text
+                        )
+                    )
+                }, onClick = {
+                    scope.launch(Dispatchers.IO) {
+                        setActionMenu(false)
+                        val songListId = DataBaseUtils.querySongListId(
+                            currentPlaySong.songSinger
+                                .split(",")[0],
+                            ARTIST_SONGLIST_TYPE
+                        )
+                        withContext(Dispatchers.Main) {
+                            navController.navigate(Route.ROUTE_ARTIST_DETAIL_PAGE + songListId)
+                        }
+                    }
+                })
+            DropdownMenuItem(
+                text = {
+                    Text(text = stringResource(id = R.string.view_lyrics_text))
+                }, onClick = {
+                    scope.launch {
+                        setActionMenu(false)
+                        bottomSheetScaffoldState.bottomSheetState.expand()
+                        pagerState.animateScrollToPage(1)
+                    }
+                })
+            DropdownMenuItem(
+                text = {
+                    Text(text = stringResource(id = R.string.view_playlist_text))
+                }, onClick = {
+                    scope.launch {
+                        setActionMenu(false)
+                        bottomSheetScaffoldState.bottomSheetState.expand()
+                        pagerState.animateScrollToPage(0)
+                    }
+                })
+            DropdownMenuItem(
+                text = {
+                    Text(
+                        text = (
+                                stringResource(
+                                    id = if (kv.decodeInt(
+                                            REPEAT_MODE,
+                                            REPEAT_MODE_ALL
+                                        ) == REPEAT_MODE_ALL
+                                    ) R.string.single_cycle_text else R.string.cancel_single_loop_text
+                                ))
+                    )
+                },
+                onClick = {
+                    if (kv.decodeInt(REPEAT_MODE, REPEAT_MODE_ALL) == REPEAT_MODE_ALL) {
+                        setRepeatMode(REPEAT_MODE_ONE)
+                    } else {
+                        setRepeatMode(REPEAT_MODE_ALL)
+                    }
+                })
+        }
+    }
+}
+
 @OptIn(
-    ExperimentalMaterial3Api::class, ExperimentalPagerApi::class,
-    ExperimentalAnimationApi::class
+    ExperimentalMaterial3Api::class, ExperimentalPagerApi::class
 )
 @Composable
 private fun SheetContent(
@@ -325,7 +380,6 @@ private fun SheetContent(
                             fabPosition = FabPosition.End,
                             onClick = {
                                 scope.launch {
-//                                    state.scrollToItem(currentPlaySongs.indexOf(currentPlaySong))
                                     state.animateScrollToItem(
                                         currentPlaySongs.indexOf(
                                             currentPlaySong

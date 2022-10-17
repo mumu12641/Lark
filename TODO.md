@@ -2,6 +2,14 @@
 
 
 
+DropMenu https://stackoverflow.com/questions/66781028/jetpack-compose-dropdownmenu-with-rounded-corners
+
+单曲循环随机播放
+
+vip 歌曲筛选
+
+
+
 app内更新	done
 
 
@@ -12,7 +20,7 @@ app内更新	done
 
 推荐歌曲
 
-下载
+下载	https://exoplayer.dev/downloading-media.html
 
 云盘
 

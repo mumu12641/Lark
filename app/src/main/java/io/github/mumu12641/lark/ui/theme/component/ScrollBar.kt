@@ -1,9 +1,5 @@
 package io.github.mumu12641.lark.ui.theme.component
 
-/*
-* Copy from https://stackoverflow.com/questions/66341823/jetpack-compose-scrollbars
-* */
-
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.gestures.ScrollableState
@@ -37,6 +33,7 @@ private fun ContentDrawScope.drawScrollbar(
             color = colorContainer,
             topLeft = Offset(this.size.width - width.toPx(), 0f),
             size = Size(width.toPx(), this.size.height),
+            cornerRadius = CornerRadius(25f, 25f)
         )
 
         drawRoundRect(
