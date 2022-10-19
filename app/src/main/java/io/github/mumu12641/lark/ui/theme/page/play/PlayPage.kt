@@ -45,11 +45,8 @@ import com.google.accompanist.pager.ExperimentalPagerApi
 import com.google.accompanist.pager.HorizontalPager
 import com.google.accompanist.pager.PagerState
 import com.google.accompanist.pager.rememberPagerState
-import com.google.android.exoplayer2.Player.REPEAT_MODE_ALL
-import com.google.android.exoplayer2.Player.REPEAT_MODE_ONE
 import io.github.mumu12641.lark.*
 import io.github.mumu12641.lark.BaseApplication.Companion.context
-import io.github.mumu12641.lark.BaseApplication.Companion.kv
 import io.github.mumu12641.lark.R
 import io.github.mumu12641.lark.entity.*
 import io.github.mumu12641.lark.room.DataBaseUtils
@@ -60,7 +57,6 @@ import io.github.mumu12641.lark.ui.theme.page.details.ShowSongs
 import io.github.mumu12641.lark.ui.theme.page.function.AddToSongListDialog
 import io.github.mumu12641.lark.ui.theme.page.function.CreateSongListDialog
 import io.github.mumu12641.lark.ui.theme.page.home.MainViewModel
-import io.github.mumu12641.lark.ui.theme.util.PreferenceUtil.REPEAT_MODE
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -87,9 +83,12 @@ fun PlayPage(
     val currentPlaySong by playState.currentPlaySong.collectAsState(initial = INIT_SONG)
     val currentPosition by mainViewModel.currentPosition.collectAsState(initial = 0)
     val currentPlayState by playState.currentPlayState.collectAsState(initial = EMPTY_PLAYBACK_STATE)
+    val repeatState by mainViewModel.repeatState.collectAsState()
     val playUiState by playViewModel.playUiState.collectAsState()
     var showDialog by remember { mutableStateOf(false) }
     var showAddDialog by remember { mutableStateOf(false) }
+    var showRemindDialog by remember { mutableStateOf(false) }
+    var notRemindCheck by remember { mutableStateOf(false) }
     var text by remember { mutableStateOf("") }
     val pagerState = rememberPagerState()
     val bottomSheetScaffoldState = rememberBottomSheetScaffoldState(
@@ -143,6 +142,7 @@ fun PlayPage(
                                 )
                             }
                             PlayPageMenu(
+                                repeatState,
                                 actionMenu,
                                 scope,
                                 currentPlaySong,
@@ -151,7 +151,10 @@ fun PlayPage(
                                 pagerState,
                                 { actionMenu = it },
                                 { showDialog = it },
-                                { mainViewModel.onSetRepeatMode(it) }
+                                {
+                                    showRemindDialog = it
+                                    mainViewModel.onSetRepeatMode(it)
+                                }
                             )
                         }
                     )
@@ -210,12 +213,40 @@ fun PlayPage(
                 }
             )
         }
+        if (!repeatState.notRemind && showRemindDialog) {
+            LarkAlertDialog(
+                onDismissRequest = { showRemindDialog = false },
+                title = stringResource(id = R.string.remind_text),
+                text = {
+                    Column {
+                        Text(stringResource(id = R.string.repeat_one_desc))
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically,
+                            modifier = Modifier.padding(vertical = 12.dp)
+                        ) {
+                            Checkbox(
+                                checked = notRemindCheck,
+                                onCheckedChange = { notRemindCheck = it })
+                            Text(
+                                text = stringResource(id = R.string.do_not_remind)
+                            )
+                        }
+                    }
+                },
+                confirmOnClick = {
+                    mainViewModel.setRemindDialog(notRemindCheck)
+                    showRemindDialog = false
+                },
+                confirmText = stringResource(id = R.string.confirm_text)
+            )
+        }
     }
 }
 
 @OptIn(ExperimentalMaterialApi::class, ExperimentalPagerApi::class)
 @Composable
 private fun PlayPageMenu(
+    repeatState: MainViewModel.RepeatState,
     actionMenu: Boolean,
     scope: CoroutineScope,
     currentPlaySong: Song,
@@ -224,8 +255,10 @@ private fun PlayPageMenu(
     pagerState: PagerState,
     setActionMenu: (Boolean) -> Unit,
     setShowDialog: (Boolean) -> Unit,
-    setRepeatMode: (Int) -> Unit
+    setRepeatMode: (Boolean) -> Unit
 ) {
+    val repeatOne = repeatState.repeatOne
+    val text = if (repeatOne) R.string.cancel_single_loop_text else R.string.single_cycle_text
     MaterialTheme(
         shapes = MaterialTheme.shapes.copy(
             extraSmall = RoundedCornerShape(18.dp)
@@ -288,23 +321,10 @@ private fun PlayPageMenu(
                 })
             DropdownMenuItem(
                 text = {
-                    Text(
-                        text = (
-                                stringResource(
-                                    id = if (kv.decodeInt(
-                                            REPEAT_MODE,
-                                            REPEAT_MODE_ALL
-                                        ) == REPEAT_MODE_ALL
-                                    ) R.string.single_cycle_text else R.string.cancel_single_loop_text
-                                ))
-                    )
+                    Text(text = stringResource(id = text))
                 },
                 onClick = {
-                    if (kv.decodeInt(REPEAT_MODE, REPEAT_MODE_ALL) == REPEAT_MODE_ALL) {
-                        setRepeatMode(REPEAT_MODE_ONE)
-                    } else {
-                        setRepeatMode(REPEAT_MODE_ALL)
-                    }
+                    setRepeatMode(!repeatOne)
                 })
         }
     }
@@ -532,6 +552,9 @@ fun PlayPageContent(
     val cornerAlbum: Int by animateIntAsState(if (currentPlayState.state == PlaybackStateCompat.STATE_PLAYING) 100 else 50)
     val cornerButton: Int by animateIntAsState(if (currentPlayState.state == PlaybackStateCompat.STATE_PLAYING) 80 else 28)
     val scope = rememberCoroutineScope()
+
+
+
     Box(modifier = modifier) {
         Column(
             modifier = Modifier

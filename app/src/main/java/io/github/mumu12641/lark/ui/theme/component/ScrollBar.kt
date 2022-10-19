@@ -31,14 +31,14 @@ private fun ContentDrawScope.drawScrollbar(
     if (needDrawScrollbar) {
         drawRoundRect(
             color = colorContainer,
-            topLeft = Offset(this.size.width - width.toPx(), 0f),
+            topLeft = Offset(this.size.width - width.toPx(), 2f),
             size = Size(width.toPx(), this.size.height),
             cornerRadius = CornerRadius(25f, 25f)
         )
 
         drawRoundRect(
             color = colorBar,
-            topLeft = Offset(this.size.width - width.toPx(), scrollbarOffsetY),
+            topLeft = Offset(this.size.width - width.toPx(), scrollbarOffsetY + 2f),
             size = Size(width.toPx(), scrollbarHeight),
             alpha = alpha,
             cornerRadius = CornerRadius(25f, 25f)
@@ -48,7 +48,7 @@ private fun ContentDrawScope.drawScrollbar(
 
 
 @Composable
-fun Modifier.Scrollbar(state: ScrollableState, width: Dp = 8.dp): Modifier {
+fun Modifier.Scrollbar(state: ScrollableState, width: Dp = 6.dp): Modifier {
     val targetAlpha = if (state.isScrollInProgress) 1f else 0f
     val duration = if (state.isScrollInProgress) 150 else 500
     val colorBar = MaterialTheme.colorScheme.primary

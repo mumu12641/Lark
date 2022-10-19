@@ -98,5 +98,8 @@
     <string name="got_to_update_text">前往更新</string>
     <string name="single_cycle_text">单曲循环该歌曲</string>
     <string name="cancel_single_loop_text">取消单曲循环</string>
+    <string name="remind_text">提醒</string>
+    <string name="repeat_one_desc">该模式下会重复播放当前歌曲，但是当你按下“下一首”或“上一首”时仍然会更换曲目</string>
+    <string name="do_not_remind">以后不再提醒</string>
 
 </resources>

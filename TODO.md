@@ -2,9 +2,13 @@
 
 
 
-DropMenu https://stackoverflow.com/questions/66781028/jetpack-compose-dropdownmenu-with-rounded-corners
+seekbar 优化
 
-单曲循环随机播放
+
+
+单曲循环	done
+
+随机播放	done
 
 vip 歌曲筛选
 
@@ -12,11 +16,7 @@ vip 歌曲筛选
 
 app内更新	done
 
-
-
 适应性色彩算法
-
-
 
 推荐歌曲
 
@@ -28,9 +28,7 @@ app内更新	done
 
 
 
-
-
-
+DropMenu https://stackoverflow.com/questions/66781028/jetpack-compose-dropdownmenu-with-rounded-corners done
 
 **歌词**	done
 

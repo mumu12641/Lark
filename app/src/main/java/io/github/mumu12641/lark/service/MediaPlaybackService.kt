@@ -474,11 +474,13 @@ class MediaPlaybackService : MediaBrowserServiceCompat() {
             }
             val searchSong = networkService.getSongUrl(song1.neteaseId)
             val detail = networkService.getSongDetail(song1.neteaseId.toString())
+            Log.d(TAG, "bufferSong: $detail")
+//            Log.d(TAG, "bufferSong: " + detail.privileges[0].fee)
             if (searchSong.data[0].url != null) {
                 song1 = song1.copy(
                     isBuffered = BUFFERED,
                     mediaFileUri = searchSong.data[0].url!!,
-                    duration = detail.songs[0].dt
+                    duration = if (detail.privileges[0].fee == 0 || detail.privileges[0].fee == 8) detail.songs[0].dt else VIP_DURATION
                 )
                 DataBaseUtils.updateSong(song1)
 

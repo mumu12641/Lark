@@ -8,7 +8,6 @@ import android.util.Log
 import androidx.annotation.RequiresApi
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.google.android.exoplayer2.Player.REPEAT_MODE_ALL
 import dagger.hilt.android.lifecycle.HiltViewModel
 import io.github.mumu12641.lark.BaseApplication.Companion.context
 import io.github.mumu12641.lark.BaseApplication.Companion.kv
@@ -21,7 +20,7 @@ import io.github.mumu12641.lark.room.DataBaseUtils
 import io.github.mumu12641.lark.service.MediaPlaybackService
 import io.github.mumu12641.lark.service.MediaServiceConnection
 import io.github.mumu12641.lark.service.MediaServiceConnection.Companion.EMPTY_PLAYBACK_STATE
-import io.github.mumu12641.lark.ui.theme.util.PreferenceUtil.REPEAT_MODE
+import io.github.mumu12641.lark.ui.theme.util.PreferenceUtil.REPEAT_ONE_NOT_REMIND
 import io.github.mumu12641.lark.ui.theme.util.UpdateUtil.checkForUpdate
 import io.github.mumu12641.lark.ui.theme.util.UpdateUtil.getUpdateInfo
 import kotlinx.coroutines.CoroutineExceptionHandler
@@ -59,6 +58,10 @@ class MainViewModel @Inject constructor() : ViewModel() {
     private val _playState = MutableStateFlow(PlayState(mediaServiceConnection))
     val playState = _playState
 
+    private val _repeatState = MutableStateFlow(RepeatState())
+    val repeatState = _repeatState
+
+
     init {
         viewModelScope.launch(Dispatchers.IO + CoroutineExceptionHandler { _, e ->
             e.message?.let { Log.d(TAG, it) }
@@ -66,9 +69,6 @@ class MainViewModel @Inject constructor() : ViewModel() {
             _bannerState.value = networkService.getBanner().banners.filter {
                 it.targetType == 1
             }
-//            _checkForUpdate.value.info = UpdateUtil.getUpdateInfo()
-//
-//            _checkForUpdate.value.showDialog = UpdateUtil.checkForUpdate(_checkForUpdate.value.info)
             Log.d(TAG, getUpdateInfo().toString())
             _checkForUpdate.update {
                 val info = getUpdateInfo()
@@ -88,11 +88,16 @@ class MainViewModel @Inject constructor() : ViewModel() {
         val loadState: io.github.mumu12641.lark.entity.LoadState = io.github.mumu12641.lark.entity.LoadState.None()
     )
 
+    data class RepeatState(
+        val repeatOne: Boolean = false,
+        val notRemind: Boolean = kv.decodeBool(REPEAT_ONE_NOT_REMIND, false)
+    )
+
     data class PlayState(
         val currentPlayState: Flow<PlaybackStateCompat>,
         val currentSongList: Flow<SongList>,
         val currentPlaySongs: Flow<List<Song>>,
-        val currentPlaySong: Flow<Song>
+        val currentPlaySong: Flow<Song>,
     ) {
         constructor(mediaServiceConnection: MediaServiceConnection) : this(
             mediaServiceConnection.playState,
@@ -132,8 +137,6 @@ class MainViewModel @Inject constructor() : ViewModel() {
     }
 
     fun setUpdateDialog() {
-//        _checkForUpdate.value = false
-//        _checkForUpdate.value.showDialog = false
         _checkForUpdate.update {
             it.copy(showDialog = false)
         }
@@ -171,12 +174,22 @@ class MainViewModel @Inject constructor() : ViewModel() {
         }
     }
 
-    fun onSetRepeatMode(repeatMode:Int){
-        mediaServiceConnection.transportControls.setRepeatMode(repeatMode)
-        kv.encode(REPEAT_MODE,repeatMode)
+    fun onSetRepeatMode(repeatOne: Boolean) {
+        _repeatState.update {
+            it.copy(repeatOne = repeatOne)
+        }
+        mediaServiceConnection.transportControls.setRepeatMode(if (repeatOne) PlaybackStateCompat.REPEAT_MODE_ONE else PlaybackStateCompat.REPEAT_MODE_ALL)
+    }
+
+    fun setRemindDialog(notRemind: Boolean) {
+        _repeatState.update {
+            it.copy(notRemind = notRemind)
+        }
+        kv.encode(REPEAT_ONE_NOT_REMIND, notRemind)
     }
 
     fun playMedia(songListId: Long, songId: Long) {
+        onSetRepeatMode(false)
         val bundle = Bundle()
         bundle.apply {
             putLong("songListId", songListId)
@@ -268,7 +281,6 @@ class MainViewModel @Inject constructor() : ViewModel() {
                 it.copy(num = tracks.songs.size)
             }
             for (i in tracks.songs) {
-                val lyrics = networkService.getLyric(i.id.toLong()).lrc.lyric
                 val song = Song(
                     0L,
                     i.name,
@@ -278,7 +290,6 @@ class MainViewModel @Inject constructor() : ViewModel() {
                     i.dt,
                     neteaseId = i.id.toLong(),
                     isBuffered = NOT_BUFFERED,
-                    lyrics = lyrics
                 )
                 if (!DataBaseUtils.isNeteaseIdExist(i.id.toLong())) {
                     DataBaseUtils.insertSong(song)

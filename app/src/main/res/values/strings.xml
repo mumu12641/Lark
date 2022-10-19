@@ -101,4 +101,7 @@
     <string name="got_to_update_text">Go to Update</string>
     <string name="single_cycle_text">Single loop the song</string>
     <string name="cancel_single_loop_text">Cancel single loop</string>
+    <string name="remind_text">Remind</string>
+    <string name="repeat_one_desc">This mode will repeat the current song, but will still change the track when you press \"Next\" or \"Previous\"</string>
+    <string name="do_not_remind">Don\'t remind me later</string>
 </resources>

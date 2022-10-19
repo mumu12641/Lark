@@ -3,7 +3,6 @@ package io.github.mumu12641.lark.ui.theme.page.play
 import android.annotation.SuppressLint
 import android.icu.text.SimpleDateFormat
 import android.os.Build
-import android.util.Log
 import androidx.annotation.RequiresApi
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -19,7 +18,6 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
-private const val TAG = "PlayViewModel"
 
 @HiltViewModel
 class PlayViewModel @Inject constructor() : ViewModel() {
@@ -51,9 +49,6 @@ class PlayViewModel @Inject constructor() : ViewModel() {
                         val value = match.value.replace("[", "").replace("]", "")
                         dateFormat.parse(value).time - fixTime
                     }.toList()
-                    Log.d(TAG, "initData: $timingList")
-                    Log.d(TAG, "initData: " + timingList.size)
-                    Log.d(TAG, "initData: " + list.size)
                 }
                 _playUiState.update { state ->
                     state.copy(lyrics = list, lyricsTiming = timingList)
@@ -65,11 +60,12 @@ class PlayViewModel @Inject constructor() : ViewModel() {
         }
     }
 
+
     data class PlayUiState(
         val isLoading: Boolean = true,
         val lyrics: List<String> = emptyList(),
         var lyricsTiming: List<Long> = emptyList(),
-        val currentPlayId: Long = 1L
+        val currentPlayId: Long = 1L,
     )
 
     companion object {

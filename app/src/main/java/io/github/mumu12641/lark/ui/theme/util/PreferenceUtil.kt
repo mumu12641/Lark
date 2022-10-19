@@ -31,6 +31,7 @@ object PreferenceUtil {
 
     const val SEED_COLOR = "seed color value"
     const val REPEAT_MODE = "repeat mode"
+    const val REPEAT_ONE_NOT_REMIND = "repeat one not remind"
 
     private const val DARK_MODE = "dark mode value"
     private const val DYNAMIC_COLOR = "dynamic color preference"

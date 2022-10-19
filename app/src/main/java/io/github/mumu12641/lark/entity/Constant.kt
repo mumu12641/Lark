@@ -84,3 +84,5 @@ val INIT_SONG_LIST = SongList(0L, "", "", 0, "", "", 2)
 // tabRow
 const val NEXT_TO_PLAY_PAGE = 0
 const val LYRICS_PAGE = 1
+
+const val VIP_DURATION = 30000
