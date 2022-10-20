@@ -575,12 +575,12 @@ fun PlayPageContent(
                         ) {
                             CircularProgressIndicator()
                         }
-
                     } else {
                         AsyncImage(
                             modifier = Modifier
                                 .clip(RoundedCornerShape(cornerAlbum.dp))
-                                .size(width = 350.dp, height = 300.dp),
+                                .size(width = 350.dp, height = 300.dp)
+                                .clickable {  },
                             imageModel = currentPlaySong.songAlbumFileUri,
                             failure = R.drawable.ic_baseline_music_note_24
                         )

@@ -11,6 +11,7 @@ import io.github.mumu12641.lark.BaseApplication.Companion.context
 import io.github.mumu12641.lark.R
 import io.github.mumu12641.lark.entity.Route
 import io.github.mumu12641.lark.ui.theme.component.animatedComposable
+import io.github.mumu12641.lark.ui.theme.component.animatedPlayPageComposable
 import io.github.mumu12641.lark.ui.theme.page.artist.ArtistDetailPage
 import io.github.mumu12641.lark.ui.theme.page.artist.ArtistPage
 import io.github.mumu12641.lark.ui.theme.page.artist.ArtistViewModel
@@ -117,7 +118,7 @@ fun MainScreen(
                 playMedia
             )
         }
-        animatedComposable(
+        animatedPlayPageComposable(
             Route.ROUTE_PLAY_PAGE
         ) {
             PlayPage(navController = navController, mainViewModel = mainViewModel, playViewModel)

@@ -1,5 +1,6 @@
 package io.github.mumu12641.lark.entity
 
+import android.support.v4.media.MediaMetadataCompat
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 import androidx.room.TypeConverter
@@ -47,4 +48,21 @@ class Converters {
     fun dateToTimestamp(date: Date?): Long? {
         return date?.time
     }
+}
+
+fun Song.toMetaData(): MediaMetadataCompat{
+    val builder = MediaMetadataCompat.Builder()
+    this.lyrics?.let {
+        builder.putString(MediaMetadataCompat.METADATA_KEY_COMPILATION, it)
+    }
+    return builder
+        .putString(MediaMetadataCompat.METADATA_KEY_MEDIA_ID, songId.toString())
+        .putString(MediaMetadataCompat.METADATA_KEY_TITLE, songTitle)
+        .putString(MediaMetadataCompat.METADATA_KEY_ARTIST, songSinger)
+        .putLong(MediaMetadataCompat.METADATA_KEY_DURATION, duration.toLong())
+        .putString(MediaMetadataCompat.METADATA_KEY_ALBUM_ART_URI, songAlbumFileUri)
+        .putString(MediaMetadataCompat.METADATA_KEY_MEDIA_URI, mediaFileUri)
+        .putString(MediaMetadataCompat.METADATA_KEY_COMPILATION, neteaseId.toString())
+        .build()
+
 }
