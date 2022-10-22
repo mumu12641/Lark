@@ -120,7 +120,7 @@ fun DisplayPageContent(modifier: Modifier) {
         item {
             Box(
                 modifier = Modifier
-                    .padding(10.dp)
+                    .padding(15.dp)
                     .fillMaxWidth(), contentAlignment = Alignment.Center
             ) {
                 ElevatedCard(
@@ -138,7 +138,7 @@ fun DisplayPageContent(modifier: Modifier) {
                         horizontalAlignment = Alignment.CenterHorizontally
                     ) {
                         Image(
-                            painter = painterResource(id = R.drawable.sample),
+                            painter = painterResource(id = R.drawable.unnamed),
                             contentDescription = "failure"
                         )
                     }
@@ -170,7 +170,7 @@ fun DisplayPageContent(modifier: Modifier) {
                 Row(
                     modifier = Modifier
                         .horizontalScroll(rememberScrollState())
-                        .padding(horizontal = 10.dp, vertical = 12.dp)
+                        .padding(horizontal = 15.dp, vertical = 12.dp)
                 ) {
                     ColorCard(Color(DEFAULT_SEED_COLOR))
                     ColorCard(Color(0, 68, 155))
