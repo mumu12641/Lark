@@ -1,12 +1,13 @@
 package io.github.mumu12641.lark.network
 
+import io.github.mumu12641.lark.BaseApplication.Companion.kv
 import io.github.mumu12641.lark.entity.network.*
+import io.github.mumu12641.lark.ui.theme.util.PreferenceUtil.MUSIC_QUALITY
 import retrofit2.http.GET
 import retrofit2.http.Query
 
 interface NetworkService {
 
-    //搜索歌手结果
     @GET("cloudsearch?type=100")
     suspend fun getSearchArtistResponse(@Query("keywords") keywords: String): SearchArtistResponse
 
@@ -52,4 +53,15 @@ interface NetworkService {
     @GET("/check/music")
     suspend fun getCheckMusic(@Query("id") id: Long): MusicCheck
 
+    @GET("/song/url/v1")
+    suspend fun getLevelMusic(
+        @Query("id") id: Long,
+        @Query("level") level: String = kv.decodeString(
+            MUSIC_QUALITY,
+            "standard"
+        )!!
+    ): SongUrl
+
+    @GET("/register/anonimous")
+    suspend fun anonymousLogin(): Any
 }

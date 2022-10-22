@@ -21,7 +21,6 @@ object PreferenceUtil {
     const val EMPTY_SEED_COLOR = 0
 
     const val FOLLOW_SYSTEM = 0
-
     const val ON = 1
     const val OFF = 2
 
@@ -29,9 +28,18 @@ object PreferenceUtil {
     private const val SIMPLIFIED_CHINESE = 1
     private const val ENGLISH = 2
 
+    // music quality
+    const val STANDARD = "Standard"
+    const val HIGHER = "Higher"
+    const val EXHIGH = "Exhigh"
+    const val LOSSLESS = "Lossless"
+    const val HIRES = "Hi-Res"
+
+    // mmkv keys
     const val SEED_COLOR = "seed color value"
     const val REPEAT_MODE = "repeat mode"
     const val REPEAT_ONE_NOT_REMIND = "repeat one not remind"
+    const val MUSIC_QUALITY = "music quality"
 
     private const val DARK_MODE = "dark mode value"
     private const val DYNAMIC_COLOR = "dynamic color preference"
@@ -82,7 +90,8 @@ object PreferenceUtil {
             kv.decodeInt(DARK_MODE, FOLLOW_SYSTEM),
             kv.decodeInt(SEED_COLOR, DEFAULT_SEED_COLOR),
             DynamicColorPreference(dynamicColorSwitch = kv.decodeInt(DYNAMIC_COLOR, OFF)),
-            followAlbumSwitch = kv.decodeInt(FOLLOW_ALBUM_COLOR_SWITCH, OFF)
+            followAlbumSwitch = kv.decodeInt(FOLLOW_ALBUM_COLOR_SWITCH, OFF),
+            musicQuality = kv.decodeString(MUSIC_QUALITY, STANDARD)!!
         )
     )
     val displayPreferenceFlow = _disaplayPreferenceFlow
@@ -92,7 +101,8 @@ object PreferenceUtil {
         val seedColor: Int = DEFAULT_SEED_COLOR,
         val dynamicPreference: DynamicColorPreference = DynamicColorPreference(),
         val currentAlbumColor: Int = DEFAULT_SEED_COLOR,
-        val followAlbumSwitch: Int = ON
+        val followAlbumSwitch: Int = ON,
+        val musicQuality: String = STANDARD,
     )
 
     data class DynamicColorPreference(
@@ -147,6 +157,15 @@ object PreferenceUtil {
             }
             kv.encode(FOLLOW_ALBUM_COLOR_SWITCH, mode)
         }
+    }
+
+    fun switchMusicQuality(quality: String) {
+        applicationScope.launch(Dispatchers.IO) {
+            _disaplayPreferenceFlow.update {
+                it.copy(musicQuality = quality)
+            }
+        }
+        kv.encode(MUSIC_QUALITY, quality)
     }
 
     private const val TAG = "PreferenceUtil"

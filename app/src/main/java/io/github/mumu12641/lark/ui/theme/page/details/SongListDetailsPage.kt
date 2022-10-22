@@ -5,10 +5,10 @@ import android.net.Uri
 import android.util.Log
 import androidx.activity.compose.BackHandler
 import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.ExperimentalAnimationApi
-import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
@@ -231,7 +231,7 @@ fun SongListDetailsContent(
 ) {
     val launcherBackground = rememberLauncherForActivityResult(
         contract =
-        ActivityResultContracts.GetContent()
+        ActivityResultContracts.PickVisualMedia()
     ) { uri: Uri? ->
         uri?.let {
             changeSongListImage(it.toString())
@@ -262,7 +262,11 @@ fun SongListDetailsContent(
                         .clickable(
                             onClick = {
                                 if (songList?.type == CREATE_SONGLIST_TYPE) {
-                                    launcherBackground.launch("image/*")
+                                    launcherBackground.launch(
+                                        PickVisualMediaRequest(
+                                            ActivityResultContracts.PickVisualMedia.ImageOnly
+                                        )
+                                    )
                                 } else {
                                     Log.d("TAG", "SongListDetailsContent")
                                 }

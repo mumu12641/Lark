@@ -23,6 +23,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.toArgb
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -119,7 +120,7 @@ fun DisplayPageContent(modifier: Modifier) {
         item {
             Box(
                 modifier = Modifier
-                    .padding(20.dp)
+                    .padding(10.dp)
                     .fillMaxWidth(), contentAlignment = Alignment.Center
             ) {
                 ElevatedCard(
@@ -169,7 +170,7 @@ fun DisplayPageContent(modifier: Modifier) {
                 Row(
                     modifier = Modifier
                         .horizontalScroll(rememberScrollState())
-                        .padding(horizontal = 20.dp, vertical = 12.dp)
+                        .padding(horizontal = 10.dp, vertical = 12.dp)
                 ) {
                     ColorCard(Color(DEFAULT_SEED_COLOR))
                     ColorCard(Color(0, 68, 155))
@@ -258,8 +259,11 @@ fun DisplayPageContent(modifier: Modifier) {
 }
 
 @Composable
-private fun RadioOptionsDialog(
-    title: String, radioOptions: List<String>,
+fun RadioOptionsDialog(
+    title: String,
+    description: String? = null,
+    icon: ImageVector? = null,
+    radioOptions: List<String>,
     selectedOption: String,
     onOptionSelected: (String) -> Unit,
     cancelDialog: () -> Unit,
@@ -268,8 +272,12 @@ private fun RadioOptionsDialog(
     LarkAlertDialog(
         onDismissRequest = { cancelDialog() },
         title = title,
+        icon = icon,
         text = {
-            RadioOptions(radioOptions, onOptionSelected, selectedOption)
+            Column {
+                description?.let { Text(text = it) }
+                RadioOptions(radioOptions, onOptionSelected, selectedOption)
+            }
         },
         confirmOnClick = { confirmOnClick() },
         confirmText = stringResource(id = R.string.confirm_text),

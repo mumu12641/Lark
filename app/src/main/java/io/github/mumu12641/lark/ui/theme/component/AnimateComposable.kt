@@ -41,38 +41,3 @@ fun NavGraphBuilder.animatedComposable(
     },
     content = content
 )
-
-@OptIn(ExperimentalAnimationApi::class)
-fun NavGraphBuilder.animatedPlayPageComposable(
-    route: String,
-    arguments: List<NamedNavArgument> = emptyList(),
-    deepLinks: List<NavDeepLink> = emptyList(),
-    content: @Composable AnimatedVisibilityScope.(NavBackStackEntry) -> Unit,
-) = composable(
-    route = route,
-    arguments = arguments,
-    deepLinks = deepLinks,
-    enterTransition = {
-//        fadeIn(animationSpec = tween(220, delayMillis = 90)) +
-//                scaleIn(
-//                    initialScale = 0.92f,
-//                    animationSpec = tween(220, delayMillis = 90)
-//                )
-        slideInVertically(animationSpec = tween(220, delayMillis = 90),initialOffsetY = {it/2})
-    },
-    exitTransition = {
-        slideOutVertically(targetOffsetY = { it / 2 })
-    },
-    popEnterTransition = {
-//        fadeIn(animationSpec = tween(220, delayMillis = 90)) +
-//                scaleIn(
-//                    initialScale = 0.92f,
-//                    animationSpec = tween(220, delayMillis = 90)
-//                )
-        slideInVertically(animationSpec = tween(220, delayMillis = 90),initialOffsetY = {it/2})
-    },
-    popExitTransition = {
-        slideOutVertically(targetOffsetY = { it / 2 })
-                        },
-    content = content
-)

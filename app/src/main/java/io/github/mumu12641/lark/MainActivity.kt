@@ -71,7 +71,7 @@ class MainActivity : AppCompatActivity() {
                     seedColor = LocalSeedColor.current,
                     darkTheme = LocalDarkTheme.current,
                     dynamicColorEnable = DynamicColorSwitch.current.enable,
-                    dynamicColor = DynamicColorSwitch.current.dynamicColorSwitch
+                    dynamicColor = DynamicColorSwitch.current.dynamicColorSwitch,
                 ) {
                     Surface(color = MaterialTheme.colorScheme.background) {
                         MainScreen(

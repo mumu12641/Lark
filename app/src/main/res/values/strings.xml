@@ -104,4 +104,11 @@
     <string name="remind_text">Remind</string>
     <string name="repeat_one_desc">This mode will repeat the current song, but will still change the track when you press \"Next\" or \"Previous\"</string>
     <string name="do_not_remind">Don\'t remind me later</string>
+    <string name="universal_text">Universal</string>
+    <string name="universal_desc">Play mode,sound quality</string>
+    <string name="music_level">Sound quality</string>
+    <string name="music_level_desc">Select the default sound quality of the audio source, which will take effect when the network audio source is loaded next time (if there is no audio source with the corresponding sound quality, the appropriate sound quality will be automatically loaded)</string>
+    <string name="general_text">General</string>
+    <string name="list_play_mode">List infinite loop</string>
+    <string name="list_play_mode_desc">Replay the entire list after the list has finished playing</string>
 </resources>

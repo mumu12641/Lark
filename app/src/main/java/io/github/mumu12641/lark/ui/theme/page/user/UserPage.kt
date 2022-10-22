@@ -4,9 +4,9 @@ import android.annotation.SuppressLint
 import android.net.Uri
 import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
@@ -21,9 +21,9 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.skydoves.landscapist.glide.GlideImage
@@ -149,27 +149,20 @@ private fun LoginDialog(
         title = stringResource(id = R.string.login_text),
         text = {
             Column {
-                TextField(
-                    modifier = Modifier.background(Color.Transparent),
+                OutlinedTextField(
                     value = phone,
                     onValueChange = { phone = it },
                     placeholder = {
                         Text(text = stringResource(id = R.string.enter_phone_text))
                     },
-                    colors = TextFieldDefaults.textFieldColors(
-                        containerColor = Color.Transparent
-                    )
                 )
-                TextField(
-                    modifier = Modifier.background(Color.Transparent),
+                OutlinedTextField(
                     value = password,
                     onValueChange = { password = it },
                     placeholder = {
                         Text(text = stringResource(id = R.string.enter_password_text))
                     },
-                    colors = TextFieldDefaults.textFieldColors(
-                        containerColor = Color.Transparent
-                    )
+                    visualTransformation = PasswordVisualTransformation()
                 )
             }
 
@@ -206,7 +199,7 @@ fun UserContent(
     val launcherBackground =
         rememberLauncherForActivityResult(
             contract =
-            ActivityResultContracts.GetContent()
+            ActivityResultContracts.PickVisualMedia()
         ) { uri: Uri? ->
             uri?.let {
                 viewModel.changeBackgroundValue(uri.toString())
@@ -217,7 +210,7 @@ fun UserContent(
 
     val launcherIcon = rememberLauncherForActivityResult(
         contract =
-        ActivityResultContracts.GetContent()
+        ActivityResultContracts.PickVisualMedia()
     ) { uri: Uri? ->
         uri?.let {
             viewModel.changeIconValue(uri.toString())
@@ -230,7 +223,7 @@ fun UserContent(
         .height(200.dp)
         .clip(RoundedCornerShape(50.dp))
         .clickable {
-            launcherBackground.launch("image/*")
+            launcherBackground.launch(PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly))
         }
 
     Box(
@@ -263,7 +256,7 @@ fun UserContent(
                         .size(50.dp)
                         .clip(CircleShape)
                         .clickable {
-                            launcherIcon.launch("image/*")
+                            launcherIcon.launch(PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly))
                         },
                     failure = {
                         Icon(
@@ -272,7 +265,11 @@ fun UserContent(
                             modifier = Modifier
                                 .size(50.dp)
                                 .clickable {
-                                    launcherIcon.launch("image/*")
+                                    launcherIcon.launch(
+                                        PickVisualMediaRequest(
+                                            ActivityResultContracts.PickVisualMedia.ImageOnly
+                                        )
+                                    )
                                 }
                         )
                     }

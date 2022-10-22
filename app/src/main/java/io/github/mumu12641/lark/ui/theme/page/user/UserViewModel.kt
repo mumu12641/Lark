@@ -40,7 +40,7 @@ class UserViewModel @Inject constructor() : ViewModel() {
         _userState.value = _userState.value.copy(name = value)
     }
 
-    fun changeBackgroundValue(uri: String) {
+    fun changeBackgroundValue(uri: String?) {
         _userState.value = _userState.value.copy(backgroundImageUri = uri)
     }
 
@@ -56,22 +56,15 @@ class UserViewModel @Inject constructor() : ViewModel() {
         }) {
             _loadState.value = LoadState.Loading()
             val async = async {
-                Log.d(TAG, "logout: start")
                 val s = networkService.logout()
-                Log.d(TAG, "logout: $s")
-                Log.d(TAG, "logout: end")
             }
             async.await()
-
-            Log.d(TAG, "another start")
             changeNameValue(context.getString(R.string.user))
             changeIconValue("")
-            changeBackgroundValue("")
+            changeBackgroundValue(null)
             saveInformation()
             kv.removeValueForKey("cookie")
             kv.removeValueForKey("neteaseId")
-            Log.d(TAG, "logout: " + kv.decodeStringSet("cookie"))
-            Log.d(TAG, "logout: " + kv.decodeLong("neteaseId"))
             _loadState.value = LoadState.Success()
         }
     }

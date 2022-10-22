@@ -101,5 +101,12 @@
     <string name="remind_text">提醒</string>
     <string name="repeat_one_desc">该模式下会重复播放当前歌曲，但是当你按下“下一首”或“上一首”时仍然会更换曲目</string>
     <string name="do_not_remind">以后不再提醒</string>
+    <string name="universal_text">通用</string>
+    <string name="universal_desc">播放模式、音质</string>
+    <string name="music_level">音质</string>
+    <string name="music_level_desc">选择音源的默认音质，下一次加载网络音源时生效（如无相应音质的音源，将自动加载合适的音质）</string>
+    <string name="general_text">常规</string>
+    <string name="list_play_mode">列表无限循环</string>
+    <string name="list_play_mode_desc">列表播放结束后重新播放整个列表</string>
 
 </resources>

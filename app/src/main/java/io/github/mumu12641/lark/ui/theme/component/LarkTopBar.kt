@@ -21,8 +21,7 @@ fun LarkTopBar(
     scrollBehavior: TopAppBarScrollBehavior? = null,
     navIconClick: () -> Unit
 ) {
-    MediumTopAppBar(
-
+    LargeTopAppBar(
         title = {
             Text(
                 text = title

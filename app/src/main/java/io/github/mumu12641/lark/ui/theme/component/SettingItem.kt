@@ -1,7 +1,10 @@
 package io.github.mumu12641.lark.ui.theme.component
 
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.outlined.Check
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -112,7 +115,16 @@ fun SettingSwitchItem(
                     switchChange(it)
                 },
                 modifier = Modifier.padding(start = 20.dp, end = 6.dp),
-                enabled = enable
+                enabled = enable,
+                thumbContent = {
+                    AnimatedVisibility(visible = isChecked) {
+                        Icon(
+                            Icons.Outlined.Check,
+                            modifier = Modifier.size(SwitchDefaults.IconSize),
+                            contentDescription = null
+                        )
+                    }
+                }
             )
         }
     }

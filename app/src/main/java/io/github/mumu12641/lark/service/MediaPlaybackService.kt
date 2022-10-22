@@ -25,6 +25,7 @@ import com.google.android.exoplayer2.ExoPlayer
 import com.google.android.exoplayer2.MediaItem
 import com.google.android.exoplayer2.PlaybackException
 import com.google.android.exoplayer2.Player
+import com.google.android.exoplayer2.Player.REPEAT_MODE_ALL
 import io.github.mumu12641.lark.BaseApplication.Companion.applicationScope
 import io.github.mumu12641.lark.BaseApplication.Companion.kv
 import io.github.mumu12641.lark.MainActivity
@@ -33,6 +34,7 @@ import io.github.mumu12641.lark.R
 import io.github.mumu12641.lark.entity.*
 import io.github.mumu12641.lark.network.NetworkCreator.networkService
 import io.github.mumu12641.lark.room.DataBaseUtils
+import io.github.mumu12641.lark.ui.theme.util.PreferenceUtil
 import kotlinx.coroutines.*
 
 
@@ -89,6 +91,7 @@ class MediaPlaybackService : MediaBrowserServiceCompat() {
 
         mExoPlayer = ExoPlayer.Builder(this).build()
         mExoPlayer.addListener(mExoPlayerListener)
+        mExoPlayer.repeatMode = REPEAT_MODE_ALL
 
         manager = getSystemService(NOTIFICATION_SERVICE) as NotificationManager
         channelId = "Lark"
@@ -256,6 +259,11 @@ class MediaPlaybackService : MediaBrowserServiceCompat() {
                     mExoPlayer.seekToPreviousMediaItem()
                     mExoPlayer.play()
                 }
+            }
+
+            override fun onSetRepeatMode(repeatMode: Int) {
+                super.onSetRepeatMode(repeatMode)
+                mExoPlayer.repeatMode = repeatMode
             }
 
             @RequiresApi(Build.VERSION_CODES.M)
@@ -448,13 +456,17 @@ class MediaPlaybackService : MediaBrowserServiceCompat() {
                 isBuffering = true
                 updateMetadata(createMetadataFromSong(BUFFER_SONG))
             }
-            val searchSong = networkService.getSongUrl(song1.neteaseId)
             val detail = networkService.getSongDetail(song1.neteaseId.toString())
-            if (searchSong.data[0].url != null) {
+            val songQuality = networkService.getLevelMusic(
+                song1.neteaseId, kv.decodeString(
+                    PreferenceUtil.MUSIC_QUALITY, "standard"
+                )!!
+            )
+            if (songQuality.data[0].url != null) {
                 song1 = song1.copy(
                     isBuffered = BUFFERED,
-                    mediaFileUri = searchSong.data[0].url!!,
-                    duration = detail.songs[0].dt
+                    mediaFileUri = songQuality.data[0].url!!,
+                    duration = if (detail.privileges[0].fee == 0 || detail.privileges[0].fee == 8) detail.songs[0].dt else VIP_DURATION
                 )
                 DataBaseUtils.updateSong(song1)
 
@@ -466,13 +478,30 @@ class MediaPlaybackService : MediaBrowserServiceCompat() {
                     }
                 }
             } else {
-                withContext(Dispatchers.Main) {
-                    Log.d(TAG, "bufferSong: null $index + " + currentPlayList.size)
-                    toast.setText("Error")
-                    toast.show()
-                    currentPlaySong = currentPlayList[index + 1]
-                    updateQueue(currentPlayList, currentPlaySong) {
-                        isBuffering = false
+                val searchSong = networkService.getSongUrl(song1.neteaseId)
+                if (searchSong.data[0].url != null) {
+                    song1 = song1.copy(
+                        isBuffered = BUFFERED,
+                        mediaFileUri = searchSong.data[0].url!!,
+                        duration = if (detail.privileges[0].fee == 0 || detail.privileges[0].fee == 8) detail.songs[0].dt else VIP_DURATION
+                    )
+                    DataBaseUtils.updateSong(song1)
+                    withContext(Dispatchers.Main) {
+                        currentPlayList[index] = song1
+                        currentPlaySong = song1
+                        updateQueue(currentPlayList, song1) {
+                            isBuffering = false
+                        }
+                    }
+                } else {
+                    withContext(Dispatchers.Main) {
+                        Log.d(TAG, "bufferSong: null $index + " + currentPlayList.size)
+                        toast.setText("Error")
+                        toast.show()
+                        currentPlaySong = currentPlayList[index + 1]
+                        updateQueue(currentPlayList, currentPlaySong) {
+                            isBuffering = false
+                        }
                     }
                 }
             }

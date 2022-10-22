@@ -19,6 +19,7 @@ object Route {
     val ROUTE_ABOUT = context.getString(R.string.about_text)
     val ROUTE_SEARCH = context.getString(R.string.search_text)
     val ROUTE_SUGGESTION = context.getString(R.string.suggestion_text)
+    val ROUTE_UNIVERSAL = context.getString(R.string.universal_text)
 
     val FUNCTION_ROUTE: Map<String, Int> = mapOf(
         Pair(ROUTE_LOCAL, R.string.local_text),

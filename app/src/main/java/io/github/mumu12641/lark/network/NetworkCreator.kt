@@ -11,7 +11,7 @@ import retrofit2.converter.gson.GsonConverterFactory
 
 object NetworkCreator {
 
-    //TODO https://github.com/square/retrofit/issues/3005
+    // TODO https://github.com/square/retrofit/issues/3005
     // https://github.com/Mr-lin930819/ComposeMany
     //"https://netease-cloud-music-api-self-ten.vercel.app/"
 

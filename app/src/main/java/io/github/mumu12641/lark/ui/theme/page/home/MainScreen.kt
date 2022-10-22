@@ -11,7 +11,6 @@ import io.github.mumu12641.lark.BaseApplication.Companion.context
 import io.github.mumu12641.lark.R
 import io.github.mumu12641.lark.entity.Route
 import io.github.mumu12641.lark.ui.theme.component.animatedComposable
-import io.github.mumu12641.lark.ui.theme.component.animatedPlayPageComposable
 import io.github.mumu12641.lark.ui.theme.page.artist.ArtistDetailPage
 import io.github.mumu12641.lark.ui.theme.page.artist.ArtistPage
 import io.github.mumu12641.lark.ui.theme.page.artist.ArtistViewModel
@@ -24,6 +23,7 @@ import io.github.mumu12641.lark.ui.theme.page.play.PlayViewModel
 import io.github.mumu12641.lark.ui.theme.page.search.SearchPage
 import io.github.mumu12641.lark.ui.theme.page.search.SearchViewModel
 import io.github.mumu12641.lark.ui.theme.page.settings.SettingPage
+import io.github.mumu12641.lark.ui.theme.page.settings.UniversalSettingPage
 import io.github.mumu12641.lark.ui.theme.page.settings.about.AboutPage
 import io.github.mumu12641.lark.ui.theme.page.settings.diaplay.DisplayPage
 import io.github.mumu12641.lark.ui.theme.page.user.UserPage
@@ -118,7 +118,7 @@ fun MainScreen(
                 playMedia
             )
         }
-        animatedPlayPageComposable(
+        animatedComposable(
             Route.ROUTE_PLAY_PAGE
         ) {
             PlayPage(navController = navController, mainViewModel = mainViewModel, playViewModel)
@@ -158,6 +158,9 @@ fun MainScreen(
         }
         animatedComposable(Route.ROUTE_ABOUT) {
             AboutPage(navController = navController)
+        }
+        animatedComposable(Route.ROUTE_UNIVERSAL) {
+            UniversalSettingPage(navController = navController, mainViewModel)
         }
         animatedComposable(Route.ROUTE_SEARCH) {
             SearchPage(

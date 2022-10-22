@@ -20,6 +20,7 @@ import io.github.mumu12641.lark.room.DataBaseUtils
 import io.github.mumu12641.lark.service.MediaPlaybackService
 import io.github.mumu12641.lark.service.MediaServiceConnection
 import io.github.mumu12641.lark.service.MediaServiceConnection.Companion.EMPTY_PLAYBACK_STATE
+import io.github.mumu12641.lark.ui.theme.util.PreferenceUtil.REPEAT_MODE
 import io.github.mumu12641.lark.ui.theme.util.PreferenceUtil.REPEAT_ONE_NOT_REMIND
 import io.github.mumu12641.lark.ui.theme.util.UpdateUtil.checkForUpdate
 import io.github.mumu12641.lark.ui.theme.util.UpdateUtil.getUpdateInfo
@@ -60,6 +61,14 @@ class MainViewModel @Inject constructor() : ViewModel() {
 
     private val _repeatState = MutableStateFlow(RepeatState())
     val repeatState = _repeatState
+
+    private val _listRepeatState = MutableStateFlow(
+        value = kv.decodeInt(
+            REPEAT_MODE,
+            PlaybackStateCompat.REPEAT_MODE_ALL
+        ) == PlaybackStateCompat.REPEAT_MODE_ALL
+    )
+    val listRepeatState = _listRepeatState
 
 
     init {
@@ -178,7 +187,22 @@ class MainViewModel @Inject constructor() : ViewModel() {
         _repeatState.update {
             it.copy(repeatOne = repeatOne)
         }
-        mediaServiceConnection.transportControls.setRepeatMode(if (repeatOne) PlaybackStateCompat.REPEAT_MODE_ONE else PlaybackStateCompat.REPEAT_MODE_ALL)
+        mediaServiceConnection.transportControls.setRepeatMode(
+            if (repeatOne) PlaybackStateCompat.REPEAT_MODE_ONE else kv.decodeInt(
+                REPEAT_MODE,
+                PlaybackStateCompat.REPEAT_MODE_ALL
+            )
+        )
+    }
+
+    fun onSetPlayListMode(repeatAll: Boolean) {
+        _listRepeatState.value = repeatAll
+        kv.apply {
+            if (repeatAll) encode(REPEAT_MODE, PlaybackStateCompat.REPEAT_MODE_ALL)
+            else encode(REPEAT_MODE, PlaybackStateCompat.REPEAT_MODE_NONE)
+
+        }
+        mediaServiceConnection.transportControls.setRepeatMode(if (repeatAll) PlaybackStateCompat.REPEAT_MODE_ALL else PlaybackStateCompat.REPEAT_MODE_NONE)
     }
 
     fun setRemindDialog(notRemind: Boolean) {

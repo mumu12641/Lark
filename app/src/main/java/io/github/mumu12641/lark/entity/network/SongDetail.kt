@@ -9,6 +9,12 @@ data class SongDetail(
         val dt: Int
     )
     data class Privilege(
-        val fee: Int
+        val fee: Int,
+        val maxBrLevel: String,
+        val playMaxBrLevel: String,
+        val downloadMaxBrLevel: String
+//        "maxBrLevel":"lossless",
+//    "playMaxBrLevel":"lossless",
+//    "downloadMaxBrLevel":"lossless",
     )
 }

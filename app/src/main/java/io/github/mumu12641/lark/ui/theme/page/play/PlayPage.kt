@@ -221,10 +221,9 @@ fun PlayPage(
                     Column {
                         Text(stringResource(id = R.string.repeat_one_desc))
                         Row(
-                            verticalAlignment = Alignment.CenterVertically,
-                            modifier = Modifier.padding(vertical = 12.dp)
+                            verticalAlignment = Alignment.CenterVertically
                         ) {
-                            Checkbox(
+                            androidx.compose.material3.Checkbox(
                                 checked = notRemindCheck,
                                 onCheckedChange = { notRemindCheck = it })
                             Text(
@@ -580,7 +579,7 @@ fun PlayPageContent(
                             modifier = Modifier
                                 .clip(RoundedCornerShape(cornerAlbum.dp))
                                 .size(width = 350.dp, height = 300.dp)
-                                .clickable {  },
+                                .clickable { },
                             imageModel = currentPlaySong.songAlbumFileUri,
                             failure = R.drawable.ic_baseline_music_note_24
                         )
