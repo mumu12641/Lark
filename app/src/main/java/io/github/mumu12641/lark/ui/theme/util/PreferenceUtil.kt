@@ -36,6 +36,7 @@ object PreferenceUtil {
     const val HIRES = "Hi-Res"
 
     // mmkv keys
+    const val SPLASH_SCREEN = "splash screen"
     const val SEED_COLOR = "seed color value"
     const val REPEAT_MODE = "repeat mode"
     const val REPEAT_ONE_NOT_REMIND = "repeat one not remind"

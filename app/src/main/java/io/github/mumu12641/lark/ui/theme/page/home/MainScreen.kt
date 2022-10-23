@@ -8,6 +8,7 @@ import androidx.compose.runtime.Composable
 import com.google.accompanist.navigation.animation.AnimatedNavHost
 import com.google.accompanist.navigation.animation.rememberAnimatedNavController
 import io.github.mumu12641.lark.BaseApplication.Companion.context
+import io.github.mumu12641.lark.BaseApplication.Companion.kv
 import io.github.mumu12641.lark.R
 import io.github.mumu12641.lark.entity.Route
 import io.github.mumu12641.lark.ui.theme.component.animatedComposable
@@ -26,8 +27,10 @@ import io.github.mumu12641.lark.ui.theme.page.settings.SettingPage
 import io.github.mumu12641.lark.ui.theme.page.settings.UniversalSettingPage
 import io.github.mumu12641.lark.ui.theme.page.settings.about.AboutPage
 import io.github.mumu12641.lark.ui.theme.page.settings.diaplay.DisplayPage
+import io.github.mumu12641.lark.ui.theme.page.splash.SplashPage
 import io.github.mumu12641.lark.ui.theme.page.user.UserPage
 import io.github.mumu12641.lark.ui.theme.page.user.UserViewModel
+import io.github.mumu12641.lark.ui.theme.util.PreferenceUtil.SPLASH_SCREEN
 
 @OptIn(ExperimentalAnimationApi::class)
 @RequiresApi(Build.VERSION_CODES.Q)
@@ -49,8 +52,17 @@ fun MainScreen(
 
     AnimatedNavHost(
         navController = navController,
-        startDestination = Route.ROUTE_HOME
+        startDestination = if (kv.decodeBool(
+                SPLASH_SCREEN,
+                true
+            )
+        ) Route.ROUTE_SPLASH else Route.ROUTE_HOME
     ) {
+        animatedComposable(
+            route = Route.ROUTE_SPLASH
+        ) {
+            SplashPage(navController = navController)
+        }
         animatedComposable(
             route = Route.ROUTE_HOME
         ) {

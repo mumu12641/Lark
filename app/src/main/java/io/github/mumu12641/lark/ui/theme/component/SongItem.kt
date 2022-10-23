@@ -108,7 +108,7 @@ fun SongItemRow(
         AnimatedVisibility(visible = isCurrentSong,modifier = Modifier.weight(0.15f)) {
                 LottieAnimation(
                     lottieComposition,
-                    lottieAnimationState,
+                    {lottieAnimationState},
                     modifier = Modifier.fillMaxSize()
                 )
 

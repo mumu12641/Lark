@@ -25,7 +25,7 @@ android {
         applicationId = "io.github.mumu12641.lark"
         minSdk = 21
         targetSdk = 33
-        versionCode = 15
+        versionCode = 16
         versionName = "0.8.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
@@ -131,7 +131,8 @@ dependencies {
     implementation("com.google.accompanist:accompanist-insets:0.24.13-rc")
     implementation("com.google.accompanist:accompanist-insets-ui:0.24.13-rc")
     implementation("com.google.accompanist:accompanist-systemuicontroller:0.25.1")
-    implementation("com.google.accompanist:accompanist-pager:0.25.1")
+    implementation("com.google.accompanist:accompanist-pager:0.26.5-rc")
+    implementation ("com.google.accompanist:accompanist-pager-indicators:0.26.5-rc")
 
     implementation("com.squareup.retrofit2:retrofit:2.9.0")
     implementation("com.squareup.retrofit2:converter-gson:2.9.0")

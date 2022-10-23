@@ -2,15 +2,15 @@
 
 - [ ] PlayBackService 重构
 - [ ] 编辑歌单信息
-- [ ] Android 13 照片选择器
+- [x] Android 13 照片选择器
 - [ ] SeekBar 优化
 - [ ] Youtube 音源
 - [ ] 推荐歌曲
 - [ ] [下载](https://exoplayer.dev/downloading-media.html)
 - [ ] 云盘
 - [ ] cookie 管理（断网处理）
-- [ ] 音乐音质
-- [ ] 通用设置管理播放模式
+- [x] 音乐音质
+- [x] 通用设置管理播放模式
 - [ ] 搜索艺术家
 - [ ] 首次打开 app 引导与登录（包括匿名） Lottie Animtion
 - [ ]  感觉funtionTab可以写在一个page里面
