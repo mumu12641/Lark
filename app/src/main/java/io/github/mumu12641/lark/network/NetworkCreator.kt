@@ -8,7 +8,7 @@ import okhttp3.Response
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 
-
+private const val TAG = "NetworkCreator"
 object NetworkCreator {
 
     // TODO https://github.com/square/retrofit/issues/3005

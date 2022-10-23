@@ -12,16 +12,12 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowBack
-import androidx.compose.material.icons.filled.Check
-import androidx.compose.material.icons.filled.Face
-import androidx.compose.material.icons.filled.MoreVert
+import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
@@ -86,9 +82,7 @@ fun UserPage(
             floatingActionButton = {
                 Column {
                     FloatingActionButton(
-                        modifier = Modifier
-                            .padding(bottom = 5.dp)
-                            .size(60.dp),
+                        modifier = Modifier.padding(vertical = 20.dp),
                         onClick = {
                             if (kv.decodeLong("neteaseId") != 0L) {
                                 Toast.makeText(
@@ -101,15 +95,11 @@ fun UserPage(
                             }
                         }) {
                         Icon(
-                            painterResource(id = R.drawable.ic_netease),
+                            Icons.Filled.Login,
                             contentDescription = "Netease",
-                            modifier = Modifier.size(40.dp)
                         )
                     }
                     FloatingActionButton(
-                        modifier = Modifier
-                            .padding(top = 5.dp)
-                            .size(60.dp),
                         onClick = {
                             viewModel.saveInformation()
                             Toast.makeText(
@@ -121,7 +111,6 @@ fun UserPage(
                         Icon(
                             Icons.Filled.Check,
                             contentDescription = "Save",
-                            modifier = Modifier.size(30.dp)
                         )
                     }
                 }
@@ -130,26 +119,29 @@ fun UserPage(
         )
     }
     if (showLoginDialog) {
-        LoginDialog(showDialogFunc = { showLoginDialog = it }) { phone, password ->
+        LoginDialog(showDialogFunc = { showLoginDialog = it }, login = { phone, password ->
             viewModel.loginUser(phone, password)
-        }
+        })
     }
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-private fun LoginDialog(
+fun LoginDialog(
     showDialogFunc: (Boolean) -> Unit,
-    login: (String, String) -> Unit
+    login: (String, String) -> Unit,
+    dismissButton: @Composable (() -> Unit)? = null,
 ) {
     var phone by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
     LarkAlertDialog(
+        icon = Icons.Filled.Login,
         onDismissRequest = { showDialogFunc(false) },
         title = stringResource(id = R.string.login_text),
         text = {
             Column {
                 OutlinedTextField(
+                    modifier = Modifier.padding(vertical = 5.dp),
                     value = phone,
                     onValueChange = { phone = it },
                     placeholder = {
@@ -157,6 +149,7 @@ private fun LoginDialog(
                     },
                 )
                 OutlinedTextField(
+                    modifier = Modifier.padding(vertical = 5.dp),
                     value = password,
                     onValueChange = { password = it },
                     placeholder = {
@@ -174,7 +167,7 @@ private fun LoginDialog(
             showDialogFunc(false)
         },
         confirmText = stringResource(id = R.string.confirm_text),
-        dismissButton = {
+        dismissButton = dismissButton ?: {
             TextButton(
                 onClick = {
                     showDialogFunc(false)

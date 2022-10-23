@@ -108,5 +108,13 @@
     <string name="general_text">常规</string>
     <string name="list_play_mode">列表无限循环</string>
     <string name="list_play_mode_desc">列表播放结束后重新播放整个列表</string>
+    <string name="listen_desc">导入个性歌单，获取个性化推荐，听你想听！</string>
+    <string name="listen_title">听你想听</string>
+    <string name="theme_title">主题如画</string>
+    <string name="theme_desc">随专辑更改主题，自定义主题，随你心情而定！</string>
+    <string name="login_title">登入网易云</string>
+    <string name="login_desc">登入您的网易云账号，获取优质音源！</string>
+    <string name="guest_login">游客登录</string>
+    <string name="not_login_text">暂不登录</string>
 
 </resources>

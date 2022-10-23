@@ -106,7 +106,7 @@ fun FunctionPage(
                     showDialog = true
                 }
             },
-            sheetPeekHeight = 0.dp,
+//            sheetPeekHeight = 0.dp,
             sheetBackgroundColor = MaterialTheme.colorScheme.secondaryContainer,
             sheetShape = RoundedCornerShape(topStart = 30.dp, topEnd = 30.dp),
 
@@ -188,13 +188,14 @@ fun FunctionPage(
 
                 }
             },
+            sheetPeekHeight = 0.dp,
             floatingActionButton = {
                 when (route) {
                     Route.ROUTE_LOCAL -> {
                         FloatingActionButton(onClick = {
                             viewModel.reFreshLocalMusicList()
                             refreshArtist?.let { it() }
-                        }) {
+                        }, modifier = Modifier.padding(bottom = 88.dp)) {
                             Icon(Icons.Filled.Refresh, contentDescription = "Refresh")
                         }
                     }
@@ -204,12 +205,15 @@ fun FunctionPage(
                                 HistorySongListId,
                                 CHANGE_PLAT_LIST_SHUFFLE
                             )
-                        }) {
+                        }, modifier = Modifier.padding(bottom = 88.dp)) {
                             Icon(Icons.Filled.PlayArrow, contentDescription = "play")
                         }
                     }
                     else -> {
-                        FloatingActionButton(onClick = { /*TODO*/ }) {
+                        FloatingActionButton(
+                            onClick = { /*TODO*/ },
+                            modifier = Modifier.padding(bottom = 88.dp)
+                        ) {
 
                         }
                     }

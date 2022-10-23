@@ -17,7 +17,7 @@ import kotlinx.coroutines.launch
 object PreferenceUtil {
     private val kv = MMKV.defaultMMKV()
 
-    const val DEFAULT_SEED_COLOR = 0xFF00221A.toInt()
+    const val DEFAULT_SEED_COLOR = 0XFFFFEB3B.toInt()
     const val EMPTY_SEED_COLOR = 0
 
     const val FOLLOW_SYSTEM = 0

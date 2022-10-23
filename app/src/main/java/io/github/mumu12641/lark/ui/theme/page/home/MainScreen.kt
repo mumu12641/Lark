@@ -61,7 +61,7 @@ fun MainScreen(
         animatedComposable(
             route = Route.ROUTE_SPLASH
         ) {
-            SplashPage(navController = navController)
+            SplashPage(navController = navController, userViewModel)
         }
         animatedComposable(
             route = Route.ROUTE_HOME

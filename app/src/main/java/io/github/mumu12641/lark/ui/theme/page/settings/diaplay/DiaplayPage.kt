@@ -174,10 +174,10 @@ fun DisplayPageContent(modifier: Modifier) {
                 ) {
                     ColorCard(Color(DEFAULT_SEED_COLOR))
                     ColorCard(Color(0, 68, 155))
-                    ColorCard(Color(220, 123, 88))
-                    ColorCard(Color(181, 210, 180))
+                    ColorCard(Color(220, 88, 88, 255))
+                    ColorCard(Color(131, 7, 255, 255))
                     ColorCard(Color(233, 30, 99, 255))
-                    ColorCard(Color(255, 235, 59, 255))
+                    ColorCard(Color(76, 175, 80, 255))
                 }
             }
         }
@@ -234,6 +234,7 @@ fun DisplayPageContent(modifier: Modifier) {
     }
     if (showSwitchDarkModeDialog) {
         RadioOptionsDialog(
+            icon = Icons.Sharp.Bedtime,
             title = stringResource(id = R.string.dark_mode_text),
             radioOptions = radioOptions,
             selectedOption = selectedOption,
@@ -246,6 +247,7 @@ fun DisplayPageContent(modifier: Modifier) {
 
     if (showSwitchLanguageDialog) {
         RadioOptionsDialog(
+            icon = Icons.Sharp.Language,
             title = stringResource(id = R.string.language_desc),
             radioOptions = languageOptions,
             selectedOption = selectedLanguageOption,

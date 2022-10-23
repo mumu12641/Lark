@@ -1,6 +1,9 @@
 ## Lark TODO
 
 - [ ] PlayBackService 重构
+- [x] FunctionPage FAB 位置出毛病？！
+- [ ] 点击 SeetingItem 直接调整开关
+- [ ] setting 管理cookie
 - [ ] 编辑歌单信息
 - [x] Android 13 照片选择器
 - [ ] SeekBar 优化
@@ -12,7 +15,7 @@
 - [x] 音乐音质
 - [x] 通用设置管理播放模式
 - [ ] 搜索艺术家
-- [ ] 首次打开 app 引导与登录（包括匿名） Lottie Animtion
+- [x] 首次打开 app 引导与登录（包括匿名） Lottie Animtion
 - [ ]  感觉funtionTab可以写在一个page里面
 - [ ]  定时关闭
 - [x] app 内更新

@@ -111,4 +111,12 @@
     <string name="general_text">General</string>
     <string name="list_play_mode">List infinite loop</string>
     <string name="list_play_mode_desc">Replay the entire list after the list has finished playing</string>
+    <string name="listen_desc">Import personalized playlists, get personalized recommendations, and listen to what you want!</string>
+    <string name="listen_title">Listen to what you want</string>
+    <string name="theme_title">Nice theme</string>
+    <string name="theme_desc">Change the theme with the album, customize the theme, as your mood dictates!</string>
+    <string name="login_title">Login account</string>
+    <string name="login_desc">Log in to your NetEase Cloud account to get high-quality audio!</string>
+    <string name="guest_login">Guest login</string>
+    <string name="not_login_text">Not logged in</string>
 </resources>

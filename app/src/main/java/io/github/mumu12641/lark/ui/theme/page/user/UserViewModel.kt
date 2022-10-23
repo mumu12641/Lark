@@ -100,6 +100,18 @@ class UserViewModel @Inject constructor() : ViewModel() {
         }
     }
 
+    fun guestLogin() {
+        viewModelScope.launch(Dispatchers.IO + CoroutineExceptionHandler { _, e ->
+            _loadState.value = LoadState.Fail(e.message ?: "Load Fail")
+            e.message?.let { Log.d(TAG, it) }
+        }) {
+            _loadState.value = LoadState.Loading()
+            val s = networkService.anonymousLogin()
+            Log.d(TAG, "guestLogin: $s")
+            _loadState.value = LoadState.Success()
+        }
+    }
+
     data class UserState(
         val name: String,
         val iconImageUri: String?,

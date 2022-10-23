@@ -362,14 +362,6 @@ private fun Banner(
                                 .padding(10.dp)
                                 .clickable(onClick = {
                                     onClick(page)
-//                                    Toast
-//                                        .makeText(
-//                                            context,
-//                                            context.getString(R.string.success_add_to_songlist_text),
-//                                            Toast.LENGTH_LONG
-//                                        )
-//                                        .show()
-
                                 })
                         ) {
                             Row(
