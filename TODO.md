@@ -1,10 +1,11 @@
 ## Lark TODO
 
 - [ ] PlayBackService 重构
+- [ ] 进入 app 的对话框废弃，存储权限获取
 - [x] FunctionPage FAB 位置出毛病？！
-- [ ] 单曲循环对话框和致谢对话框没有icon
+- [x] 单曲循环对话框和致谢对话框没有icon
 - [ ] 准确记录上次播放
-- [ ] 点击 SeetingItem 直接调整开关
+- [x] 点击 SeetingItem 直接调整开关
 - [ ] setting 管理cookie
 - [ ] 编辑歌单信息
 - [x] Android 13 照片选择器

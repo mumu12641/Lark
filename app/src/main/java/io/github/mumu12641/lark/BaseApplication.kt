@@ -6,7 +6,10 @@ import android.app.Application
 import android.content.Context
 import android.content.pm.PackageManager
 import android.os.Build
+import android.util.Log
 import com.tencent.mmkv.MMKV
+import com.yausername.youtubedl_android.YoutubeDL
+import com.yausername.youtubedl_android.YoutubeDLException
 import dagger.hilt.android.HiltAndroidApp
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.SupervisorJob
@@ -14,6 +17,8 @@ import kotlinx.coroutines.SupervisorJob
 
 @HiltAndroidApp
 class BaseApplication : Application() {
+
+    private val TAG = "BaseApplication"
 
     override fun onCreate() {
         super.onCreate()
@@ -32,6 +37,11 @@ class BaseApplication : Application() {
             ).versionName
         } else {
             packageManager.getPackageInfo(packageName, 0).versionName
+        }
+        try {
+            YoutubeDL.getInstance().init(this)
+        } catch (e: YoutubeDLException) {
+            Log.e(TAG, "failed to initialize youtubedl-android", e)
         }
     }
 

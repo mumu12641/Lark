@@ -8,6 +8,8 @@ import android.util.Log
 import androidx.annotation.RequiresApi
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.yausername.youtubedl_android.YoutubeDL
+import com.yausername.youtubedl_android.YoutubeDLRequest
 import dagger.hilt.android.lifecycle.HiltViewModel
 import io.github.mumu12641.lark.BaseApplication.Companion.context
 import io.github.mumu12641.lark.BaseApplication.Companion.kv
@@ -32,6 +34,7 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
+
 
 @HiltViewModel
 class MainViewModel @Inject constructor() : ViewModel() {
@@ -78,12 +81,14 @@ class MainViewModel @Inject constructor() : ViewModel() {
             _bannerState.value = networkService.getBanner().banners.filter {
                 it.targetType == 1
             }
-            Log.d(TAG, getUpdateInfo().toString())
             _checkForUpdate.update {
                 val info = getUpdateInfo()
                 it.copy(info = info, showDialog = checkForUpdate(info))
             }
-            Log.d(TAG, _checkForUpdate.value.toString())
+            val request = YoutubeDLRequest("https://youtu.be/Pv61yEcOqpw")
+            request.addOption("-f", "best")
+            val streamInfo = YoutubeDL.getInstance().getInfo(request)
+            Log.d(TAG, streamInfo.url)
         }
     }
 

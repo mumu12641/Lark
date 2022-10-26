@@ -37,6 +37,22 @@ android {
                 arguments += mapOf("room.schemaLocation" to "$projectDir/schemas")
             }
         }
+        ndk{
+            abiFilters.add("x86")
+            abiFilters.add("arm64-v8a")
+            abiFilters.add("x86_64")
+            abiFilters.add("armeabi-v7a")
+
+        }
+    }
+
+    splits {
+        abi {
+            isEnable = true
+            reset()
+            include("x86", "x86_64", "armeabi-v7a", "arm64-v8a")
+            isUniversalApk = true
+        }
     }
 
     buildTypes {
@@ -84,6 +100,7 @@ dependencies {
     implementation("androidx.core:core-ktx:1.9.0")
     implementation("androidx.compose.ui:ui:$composeVersion")
     implementation("androidx.compose.material3:material3:$material3Version")
+    implementation ("com.google.android.material:material:1.7.0" )
     implementation("androidx.appcompat:appcompat:1.6.0-rc01")
     implementation("androidx.compose.ui:ui-tooling-preview:$composeVersion")
     implementation("androidx.compose.material:material-icons-extended:$composeVersion")
@@ -138,13 +155,10 @@ dependencies {
     implementation("com.squareup.retrofit2:converter-gson:2.9.0")
 
 
-    implementation("androidx.glance:glance:1.0.0-alpha04")
 
     implementation("com.squareup.okhttp3:okhttp:5.0.0-alpha.10")
     implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.4.0")
 
-//    implementation("io.github.hokofly:hoko-blur:1.3.7")
-//    implementation("com.github.caiyonglong:musicapi:1.1.4")
 
-
+    implementation ("com.github.yausername.youtubedl-android:library:3a0252d88b4ae573068c63c3d08fc52c66102d55")
 }
