@@ -215,6 +215,7 @@ fun PlayPage(
         }
         if (!repeatState.notRemind && showRemindDialog) {
             LarkAlertDialog(
+                icon = Icons.Filled.Lightbulb,
                 onDismissRequest = { showRemindDialog = false },
                 title = stringResource(id = R.string.remind_text),
                 text = {

@@ -22,10 +22,14 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
+import io.github.mumu12641.lark.BaseApplication.Companion.applicationScope
 import io.github.mumu12641.lark.BaseApplication.Companion.version
 import io.github.mumu12641.lark.R
 import io.github.mumu12641.lark.ui.theme.component.LarkTopBar
 import io.github.mumu12641.lark.ui.theme.component.SettingItem
+import kotlinx.coroutines.CoroutineExceptionHandler
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -111,12 +115,15 @@ fun AboutContent(modifier: Modifier) {
                 description = version,
                 icon = Icons.Default.Settings
             ) {
-
+                applicationScope.launch (Dispatchers.IO + CoroutineExceptionHandler{_,_,->}){
+//                    UpdateUtil.
+                }
             }
         }
     }
     if (showThanksDialog) {
         AlertDialog(
+            icon = { Icon(Icons.Default.AutoAwesome, contentDescription = null) },
             onDismissRequest = {
                 showThanksDialog = false
             },

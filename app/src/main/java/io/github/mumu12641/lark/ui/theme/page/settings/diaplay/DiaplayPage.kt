@@ -182,6 +182,7 @@ fun DisplayPageContent(modifier: Modifier) {
             }
         }
         item {
+            val dynamicColorCurrent = DynamicColorSwitch.current
             if (DynamicColorSwitch.current.enable) {
                 SettingSwitchItem(
                     title = stringResource(id = R.string.dynamic_text),
@@ -191,10 +192,13 @@ fun DisplayPageContent(modifier: Modifier) {
                     switchChange = switchDynamicColor,
                     enable = DynamicColorSwitch.current.enable
                 ) {
+                    if(dynamicColorCurrent.dynamicColorSwitch == ON) switchDynamicColor(false)
+                    else switchDynamicColor(true)
                 }
             }
         }
         item {
+            val followAlbumCurrent = FollowAlbumSwitch.current
             SettingSwitchItem(
                 title = stringResource(id = R.string.adaptive_color_text),
                 description = stringResource(id = R.string.adaptive_color_des_text),
@@ -206,7 +210,8 @@ fun DisplayPageContent(modifier: Modifier) {
                     )
                 }
             ) {
-
+                if (followAlbumCurrent == ON)  PreferenceUtil.switchFollowAlbum(OFF)
+                else PreferenceUtil.switchFollowAlbum(ON)
             }
         }
         item {

@@ -11,9 +11,9 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
+import androidx.navigation.NavGraph.Companion.findStartDestination
 import com.airbnb.lottie.compose.*
 import com.google.accompanist.pager.ExperimentalPagerApi
 import com.google.accompanist.pager.HorizontalPager
@@ -74,7 +74,7 @@ fun SplashPage(navController: NavController, userViewModel: UserViewModel) {
                     else Icon(Icons.Default.Login, contentDescription = null)
                 }
             }
-        }) { it ->
+        }) {
         Box(
             modifier = Modifier
                 .padding(it)
@@ -87,13 +87,16 @@ fun SplashPage(navController: NavController, userViewModel: UserViewModel) {
                 HorizontalPager(count = 3, state = pagerState) { page: Int ->
                     when (page) {
                         0 -> {
-                            Column {
-                                Column(modifier = Modifier.height(200.dp)) {
+                            Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                                Column(
+                                    modifier = Modifier.height(200.dp).padding(horizontal = 20.dp),
+                                    horizontalAlignment = Alignment.CenterHorizontally,
+                                    verticalArrangement = Arrangement.Center
+                                ) {
                                     Text(
                                         text = stringResource(id = R.string.listen_title),
                                         style = MaterialTheme.typography.displayMedium,
                                         modifier = Modifier.padding(5.dp),
-                                        fontFamily = FontFamily.Monospace,
                                         color = MaterialTheme.colorScheme.primaryContainer
                                     )
                                     Text(
@@ -110,13 +113,14 @@ fun SplashPage(navController: NavController, userViewModel: UserViewModel) {
                             }
                         }
                         1 -> {
-                            Column {
-                                Column(modifier = Modifier.height(200.dp)) {
+                            Column (horizontalAlignment = Alignment.CenterHorizontally) {
+                                Column(modifier = Modifier.height(200.dp).padding(horizontal = 20.dp),
+                                    horizontalAlignment = Alignment.CenterHorizontally,
+                                    verticalArrangement = Arrangement.Center) {
                                     Text(
                                         text = stringResource(id = R.string.theme_title),
                                         style = MaterialTheme.typography.displayMedium,
                                         modifier = Modifier.padding(vertical = 10.dp),
-                                        fontFamily = FontFamily.SansSerif,
                                         color = MaterialTheme.colorScheme.primaryContainer
                                     )
                                     Text(
@@ -132,21 +136,24 @@ fun SplashPage(navController: NavController, userViewModel: UserViewModel) {
                             }
                         }
                         2 -> {
-                            Column {
-                                Column(modifier = Modifier.height(200.dp)) {
+                            Column (horizontalAlignment = Alignment.CenterHorizontally) {
+                                Column(modifier = Modifier.height(200.dp).padding(horizontal = 20.dp),
+                                    horizontalAlignment = Alignment.CenterHorizontally,
+                                    verticalArrangement = Arrangement.Center) {
                                     Row {
                                         Text(
                                             text = stringResource(id = R.string.login_title),
                                             style = MaterialTheme.typography.displayMedium,
                                             modifier = Modifier.padding(vertical = 10.dp),
-                                            fontFamily = FontFamily.SansSerif,
                                             color = MaterialTheme.colorScheme.primaryContainer
                                         )
                                         AnimatedContent(targetState = loadState) { load ->
                                             when (load) {
                                                 is LoadState.Loading -> CircularProgressIndicator()
                                                 is LoadState.Success -> {
-                                                    navController.navigate(Route.ROUTE_HOME)
+                                                    navController.navigate(Route.ROUTE_HOME){
+                                                        popUpTo(0)
+                                                    }
                                                     kv.encode(
                                                         PreferenceUtil.SPLASH_SCREEN,
                                                         false
@@ -186,7 +193,9 @@ fun SplashPage(navController: NavController, userViewModel: UserViewModel) {
                 TextButton(
                     onClick = {
                         showLoginDialog = false
-                        navController.navigate(Route.ROUTE_HOME)
+                        navController.navigate(Route.ROUTE_HOME){
+                            popUpTo(0)
+                        }
                         kv.encode(
                             PreferenceUtil.SPLASH_SCREEN,
                             false

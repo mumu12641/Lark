@@ -107,12 +107,12 @@
     <string name="universal_text">Universal</string>
     <string name="universal_desc">Play mode,sound quality</string>
     <string name="music_level">Sound quality</string>
-    <string name="music_level_desc">Select the default sound quality of the audio source, which will take effect when the network audio source is loaded next time (if there is no audio source with the corresponding sound quality, the appropriate sound quality will be automatically loaded)</string>
+    <string name="music_level_desc">Select the default sound quality of the audio source, which will take effect when the network audio source is loaded next time </string>
     <string name="general_text">General</string>
     <string name="list_play_mode">List infinite loop</string>
     <string name="list_play_mode_desc">Replay the entire list after the list has finished playing</string>
     <string name="listen_desc">Import personalized playlists, get personalized recommendations, and listen to what you want!</string>
-    <string name="listen_title">Listen to what you want</string>
+    <string name="listen_title">Listen</string>
     <string name="theme_title">Nice theme</string>
     <string name="theme_desc">Change the theme with the album, customize the theme, as your mood dictates!</string>
     <string name="login_title">Login account</string>

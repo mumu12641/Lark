@@ -92,7 +92,8 @@ fun UniversalSettingPageContent(
                 isChecked = repeatMode,
                 switchChange = { setRepeatMode(it) }
             ) {
-
+                if (repeatMode) setRepeatMode(false)
+                else setRepeatMode(true)
             }
         }
     }
