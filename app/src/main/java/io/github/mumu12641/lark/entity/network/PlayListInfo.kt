@@ -1,4 +1,6 @@
-package io.github.mumu12641.lark.entity.network.youtube
+package io.github.mumu12641.lark.entity.network
+
+import io.github.mumu12641.lark.entity.network.youtube.SongInfo
 
 @kotlinx.serialization.Serializable
 data class PlayListInfo(

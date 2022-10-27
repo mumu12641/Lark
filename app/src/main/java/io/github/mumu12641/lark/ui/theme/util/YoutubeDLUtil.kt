@@ -4,15 +4,12 @@ import android.util.Log
 import com.yausername.youtubedl_android.YoutubeDL
 import com.yausername.youtubedl_android.YoutubeDLRequest
 import com.yausername.youtubedl_android.YoutubeDLResponse
-import io.github.mumu12641.lark.entity.CREATE_SONGLIST_TYPE
-import io.github.mumu12641.lark.entity.SongList
-import io.github.mumu12641.lark.entity.network.youtube.PlayListInfo
+import io.github.mumu12641.lark.entity.network.PlayListInfo
 import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.json.Json
 
 object YoutubeDLUtil {
 
-//    https://music.youtube.com/playlist?list=PLq6Tn5ulC8-vG-L0f0v-pvnhaM9ajYLOx&feature=share
 
     private const val TAG = "YoutubeDLUtil"
     private val jsonFormat = Json { ignoreUnknownKeys = true }

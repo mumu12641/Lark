@@ -29,6 +29,7 @@ import io.github.mumu12641.lark.ui.theme.util.UpdateUtil.getUpdateInfo
 import io.github.mumu12641.lark.ui.theme.util.YoutubeDLUtil
 import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.map
@@ -325,6 +326,7 @@ class MainViewModel @Inject constructor() : ViewModel() {
                 if (!DataBaseUtils.isRefExist(listId, songId)) {
                     DataBaseUtils.insertRef(PlaylistSongCrossRef(listId, songId))
                 }
+                delay(500)
                 _loadState.update {
                     it.copy(
                         loadState = io.github.mumu12641.lark.entity.LoadState.Loading(

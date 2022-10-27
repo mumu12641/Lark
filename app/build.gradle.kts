@@ -25,8 +25,8 @@ android {
         applicationId = "io.github.mumu12641.lark"
         minSdk = 21
         targetSdk = 33
-        versionCode = 18
-        versionName = "0.8.0"
+        versionCode = 20
+        versionName = "0.9.0-beta.1"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables {
@@ -42,7 +42,6 @@ android {
             abiFilters.add("arm64-v8a")
             abiFilters.add("x86_64")
             abiFilters.add("armeabi-v7a")
-
         }
     }
 
