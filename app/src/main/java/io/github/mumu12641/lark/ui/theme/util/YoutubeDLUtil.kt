@@ -30,10 +30,6 @@ object YoutubeDLUtil {
         Log.d(TAG, "getPlayListInfo: " + resp.out)
         val jsonObj = jsonFormat.decodeFromString<PlayListInfo>(resp.out)
         Log.d(TAG, "getPlayListInfo: " + jsonObj.entries)
-//        return SongList(
-//            0L, jsonObj.title, "", jsonObj.playlist_count, jsonObj.description, "",
-//            CREATE_SONGLIST_TYPE
-//        )
         return jsonObj
     }
 

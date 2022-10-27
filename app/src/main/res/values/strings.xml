@@ -71,9 +71,9 @@
     <string name="import_text">Import</string>
     <string name="not_match_text">Playlist link not matched in clipboard</string>
     <string name="import_playlist_text">Import playlist</string>
-    <string name="share_text">NetEase cloud playlist link</string>
+    <string name="share_text">Playlist link</string>
     <string name="build_own_text">Build your own playlist</string>
-    <string name="sry_no_netease_text">Sorry, the NetEase cloud playlist information could not be obtained</string>
+    <string name="sry_no_link_text">Sorry, the link is invalid</string>
     <string name="sry_no_url_text">Sorry, failed to get url info from clipboard</string>
     <string name="see_all_text">See all</string>
     <string name="next_to_play_text">Next to play</string>
@@ -119,4 +119,5 @@
     <string name="login_desc">Log in to your NetEase Cloud account to get high-quality audio!</string>
     <string name="guest_login">Guest login</string>
     <string name="not_login_text">Not logged in</string>
+    <string name="check_network">Check network settings</string>
 </resources>

@@ -71,9 +71,9 @@
     <string name="import_text">导入</string>
     <string name="not_match_text">未在剪切板中匹配到歌单链接</string>
     <string name="import_playlist_text">导入歌单</string>
-    <string name="share_text">网易云歌单分享链接导入</string>
+    <string name="share_text">分享链接导入</string>
     <string name="build_own_text">自建歌单</string>
-    <string name="sry_no_netease_text">抱歉，未能获取到网易云歌单信息</string>
+    <string name="sry_no_link_text">抱歉，该链接无效</string>
     <string name="sry_no_url_text">抱歉，未能从剪切板获取网址信息</string>
     <string name="see_all_text">更多</string>
     <string name="next_to_play_text">接下来播放</string>
@@ -116,5 +116,6 @@
     <string name="login_desc">登入您的网易云账号，获取优质音源！</string>
     <string name="guest_login">游客登录</string>
     <string name="not_login_text">暂不登录</string>
+    <string name="check_network">请检查您的网络</string>
 
 </resources>

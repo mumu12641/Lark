@@ -482,18 +482,19 @@ private fun SongListRow(
                 showNeteaseDialog = false
             },
             confirmOnClick = {
-//                if (StringUtil.getNeteaseSongListId(text) != text) {
-//                    getNeteaseSongList(StringUtil.getNeteaseSongListId(text)!!.toLong())
-//                } else {
-//                    Toast.makeText(
-//                        context,
-//                        context.getString(R.string.sry_no_netease_text),
-//                        Toast.LENGTH_LONG
-//                    ).show()
-//                }
-//                showNeteaseDialog = false
-//                showDialog = false
-                getYoutubePlayList(text)
+                if (StringUtil.getNeteaseSongListId(text) != text) {
+                    getNeteaseSongList(StringUtil.getNeteaseSongListId(text)!!.toLong())
+                } else if (StringUtil.matchYoutubeLink(text) != text) {
+                    getYoutubePlayList(text)
+                } else {
+                    Toast.makeText(
+                        context,
+                        context.getString(R.string.sry_no_link_text),
+                        Toast.LENGTH_LONG
+                    ).show()
+                }
+                showNeteaseDialog = false
+                showDialog = false
             },
             trailingIconOnClick = {
                 if (StringUtil.getHttpUrl() != null) {

@@ -283,7 +283,7 @@ class MainViewModel @Inject constructor() : ViewModel() {
                 }
             }
             applicationScope.launch(Dispatchers.Main) {
-                Toast.makeText(context,"请使用VPN重试",Toast.LENGTH_SHORT).show()
+                Toast.makeText(context, context.getString(R.string.check_network),Toast.LENGTH_SHORT).show()
             }
             Log.d(TAG, "getYoutubePlayList: " + e.message)
         }) {

@@ -482,13 +482,15 @@ class MediaPlaybackService : MediaBrowserServiceCompat() {
                 }
             } catch (e: Exception) {
                 withContext(Dispatchers.Main) {
-                    Log.d(TAG, "bufferSong: null $index + " + currentPlayList.size)
-                    toast.setText("Error")
-                    toast.show()
-                    currentPlaySong = currentPlayList[index + 1]
-                    updateQueue(currentPlayList, currentPlaySong) {
-                        isBuffering = false
-                    }
+//                    Log.d(TAG, "bufferSong: null $index + " + currentPlayList.size)
+//                    toast.setText("Error")
+//                    toast.show()
+//                    currentPlaySong = currentPlayList[index + 1]
+//                    updateQueue(currentPlayList, currentPlaySong) {
+//                        isBuffering = false
+//                    }
+                    Toast.makeText(context, context.getString(R.string.check_network),Toast.LENGTH_SHORT).show()
+                    setEmptyPlayList()
                 }
             }
         }

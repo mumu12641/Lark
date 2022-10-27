@@ -32,4 +32,13 @@ object StringUtil {
         }
         return null
     }
+
+    fun matchYoutubeLink(s:String):String?{
+        val r = Regex("[a-zA-z]+://[^\\s]*")
+//        https://music.youtube.com/playlist?list=PLq6Tn5ulC8-vG-L0f0v-pvnhaM9ajYLOx&feature=share
+        r.find(s)?.let {
+            return it.value.substringAfter("playlist?list=").substringBefore("&feature=share")
+        }
+        return null
+    }
 }
