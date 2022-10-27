@@ -2,7 +2,7 @@
   "formatVersion": 1,
   "database": {
     "version": 23,
-    "identityHash": "45bd5efa73ff9ee61b1464785f4c88a0",
+    "identityHash": "d89089b019109ed82b8c93893ca911a6",
     "entities": [
       {
         "tableName": "SongList",
@@ -68,7 +68,7 @@
       },
       {
         "tableName": "Song",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`songId` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `songTitle` TEXT NOT NULL, `songSinger` TEXT NOT NULL, `songAlbumFileUri` TEXT NOT NULL, `mediaFileUri` TEXT NOT NULL, `duration` INTEGER NOT NULL, `recentPlay` INTEGER, `neteaseId` INTEGER NOT NULL, `isBuffered` INTEGER NOT NULL, `vip` INTEGER NOT NULL, `lyrics` TEXT)",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`songId` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `songTitle` TEXT NOT NULL, `songSinger` TEXT NOT NULL, `songAlbumFileUri` TEXT NOT NULL, `mediaFileUri` TEXT NOT NULL, `duration` INTEGER NOT NULL, `recentPlay` INTEGER, `neteaseId` INTEGER NOT NULL, `isBuffered` INTEGER NOT NULL, `vip` INTEGER NOT NULL, `youtubeId` TEXT, `lyrics` TEXT)",
         "fields": [
           {
             "fieldPath": "songId",
@@ -129,6 +129,12 @@
             "columnName": "vip",
             "affinity": "INTEGER",
             "notNull": true
+          },
+          {
+            "fieldPath": "youtubeId",
+            "columnName": "youtubeId",
+            "affinity": "TEXT",
+            "notNull": false
           },
           {
             "fieldPath": "lyrics",
@@ -196,7 +202,7 @@
     "views": [],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '45bd5efa73ff9ee61b1464785f4c88a0')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, 'd89089b019109ed82b8c93893ca911a6')"
     ]
   }
 }

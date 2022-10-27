@@ -232,7 +232,8 @@ fun HomeContent(
         SongListRow(
             allSongList,
             addSongList = { mainViewModel.addSongList(it) },
-            { mainViewModel.getNeteaseSongList(it) }
+            { mainViewModel.getNeteaseSongList(it) },
+            { mainViewModel.getYoutubePlayList(it) }
         ) { navController.navigate(Route.ROUTE_SONG_LIST_DETAILS + it.toString()) }
         ArtistRow(navController, artistSongList)
     }
@@ -245,7 +246,7 @@ fun HomeContent(
             }
         }, text = {
             Column {
-                LinearProgressIndicator(progress = (loadState.loadState.msg.toFloat() / (loadState.num.toFloat() + 1e-6)).toFloat())
+                LinearProgressIndicator(progress = (loadState.loadState.msg.toFloat() / (loadState.num.toFloat() + 1)))
                 Text(text = loadState.loadState.msg + "/" + loadState.num.toString())
             }
         })
@@ -427,8 +428,10 @@ private fun SongListRow(
     list: List<SongList>,
     addSongList: (SongList) -> Unit,
     getNeteaseSongList: (Long) -> Unit,
-    navigationToDetails: (Long) -> Unit
-) {
+    getYoutubePlayList: (String) -> Unit,
+    navigationToDetails: (Long) -> Unit,
+
+    ) {
     var showDialog by remember { mutableStateOf(false) }
     var showNeteaseDialog by remember { mutableStateOf(false) }
     var text by remember { mutableStateOf("") }
@@ -479,17 +482,18 @@ private fun SongListRow(
                 showNeteaseDialog = false
             },
             confirmOnClick = {
-                if (StringUtil.getNeteaseSongListId(text) != text) {
-                    getNeteaseSongList(StringUtil.getNeteaseSongListId(text)!!.toLong())
-                } else {
-                    Toast.makeText(
-                        context,
-                        context.getString(R.string.sry_no_netease_text),
-                        Toast.LENGTH_LONG
-                    ).show()
-                }
-                showNeteaseDialog = false
-                showDialog = false
+//                if (StringUtil.getNeteaseSongListId(text) != text) {
+//                    getNeteaseSongList(StringUtil.getNeteaseSongListId(text)!!.toLong())
+//                } else {
+//                    Toast.makeText(
+//                        context,
+//                        context.getString(R.string.sry_no_netease_text),
+//                        Toast.LENGTH_LONG
+//                    ).show()
+//                }
+//                showNeteaseDialog = false
+//                showDialog = false
+                getYoutubePlayList(text)
             },
             trailingIconOnClick = {
                 if (StringUtil.getHttpUrl() != null) {

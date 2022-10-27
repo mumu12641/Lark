@@ -37,6 +37,12 @@ interface MusicDao {
     @Query("SELECT EXISTS(SELECT * FROM song WHERE neteaseId = :neteaseId)")
     suspend fun isNeteaseIdExist(neteaseId: Long): Boolean
 
+    @Query("SELECT songId FROM Song WHERE youtubeId = :youtubeId")
+    suspend fun querySongIdByYoutubeId(youtubeId: String): Long
+
+    @Query("SELECT EXISTS(SELECT * FROM song WHERE youtubeId = :youtubeId)")
+    suspend fun isYoutubeIdExist(youtubeId: String): Boolean
+
     @Query("SELECT * FROM SongList")
     fun queryAllSongList(): Flow<List<SongList>>
 

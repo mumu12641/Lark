@@ -35,6 +35,7 @@ import io.github.mumu12641.lark.entity.*
 import io.github.mumu12641.lark.network.NetworkCreator.networkService
 import io.github.mumu12641.lark.room.DataBaseUtils
 import io.github.mumu12641.lark.ui.theme.util.PreferenceUtil
+import io.github.mumu12641.lark.ui.theme.util.YoutubeDLUtil
 import kotlinx.coroutines.*
 
 
@@ -186,7 +187,11 @@ class MediaPlaybackService : MediaBrowserServiceCompat() {
                 super.onPlayerError(error)
                 val index = mExoPlayer.currentMediaItemIndex
                 if (currentPlayList[index].isBuffered > NOT_BUFFERED) {
-                    bufferSong(currentPlayList[index], index)
+                    if (currentPlayList[index].youtubeId != null) {
+                        bufferYoutubeSteam(currentPlayList[index], index)
+                    } else {
+                        bufferSong(currentPlayList[index], index)
+                    }
                 }
             }
 
@@ -197,7 +202,11 @@ class MediaPlaybackService : MediaBrowserServiceCompat() {
                 val index = mExoPlayer.currentMediaItemIndex
                 when (song.isBuffered) {
                     NOT_BUFFERED -> {
-                        bufferSong(song, index)
+                        if (currentPlayList[index].youtubeId != null) {
+                            bufferYoutubeSteam(currentPlayList[index], index)
+                        } else {
+                            bufferSong(currentPlayList[index], index)
+                        }
                     }
                     else -> {
                         currentPlaySong = song
@@ -443,6 +452,45 @@ class MediaPlaybackService : MediaBrowserServiceCompat() {
         }
         setBuffer?.let {
             it()
+        }
+    }
+
+    @RequiresApi(Build.VERSION_CODES.M)
+    private fun bufferYoutubeSteam(song: Song, index: Int) {
+        var song1 = song
+        applicationScope.launch(Dispatchers.IO + CoroutineExceptionHandler { _, _ ->
+            Log.d(TAG, "bufferSong: error")
+        }) {
+            withContext(Dispatchers.Main) {
+                isBuffering = true
+                updateMetadata(createMetadataFromSong(BUFFER_SONG))
+            }
+            try {
+                val streamUrl = YoutubeDLUtil.getStream(song1.youtubeId!!)
+                song1 = song1.copy(
+                    isBuffered = BUFFERED,
+                    mediaFileUri = streamUrl
+                )
+                DataBaseUtils.updateSong(song1)
+
+                withContext(Dispatchers.Main) {
+                    currentPlayList[index] = song1
+                    currentPlaySong = song1
+                    updateQueue(currentPlayList, song1) {
+                        isBuffering = false
+                    }
+                }
+            } catch (e: Exception) {
+                withContext(Dispatchers.Main) {
+                    Log.d(TAG, "bufferSong: null $index + " + currentPlayList.size)
+                    toast.setText("Error")
+                    toast.show()
+                    currentPlaySong = currentPlayList[index + 1]
+                    updateQueue(currentPlayList, currentPlaySong) {
+                        isBuffering = false
+                    }
+                }
+            }
         }
     }
 

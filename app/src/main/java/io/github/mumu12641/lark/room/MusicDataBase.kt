@@ -1,9 +1,6 @@
 package io.github.mumu12641.lark.room
 
-import androidx.room.Database
-import androidx.room.Room
-import androidx.room.RoomDatabase
-import androidx.room.TypeConverters
+import androidx.room.*
 import androidx.sqlite.db.SupportSQLiteDatabase
 import io.github.mumu12641.lark.BaseApplication.Companion.context
 import io.github.mumu12641.lark.BaseApplication.Companion.kv
@@ -14,8 +11,11 @@ import io.github.mumu12641.lark.entity.SongList
 
 @Database(
     entities = [SongList::class, Song::class, PlaylistSongCrossRef::class],
-    version = 22,
-    exportSchema = true
+    version = 23,
+    exportSchema = true,
+    autoMigrations = [
+        AutoMigration(from = 22, to = 23)
+    ]
 )
 @TypeConverters(Converters::class)
 abstract class MusicDataBase : RoomDatabase() {

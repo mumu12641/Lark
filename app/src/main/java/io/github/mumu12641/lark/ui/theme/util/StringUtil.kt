@@ -5,19 +5,6 @@ import android.content.Context
 import io.github.mumu12641.lark.BaseApplication.Companion.context
 
 object StringUtil {
-//    public static String paste(){
-//        ClipboardManager manager = (ClipboardManager) CourserApplication.getContext().getSystemService(Context.CLIPBOARD_SERVICE);
-//        if (manager != null) {
-//            if (manager.hasPrimaryClip() && manager.getPrimaryClip().getItemCount() > 0) {
-//                CharSequence addedText = manager.getPrimaryClip().getItemAt(0).getText();
-//                String addedTextString = String.valueOf(addedText);
-//                if (!TextUtils.isEmpty(addedTextString)) {
-//                    return addedTextString;
-//                }
-//            }
-//        }
-//        return "";
-//    }
 
     private fun getPaste(): String {
         val manager: ClipboardManager =

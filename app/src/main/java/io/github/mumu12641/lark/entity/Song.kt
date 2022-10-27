@@ -18,6 +18,7 @@ data class Song(
     var neteaseId: Long = 0L,
     var isBuffered: Int = NOT_NEED_BUFFER,
     var vip: Boolean = false,
+    var youtubeId:String? = null,
     var lyrics: String? = null
 ) {
     override fun equals(other: Any?): Boolean {

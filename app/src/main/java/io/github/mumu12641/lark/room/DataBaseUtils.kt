@@ -1,5 +1,6 @@
 package io.github.mumu12641.lark.room
 
+import androidx.room.Query
 import io.github.mumu12641.lark.BaseApplication
 import io.github.mumu12641.lark.BaseApplication.Companion.applicationScope
 import io.github.mumu12641.lark.R
@@ -39,6 +40,14 @@ class DataBaseUtils {
 
         suspend fun isNeteaseIdExist(neteaseId: Long): Boolean {
             return musicDao.isNeteaseIdExist(neteaseId)
+        }
+
+        suspend fun querySongIdByYoutubeId(youtubeId: String): Long{
+            return musicDao.querySongIdByYoutubeId(youtubeId)
+        }
+
+        suspend fun isYoutubeIdExist(youtubeId: String): Boolean{
+            return musicDao.isYoutubeIdExist(youtubeId)
         }
 
         suspend fun insertSong(song: Song): Long {

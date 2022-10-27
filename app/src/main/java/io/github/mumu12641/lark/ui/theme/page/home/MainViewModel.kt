@@ -5,12 +5,12 @@ import android.os.Build
 import android.os.Bundle
 import android.support.v4.media.session.PlaybackStateCompat
 import android.util.Log
+import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.yausername.youtubedl_android.YoutubeDL
-import com.yausername.youtubedl_android.YoutubeDLRequest
 import dagger.hilt.android.lifecycle.HiltViewModel
+import io.github.mumu12641.lark.BaseApplication.Companion.applicationScope
 import io.github.mumu12641.lark.BaseApplication.Companion.context
 import io.github.mumu12641.lark.BaseApplication.Companion.kv
 import io.github.mumu12641.lark.R
@@ -26,6 +26,7 @@ import io.github.mumu12641.lark.ui.theme.util.PreferenceUtil.REPEAT_MODE
 import io.github.mumu12641.lark.ui.theme.util.PreferenceUtil.REPEAT_ONE_NOT_REMIND
 import io.github.mumu12641.lark.ui.theme.util.UpdateUtil.checkForUpdate
 import io.github.mumu12641.lark.ui.theme.util.UpdateUtil.getUpdateInfo
+import io.github.mumu12641.lark.ui.theme.util.YoutubeDLUtil
 import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
@@ -85,10 +86,6 @@ class MainViewModel @Inject constructor() : ViewModel() {
                 val info = getUpdateInfo()
                 it.copy(info = info, showDialog = checkForUpdate(info))
             }
-            val request = YoutubeDLRequest("https://youtu.be/Pv61yEcOqpw")
-            request.addOption("-f", "best")
-            val streamInfo = YoutubeDL.getInstance().getInfo(request)
-            Log.d(TAG, streamInfo.url)
         }
     }
 
@@ -274,6 +271,73 @@ class MainViewModel @Inject constructor() : ViewModel() {
                         Log.d(TAG, "refreshArtist: error" + e.message)
                     }
                 }
+            }
+        }
+    }
+
+    fun getYoutubePlayList(url: String) {
+        viewModelScope.launch(Dispatchers.IO + CoroutineExceptionHandler { _, e ->
+            e.message?.let {
+                _loadState.update { state ->
+                    state.copy(loadState = io.github.mumu12641.lark.entity.LoadState.Fail("0"))
+                }
+            }
+            applicationScope.launch(Dispatchers.Main) {
+                Toast.makeText(context,"请使用VPN重试",Toast.LENGTH_SHORT).show()
+            }
+            Log.d(TAG, "getYoutubePlayList: " + e.message)
+        }) {
+            _loadState.update {
+                it.copy(num = 0,loadState = io.github.mumu12641.lark.entity.LoadState.Loading("0"))
+            }
+            val playListInfo = YoutubeDLUtil.getPlayListInfo(url)
+            Log.d(TAG, "getYoutubePlayList: " + playListInfo.playlist_count)
+            if(playListInfo.playlist_count >0) {
+                _loadState.update {
+                    it.copy(num = playListInfo.playlist_count)
+                }
+            }
+            val songList = SongList(
+                0L,
+                playListInfo.title,
+                "",
+                playListInfo.playlist_count,
+                playListInfo.description,
+                "",
+                CREATE_SONGLIST_TYPE
+            )
+            val listId = DataBaseUtils.insertSongList(songList)
+            for (i in playListInfo.entries) {
+                val song = Song(
+                    0L,
+                    i.title,
+                    i.uploader,
+                    i.thumbnails.last().url,
+                    "",
+                    (i.duration * 1000).toInt(),
+                    isBuffered = NOT_BUFFERED,
+                    youtubeId = i.id
+                )
+                if (!DataBaseUtils.isYoutubeIdExist(i.id)) {
+                    DataBaseUtils.insertSong(song)
+                }
+                val songId = DataBaseUtils.querySongIdByYoutubeId(i.id)
+                if (!DataBaseUtils.isRefExist(listId, songId)) {
+                    DataBaseUtils.insertRef(PlaylistSongCrossRef(listId, songId))
+                }
+                _loadState.update {
+                    it.copy(
+                        loadState = io.github.mumu12641.lark.entity.LoadState.Loading(
+                            (playListInfo.entries.indexOf(
+                                i
+                            ) + 1).toString()
+                        )
+                    )
+                }
+
+            }
+            _loadState.update {
+                it.copy(loadState = io.github.mumu12641.lark.entity.LoadState.Success("0"))
             }
         }
     }
