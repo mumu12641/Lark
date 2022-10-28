@@ -5,15 +5,18 @@
     <img alt="GitHub" src="https://img.shields.io/github/license/mumu12641/Lark?color=brigntgreen&style=flat-square">
      <img alt="Version" src="https://img.shields.io/github/v/release/mumu12641/Lark?color=brigntgreen&style=flat-square">
     <img alt="GitHub last commit" src="https://img.shields.io/github/last-commit/mumu12641/Lark?color=brigntgreen&style=flat-square">
-</div>
-
-
-<h1 align="center">
+    <h1 align="center">
 	Lark
 </h1>
 <p align="center">
-  Netease Cloud Music and Local Music Player,developed by using Jetpack Compose
+  Netease Cloud Music and Youtube Music Player,developed by using Jetpack Compose
 </p>
+<p align="center">
+English
+&nbsp;&nbsp;| &nbsp;&nbsp;
+<a href="https://github.com/mumu12641/Lark/blob/master/README-zh.md">简体中文</a> 
+</div>
+
 
 ## :framed_picture: ScreenShot
 
@@ -32,14 +35,14 @@
 ## :book:Features
 
 - :floppy_disk:Fetch local music to play
-- :rocket:Import songlists from Netease Cloud Music
+- :rocket:Import songlists from Netease Cloud Music and Youtube Music
 - :bulb:Adaptive play theme with currently playing song
 - :art: [Material Design 3](https://m3.material.io/) style UI, with [dynamic color](https://m3.material.io/foundations/customization) theme
 
 ## :pushpin:What's Next
 
 - :sparkles:UI improvement
-- :mag_right:Search songs from Netease Cloud Music
+- :mag_right:Search songs from Netease Cloud Music and Youtube Music
 - :link:More sound source
 
 ## :open_file_folder:Download
@@ -50,7 +53,9 @@ Please download apk from [releases](https://github.com/mumu12641/Lark/releases)
 
 Some code is borrowed from [Seal](https://github.com/JunkFood02/Seal), and UI design inspired by [RetroMusicPlayer](https://github.com/RetroMusicPlayer/RetroMusicPlayer) and [Howl](https://github.com/Iamlooker/Howl).
 
-API service from [NeteaseCloudMusicApi](https://github.com/Binaryify/NeteaseCloudMusicApi).
+Netease Cloud Music API service from [NeteaseCloudMusicApi](https://github.com/Binaryify/NeteaseCloudMusicApi).
+
+Youtube Music from [yt_dlp](https://github.com/yt-dlp/yt-dlp) and [youtubedl-android](https://github.com/yausername/youtubedl-android).
 
 
 Material design from [material color utilities](https://github.com/material-foundation/material-color-utilities).

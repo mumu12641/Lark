@@ -1,6 +1,5 @@
 package io.github.mumu12641.lark.ui.theme.util
 
-import android.util.Log
 import com.yausername.youtubedl_android.YoutubeDL
 import com.yausername.youtubedl_android.YoutubeDLRequest
 import com.yausername.youtubedl_android.YoutubeDLResponse
@@ -24,15 +23,12 @@ object YoutubeDLUtil {
             addOption("--socket-timeout", "5")
         }
         val resp: YoutubeDLResponse = YoutubeDL.getInstance().execute(request, null)
-        Log.d(TAG, "getPlayListInfo: " + resp.out)
-        val jsonObj = jsonFormat.decodeFromString<PlayListInfo>(resp.out)
-        Log.d(TAG, "getPlayListInfo: " + jsonObj.entries)
-        return jsonObj
+        return jsonFormat.decodeFromString(resp.out)
     }
 
     suspend fun getStream(id: String): String {
         val request = YoutubeDLRequest("https://youtu.be/$id")
-        request.addOption("-f", "best")
+        request.addOption("-f", "b")
         val streamInfo = YoutubeDL.getInstance().getInfo(request)
         return streamInfo.url
     }
