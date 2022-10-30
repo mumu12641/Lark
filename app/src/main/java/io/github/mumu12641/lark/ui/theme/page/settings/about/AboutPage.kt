@@ -1,32 +1,37 @@
 package io.github.mumu12641.lark.ui.theme.page.settings.about
 
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowBack
-import androidx.compose.material.icons.filled.AutoAwesome
-import androidx.compose.material.icons.filled.Description
-import androidx.compose.material.icons.filled.Settings
+import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.LocalUriHandler
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import io.github.mumu12641.lark.BaseApplication.Companion.applicationScope
+import io.github.mumu12641.lark.BaseApplication.Companion.context
 import io.github.mumu12641.lark.BaseApplication.Companion.version
+import io.github.mumu12641.lark.LocalAutoUpdateSwitch
 import io.github.mumu12641.lark.R
+import io.github.mumu12641.lark.entity.network.UpdateInfo
+import io.github.mumu12641.lark.ui.theme.component.LarkAlertDialog
 import io.github.mumu12641.lark.ui.theme.component.LarkTopBar
 import io.github.mumu12641.lark.ui.theme.component.SettingItem
+import io.github.mumu12641.lark.ui.theme.component.SettingSwitchItem
+import io.github.mumu12641.lark.ui.theme.util.PreferenceUtil
+import io.github.mumu12641.lark.ui.theme.util.UpdateUtil
+import io.github.mumu12641.lark.ui.theme.util.UpdateUtil.checkForUpdate
+import io.github.mumu12641.lark.ui.theme.util.UpdateUtil.getUpdateInfo
+import io.github.mumu12641.lark.ui.theme.util.suspendToast
 import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -44,7 +49,7 @@ fun AboutPage(navController: NavController) {
         topBar = {
             LarkTopBar(
                 title = stringResource(id = R.string.about_text),
-                navIcon = Icons.Default.ArrowBack,
+                navIcon = Icons.Filled.ArrowBack,
                 scrollBehavior = scrollBehavior
             ) {
                 navController.popBackStack()
@@ -69,33 +74,26 @@ fun AboutContent(modifier: Modifier) {
             "material color utilities",
             "https://github.com/material-foundation/material-color-utilities"
         ),
+        Pair("yt_dlp", "https://github.com/yt-dlp/yt-dlp"),
+        Pair("youtubedl-android", "https://github.com/yausername/youtubedl-android"),
         Pair("NeteaseCloudMusicApi", "https://github.com/Binaryify/NeteaseCloudMusicApi"),
         Pair("retrofit", "https://github.com/square/retrofit"),
         Pair("RetroMusicPlayer", "https://github.com/RetroMusicPlayer/RetroMusicPlayer"),
-        Pair("Howl", "https://github.com/Iamlooker/Howl")
+        Pair("Howl", "https://github.com/Iamlooker/Howl"),
     )
+    var showUpdateDialog by remember {
+        mutableStateOf(false)
+    }
+    var updateInfo by remember {
+        mutableStateOf(UpdateInfo())
+    }
 
     LazyColumn(modifier = modifier) {
-        item {
-            Row(
-                modifier = Modifier.fillMaxSize(),
-                horizontalArrangement = Arrangement.Center,
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Image(
-                    painter = painterResource(id = R.drawable.icon),
-                    contentDescription = "icon",
-                    modifier = Modifier
-                        .padding(10.dp)
-                        .size(100.dp)
-                )
-            }
-        }
         item {
             SettingItem(
                 title = stringResource(id = R.string.github_text), description = stringResource(
                     id = R.string.github_des_text
-                ), icon = Icons.Default.Description
+                ), icon = Icons.Filled.Description
             ) {
                 uriHandler.openUri("https://github.com/mumu12641/Lark")
             }
@@ -104,19 +102,39 @@ fun AboutContent(modifier: Modifier) {
             SettingItem(
                 title = stringResource(id = R.string.thanks_text), description = stringResource(
                     id = R.string.thanks_des_text
-                ), icon = Icons.Default.AutoAwesome
+                ), icon = Icons.Filled.AutoAwesome
             ) {
                 showThanksDialog = true
+            }
+        }
+        item {
+            val localAutoUpdateSwitch = LocalAutoUpdateSwitch.current
+            SettingSwitchItem(
+                title = stringResource(id = R.string.auto_update),
+                description = stringResource(id = R.string.auto_update_desc),
+                icon = Icons.Filled.Update,
+                isChecked = localAutoUpdateSwitch,
+                switchChange = { PreferenceUtil.switchAutoUpdate(it) },
+            ) {
+                PreferenceUtil.switchAutoUpdate(!localAutoUpdateSwitch)
             }
         }
         item {
             SettingItem(
                 title = stringResource(id = R.string.version_text),
                 description = version,
-                icon = Icons.Default.Settings
+                icon = Icons.Filled.Info
             ) {
-                applicationScope.launch (Dispatchers.IO + CoroutineExceptionHandler{_,_,->}){
-//                    UpdateUtil.
+                applicationScope.launch(Dispatchers.IO + CoroutineExceptionHandler { _, _ ->
+                    context.getString(R.string.check_network).suspendToast()
+                }) {
+                    val info = getUpdateInfo()
+                    if (checkForUpdate(info)) {
+                        updateInfo = info
+                        showUpdateDialog = true
+                    } else {
+                        context.getString(R.string.already_latest).suspendToast()
+                    }
                 }
             }
         }
@@ -152,5 +170,20 @@ fun AboutContent(modifier: Modifier) {
                     }
                 }
             })
+    }
+    if (showUpdateDialog) {
+        LarkAlertDialog(
+            onDismissRequest = { showUpdateDialog = false },
+            title = updateInfo.name,
+            text = {
+                Text(
+                    updateInfo.body
+                )
+            },
+            confirmOnClick = {
+                uriHandler.openUri(UpdateUtil.RELEASE_URL)
+            },
+            confirmText = stringResource(id = R.string.got_to_update_text),
+        )
     }
 }

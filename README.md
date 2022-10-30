@@ -1,5 +1,5 @@
 <p align="center"> 
-	<img src="assert/icon.png "  >
+	<img src="assert/icon.png" width=160 height=160  >
 </p>
 <div align="center">
     <img alt="GitHub" src="https://img.shields.io/github/license/mumu12641/Lark?color=brigntgreen&style=flat-square">
@@ -16,7 +16,6 @@ English
 &nbsp;&nbsp;| &nbsp;&nbsp;
 <a href="https://github.com/mumu12641/Lark/blob/master/README-zh.md">简体中文</a> 
 </div>
-
 
 ## :framed_picture: ScreenShot
 

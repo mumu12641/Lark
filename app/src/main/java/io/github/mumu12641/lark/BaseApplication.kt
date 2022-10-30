@@ -43,6 +43,9 @@ class BaseApplication : Application() {
         } catch (e: YoutubeDLException) {
             Log.e(TAG, "failed to initialize youtubedl-android", e)
         }
+
+        ytDlpVersion =
+            YoutubeDL.getInstance().version(this) ?: resources.getString(R.string.ytdlp_update)
     }
 
     companion object {
@@ -51,5 +54,6 @@ class BaseApplication : Application() {
         lateinit var applicationScope: CoroutineScope
         lateinit var version: String
         lateinit var kv: MMKV
+        lateinit var ytDlpVersion:String
     }
 }

@@ -41,6 +41,7 @@ object PreferenceUtil {
     const val REPEAT_MODE = "repeat mode"
     const val REPEAT_ONE_NOT_REMIND = "repeat one not remind"
     const val MUSIC_QUALITY = "music quality"
+    const val AUTO_UPDATE = "auto update"
 
     private const val DARK_MODE = "dark mode value"
     private const val DYNAMIC_COLOR = "dynamic color preference"
@@ -92,7 +93,8 @@ object PreferenceUtil {
             kv.decodeInt(SEED_COLOR, DEFAULT_SEED_COLOR),
             DynamicColorPreference(dynamicColorSwitch = kv.decodeInt(DYNAMIC_COLOR, OFF)),
             followAlbumSwitch = kv.decodeInt(FOLLOW_ALBUM_COLOR_SWITCH, OFF),
-            musicQuality = kv.decodeString(MUSIC_QUALITY, STANDARD)!!
+            musicQuality = kv.decodeString(MUSIC_QUALITY, STANDARD)!!,
+            autoUpdateSwitch = kv.decodeBool(AUTO_UPDATE,true)
         )
     )
     val displayPreferenceFlow = _disaplayPreferenceFlow
@@ -104,6 +106,7 @@ object PreferenceUtil {
         val currentAlbumColor: Int = DEFAULT_SEED_COLOR,
         val followAlbumSwitch: Int = ON,
         val musicQuality: String = STANDARD,
+        val autoUpdateSwitch:Boolean = true
     )
 
     data class DynamicColorPreference(
@@ -167,6 +170,15 @@ object PreferenceUtil {
             }
         }
         kv.encode(MUSIC_QUALITY, quality)
+    }
+
+    fun switchAutoUpdate(auto:Boolean){
+        applicationScope.launch(Dispatchers.IO) {
+            _disaplayPreferenceFlow.update {
+                it.copy(autoUpdateSwitch = auto)
+            }
+        }
+        kv.encode(AUTO_UPDATE, auto)
     }
 
     private const val TAG = "PreferenceUtil"

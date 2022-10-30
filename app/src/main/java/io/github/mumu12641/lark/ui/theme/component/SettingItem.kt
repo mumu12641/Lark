@@ -4,6 +4,7 @@ import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.outlined.Check
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
@@ -119,7 +120,7 @@ fun SettingSwitchItem(
                 thumbContent = {
                     AnimatedVisibility(visible = isChecked) {
                         Icon(
-                            Icons.Outlined.Check,
+                            Icons.Filled.Check,
                             modifier = Modifier.size(SwitchDefaults.IconSize),
                             contentDescription = null
                         )

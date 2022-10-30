@@ -101,13 +101,6 @@ class MediaServiceConnection(context: Context, componentName: ComponentName) {
             _playMetadata.value = metadata ?: NOTHING_PLAYING
 
             applicationScope.launch(Dispatchers.IO + CoroutineExceptionHandler { _, _ ->
-//                Toast.makeText(context,"Something went wrong",Toast.LENGTH_SHORT).show()
-//                transportControls.sendCustomAction(
-//                    CHANGE_PLAY_LIST,
-//                    Bundle().apply {
-//                        putLong("songListId", LocalSongListId)
-//                        putLong("songId", CHANGE_PLAT_LIST_SHUFFLE)
-//                    })
                 transportControls.sendCustomAction(SET_EMPTY, Bundle())
             }) {
                 if (_playMetadata.value.getString(MediaMetadataCompat.METADATA_KEY_MEDIA_ID)
@@ -115,16 +108,11 @@ class MediaServiceConnection(context: Context, componentName: ComponentName) {
                 ) {
                     _currentPlaySong.value = BUFFER_SONG
                 } else {
-                    Log.d(
-                        TAG,
-                        "onMetadataChanged: " + _playMetadata.value.getString(MediaMetadataCompat.METADATA_KEY_MEDIA_ID)
-                    )
                     _currentPlaySong.value = DataBaseUtils.querySongById(
                         _playMetadata.value.getString(MediaMetadataCompat.METADATA_KEY_MEDIA_ID)
                             .toLong()
                     )
                 }
-                Log.d(TAG, "onMetadataChanged: " + _currentPlaySong.value.songTitle)
             }
 
             updateCurrentAlbumColor(metadata)

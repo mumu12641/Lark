@@ -36,6 +36,7 @@ import io.github.mumu12641.lark.network.NetworkCreator.networkService
 import io.github.mumu12641.lark.room.DataBaseUtils
 import io.github.mumu12641.lark.ui.theme.util.PreferenceUtil
 import io.github.mumu12641.lark.ui.theme.util.YoutubeDLUtil
+import io.github.mumu12641.lark.ui.theme.util.suspendToast
 import kotlinx.coroutines.*
 
 
@@ -482,7 +483,7 @@ class MediaPlaybackService : MediaBrowserServiceCompat() {
                 }
             } catch (e: Exception) {
                 withContext(Dispatchers.Main) {
-                    Toast.makeText(context, context.getString(R.string.check_network),Toast.LENGTH_SHORT).show()
+                    context.getString(R.string.check_network).suspendToast()
                     setEmptyPlayList()
                 }
             }

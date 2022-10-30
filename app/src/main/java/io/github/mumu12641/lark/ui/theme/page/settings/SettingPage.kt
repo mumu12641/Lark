@@ -8,9 +8,9 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material.Scaffold
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
-import androidx.compose.material.icons.sharp.Info
-import androidx.compose.material.icons.sharp.Palette
-import androidx.compose.material.icons.sharp.SettingsSuggest
+import androidx.compose.material.icons.filled.Info
+import androidx.compose.material.icons.filled.Palette
+import androidx.compose.material.icons.filled.SettingsSuggest
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -55,7 +55,7 @@ fun SettingPageContent(modifier: Modifier, navController: NavController) {
             SettingItem(
                 title = stringResource(id = R.string.universal_text),
                 description = stringResource(id = R.string.universal_desc),
-                icon = Icons.Sharp.SettingsSuggest
+                icon = Icons.Filled.SettingsSuggest
             ) {
                 navController.navigate(Route.ROUTE_UNIVERSAL)
             }
@@ -64,7 +64,7 @@ fun SettingPageContent(modifier: Modifier, navController: NavController) {
             SettingItem(
                 title = stringResource(id = R.string.display_text), description = stringResource(
                     id = R.string.display_des_text
-                ), icon = Icons.Sharp.Palette
+                ), icon = Icons.Filled.Palette
             ) {
                 navController.navigate(Route.ROUTE_DISPLAY)
             }
@@ -73,7 +73,7 @@ fun SettingPageContent(modifier: Modifier, navController: NavController) {
             SettingItem(
                 title = stringResource(id = R.string.about_text), description = stringResource(
                     id = R.string.about_des_text
-                ), icon = Icons.Sharp.Info
+                ), icon = Icons.Filled.Info
             ) {
                 navController.navigate(Route.ROUTE_ABOUT)
             }

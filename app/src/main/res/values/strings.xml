@@ -120,4 +120,13 @@
     <string name="guest_login">Guest login</string>
     <string name="not_login_text">Not logged in</string>
     <string name="check_network">Check network settings</string>
+    <string name="advanced_text">Advanced</string>
+    <string name="yt_dlp_version">Yt_dlp version</string>
+    <string name="ytdlp_update">Click to update ytdlp version</string>
+    <string name="yt_dlp_up_to_date">Update completed</string>
+    <string name="yt_dlp_update_fail">Update failed, please check your internet connection</string>
+    <string name="requie_permission_text">Lark wants to get your media rights, please allow it!</string>
+    <string name="auto_update">Auto update</string>
+    <string name="auto_update_desc">Automatically check and update to the latest version on Github</string>
+    <string name="already_latest">Already the latest version</string>
 </resources>

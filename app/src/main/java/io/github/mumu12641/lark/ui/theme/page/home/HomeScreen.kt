@@ -158,21 +158,9 @@ fun HomeSetup(
         LarkAlertDialog(
             onDismissRequest = {},
             title = stringResource(id = R.string.welcome_text),
+            icon = Icons.Filled.Lightbulb,
             text = {
-                Column(modifier = Modifier.verticalScroll(rememberScrollState())) {
-                    IconDescription(
-                        icon = Icons.Filled.MusicNote,
-                        description = stringResource(id = R.string.welcome_dialog_1_desc)
-                    )
-                    IconDescription(
-                        icon = Icons.Filled.Backup,
-                        description = stringResource(id = R.string.welcome_dialog_2_desc),
-                    )
-                    IconDescription(
-                        icon = Icons.Filled.PlayArrow,
-                        description = stringResource(id = R.string.welcome_dialog_3_desc),
-                    )
-                }
+                   Text(text = stringResource(id = R.string.requie_permission_text))
             },
             confirmOnClick = {
                 showDialog = false
@@ -182,26 +170,6 @@ fun HomeSetup(
         )
     }
 }
-
-
-@Composable
-fun IconDescription(modifier: Modifier = Modifier, icon: ImageVector, description: String) {
-    Row(
-        modifier = modifier.padding(top = 12.dp, bottom = 9.dp),
-        verticalAlignment = Alignment.CenterVertically
-    ) {
-        Icon(
-            modifier = Modifier.size(24.dp),
-            imageVector = icon,
-            contentDescription = null
-        )
-        Text(
-            modifier = Modifier.padding(start = 12.dp),
-            text = description,
-        )
-    }
-}
-
 
 @Composable
 fun HomeContent(
@@ -371,7 +339,7 @@ private fun Banner(
                                 horizontalArrangement = Arrangement.Center
                             ) {
                                 Icon(
-                                    Icons.Sharp.PlayArrow,
+                                    Icons.Filled.PlayArrow,
                                     contentDescription = "Play",
                                     tint = MaterialTheme.colorScheme.onPrimaryContainer
                                 )

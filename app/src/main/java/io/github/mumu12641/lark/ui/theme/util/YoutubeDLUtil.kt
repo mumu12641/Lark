@@ -1,9 +1,10 @@
 package io.github.mumu12641.lark.ui.theme.util
 
+import android.util.Log
 import com.yausername.youtubedl_android.YoutubeDL
 import com.yausername.youtubedl_android.YoutubeDLRequest
 import com.yausername.youtubedl_android.YoutubeDLResponse
-import io.github.mumu12641.lark.entity.network.PlayListInfo
+import io.github.mumu12641.lark.entity.network.youtube.PlayListInfo
 import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.json.Json
 
@@ -31,6 +32,13 @@ object YoutubeDLUtil {
         request.addOption("-f", "b")
         val streamInfo = YoutubeDL.getInstance().getInfo(request)
         return streamInfo.url
+    }
+
+    suspend fun getThumbnail(id:String):String?{
+        val request = YoutubeDLRequest("https://youtu.be/$id")
+        val streamInfo = YoutubeDL.getInstance().getInfo(request)
+//        if (streamInfo.thumbnails.size > )
+        return streamInfo.thumbnails.getOrNull(36)?.url
     }
 
 }

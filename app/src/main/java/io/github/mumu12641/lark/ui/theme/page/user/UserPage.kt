@@ -20,6 +20,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.PasswordVisualTransformation
+import androidx.compose.ui.unit.DpOffset
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.skydoves.landscapist.glide.GlideImage
@@ -55,21 +56,28 @@ fun UserPage(
                         IconButton(onClick = { actionMenu = !actionMenu }) {
                             Icon(Icons.Filled.MoreVert, contentDescription = "Menu")
                         }
-                        DropdownMenu(
-                            expanded = actionMenu,
-                            onDismissRequest = { actionMenu = false }) {
-                            DropdownMenuItem(
-                                text = { Text(text = stringResource(id = R.string.refresh_user_text)) },
-                                onClick = {
-                                    viewModel.getNeteaseUserDetail()
-                                }
+                        MaterialTheme(
+                            shapes = MaterialTheme.shapes.copy(
+                                extraSmall = RoundedCornerShape(18.dp)
                             )
-                            DropdownMenuItem(
-                                text = { Text(text = stringResource(id = R.string.logout_text)) },
-                                onClick = {
-                                    viewModel.logout()
-                                }
-                            )
+                        ) {
+                            DropdownMenu(
+                                offset = DpOffset(10.dp, 0.dp),
+                                expanded = actionMenu,
+                                onDismissRequest = { actionMenu = false }) {
+                                DropdownMenuItem(
+                                    text = { Text(text = stringResource(id = R.string.refresh_user_text)) },
+                                    onClick = {
+                                        viewModel.getNeteaseUserDetail()
+                                    }
+                                )
+                                DropdownMenuItem(
+                                    text = { Text(text = stringResource(id = R.string.logout_text)) },
+                                    onClick = {
+                                        viewModel.logout()
+                                    }
+                                )
+                            }
                         }
                     }
                 ) {

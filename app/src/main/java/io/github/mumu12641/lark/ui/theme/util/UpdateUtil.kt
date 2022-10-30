@@ -1,7 +1,16 @@
 package io.github.mumu12641.lark.ui.theme.util
 
+import android.util.Log
+import android.widget.Toast
+import com.yausername.youtubedl_android.YoutubeDL
+import io.github.mumu12641.lark.BaseApplication
+import io.github.mumu12641.lark.BaseApplication.Companion.context
 import io.github.mumu12641.lark.BaseApplication.Companion.version
+import io.github.mumu12641.lark.BaseApplication.Companion.ytDlpVersion
+import io.github.mumu12641.lark.R
 import io.github.mumu12641.lark.entity.network.UpdateInfo
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.json.Json
 import okhttp3.*
@@ -39,6 +48,22 @@ object UpdateUtil {
 
     fun checkForUpdate(info: UpdateInfo): Boolean {
         return Version(info.name) > Version(version)
+    }
+
+    suspend fun updateYtDlp(): String {
+        withContext(Dispatchers.IO) {
+            try {
+                YoutubeDL.getInstance().updateYoutubeDL(context)
+                context.getString(R.string.yt_dlp_up_to_date).suspendToast()
+            } catch (e: Exception) {
+                Log.d("TAG", "updateYtDlp: " + e.message)
+                context.getString(R.string.yt_dlp_update_fail).suspendToast()
+            }
+        }
+        YoutubeDL.getInstance().version(context)?.let {
+            ytDlpVersion = it
+        }
+        return ytDlpVersion
     }
 
     const val RELEASE_URL = "https://github.com/mumu12641/Lark/releases/"

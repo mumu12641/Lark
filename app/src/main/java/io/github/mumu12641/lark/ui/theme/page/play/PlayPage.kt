@@ -128,7 +128,7 @@ fun PlayPage(
                 topBar = {
                     LarkSmallTopBar(
                         title = "",
-                        navIcon = Icons.Filled.ExpandMore,
+                        navIcon = Icons.Filled.ArrowBack,
                         navIconClick = { navController.popBackStack() },
                         actions = {
                             IconButton(onClick = {
@@ -137,7 +137,7 @@ fun PlayPage(
                                 }
                             }) {
                                 Icon(
-                                    Icons.Filled.Menu,
+                                    Icons.Filled.MoreVert,
                                     contentDescription = null
                                 )
                             }

@@ -27,6 +27,7 @@ val FollowAlbumSwitch = compositionLocalOf { ON }
 val DynamicColorSwitch = compositionLocalOf { PreferenceUtil.DynamicColorPreference() }
 val displayPreferenceFlow = PreferenceUtil.displayPreferenceFlow
 val LocalMusicQuality = compositionLocalOf { STANDARD }
+val LocalAutoUpdateSwitch = compositionLocalOf { true }
 
 @Composable
 fun PreferenceProvider(content: @Composable () -> Unit) {
@@ -41,6 +42,7 @@ fun PreferenceProvider(content: @Composable () -> Unit) {
         LocalDensity provides Density(
             density = LocalContext.current.resources.displayMetrics.widthPixels / 400.0f
         ),
+        LocalAutoUpdateSwitch provides displayPreferenceFlowState.autoUpdateSwitch,
         content = content
     )
 }

@@ -10,10 +10,8 @@ import androidx.compose.foundation.selection.selectableGroup
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowBack
-import androidx.compose.material.icons.filled.Brightness6
-import androidx.compose.material.icons.filled.Check
-import androidx.compose.material.icons.filled.Colorize
+import androidx.compose.material.icons.filled.*
+import androidx.compose.material.icons.sharp.ArrowBack
 import androidx.compose.material.icons.sharp.Bedtime
 import androidx.compose.material.icons.sharp.Language
 import androidx.compose.material3.*
@@ -222,7 +220,7 @@ fun DisplayPageContent(modifier: Modifier) {
                     ON -> stringResource(id = R.string.on_text)
                     else -> stringResource(id = R.string.off_text)
                 },
-                icon = Icons.Sharp.Bedtime
+                icon = Icons.Filled.Bedtime
             ) {
                 showSwitchDarkModeDialog = true
             }
@@ -231,7 +229,7 @@ fun DisplayPageContent(modifier: Modifier) {
             SettingItem(
                 title = stringResource(id = R.string.language_desc),
                 description = getLanguageDesc(),
-                icon = Icons.Sharp.Language
+                icon = Icons.Filled.Language
             ) {
                 showSwitchLanguageDialog = true
             }
@@ -239,7 +237,7 @@ fun DisplayPageContent(modifier: Modifier) {
     }
     if (showSwitchDarkModeDialog) {
         RadioOptionsDialog(
-            icon = Icons.Sharp.Bedtime,
+            icon = Icons.Filled.Bedtime,
             title = stringResource(id = R.string.dark_mode_text),
             radioOptions = radioOptions,
             selectedOption = selectedOption,
@@ -252,7 +250,7 @@ fun DisplayPageContent(modifier: Modifier) {
 
     if (showSwitchLanguageDialog) {
         RadioOptionsDialog(
-            icon = Icons.Sharp.Language,
+            icon = Icons.Filled.Language,
             title = stringResource(id = R.string.language_desc),
             radioOptions = languageOptions,
             selectedOption = selectedLanguageOption,

@@ -22,14 +22,15 @@ import io.github.mumu12641.lark.room.DataBaseUtils
 import io.github.mumu12641.lark.service.MediaPlaybackService
 import io.github.mumu12641.lark.service.MediaServiceConnection
 import io.github.mumu12641.lark.service.MediaServiceConnection.Companion.EMPTY_PLAYBACK_STATE
+import io.github.mumu12641.lark.ui.theme.util.PreferenceUtil.AUTO_UPDATE
 import io.github.mumu12641.lark.ui.theme.util.PreferenceUtil.REPEAT_MODE
 import io.github.mumu12641.lark.ui.theme.util.PreferenceUtil.REPEAT_ONE_NOT_REMIND
 import io.github.mumu12641.lark.ui.theme.util.UpdateUtil.checkForUpdate
 import io.github.mumu12641.lark.ui.theme.util.UpdateUtil.getUpdateInfo
 import io.github.mumu12641.lark.ui.theme.util.YoutubeDLUtil
+import io.github.mumu12641.lark.ui.theme.util.YoutubeDLUtil.getThumbnail
 import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.map
@@ -83,9 +84,11 @@ class MainViewModel @Inject constructor() : ViewModel() {
             _bannerState.value = networkService.getBanner().banners.filter {
                 it.targetType == 1
             }
-            _checkForUpdate.update {
-                val info = getUpdateInfo()
-                it.copy(info = info, showDialog = checkForUpdate(info))
+            if (kv.encode(AUTO_UPDATE, true)) {
+                _checkForUpdate.update {
+                    val info = getUpdateInfo()
+                    it.copy(info = info, showDialog = checkForUpdate(info))
+                }
             }
         }
     }
@@ -309,11 +312,12 @@ class MainViewModel @Inject constructor() : ViewModel() {
             )
             val listId = DataBaseUtils.insertSongList(songList)
             for (i in playListInfo.entries) {
+                val thumbnail = getThumbnail(i.id)?:i.thumbnails.last().url
                 val song = Song(
                     0L,
                     i.title,
                     i.uploader,
-                    i.thumbnails.last().url,
+                    thumbnail,
                     "",
                     (i.duration * 1000).toInt(),
                     isBuffered = NOT_BUFFERED,
@@ -326,7 +330,6 @@ class MainViewModel @Inject constructor() : ViewModel() {
                 if (!DataBaseUtils.isRefExist(listId, songId)) {
                     DataBaseUtils.insertRef(PlaylistSongCrossRef(listId, songId))
                 }
-                delay(500)
                 _loadState.update {
                     it.copy(
                         loadState = io.github.mumu12641.lark.entity.LoadState.Loading(
