@@ -12,6 +12,7 @@ import io.github.mumu12641.lark.BaseApplication.Companion.context
 import io.github.mumu12641.lark.R
 import io.github.mumu12641.lark.entity.*
 import io.github.mumu12641.lark.room.DataBaseUtils
+import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
@@ -23,7 +24,6 @@ import javax.inject.Inject
 
 @HiltViewModel
 class FunctionViewModel @Inject constructor() : ViewModel() {
-
 
     private val _loadState = MutableStateFlow(Load.NONE)
     val loadLocal: StateFlow<Int> = _loadState
@@ -60,7 +60,9 @@ class FunctionViewModel @Inject constructor() : ViewModel() {
 
     @SuppressLint("Range", "Recycle")
     fun reFreshLocalMusicList() {
-        viewModelScope.launch(Dispatchers.IO) {
+        viewModelScope.launch(Dispatchers.IO + CoroutineExceptionHandler { _, e ->
+            e.message?.let { Log.d(TAG, it) }
+        }) {
             _loadState.value = Load.LOADING
             Log.d(TAG, "reFreshLocalMusicList: $loadLocal")
             val allMediaFileUri = DataBaseUtils.queryAllMediaFileUri()
@@ -123,33 +125,6 @@ class FunctionViewModel @Inject constructor() : ViewModel() {
         private const val TAG = "FunctionViewModel"
     }
 
-    private fun refreshArtist() {
-        viewModelScope.launch(Dispatchers.IO) {
-            val songs = DataBaseUtils.queryAllSong()
-            for (i in songs) {
-                if (!DataBaseUtils.isSongListExist(i.songSinger, ARTIST_SONGLIST_TYPE)) {
-                    DataBaseUtils.insertSongList(
-                        SongList(
-                            0L, i.songSinger, "xxx", 0, context.getString(
-                                R.string.no_description_text
-                            ), "111", ARTIST_SONGLIST_TYPE
-                        )
-                    )
-                }
-                val songListId = DataBaseUtils.querySongListId(
-                    i.songSinger,
-                    ARTIST_SONGLIST_TYPE
-                )
-                if (!DataBaseUtils.isRefExist(songListId, i.songId)) {
-                    DataBaseUtils.insertRef(
-                        PlaylistSongCrossRef(
-                            songListId, i.songId
-                        )
-                    )
-                }
-            }
-        }
-    }
 }
 
 fun getAlbumImageUri(id: Long): Uri {

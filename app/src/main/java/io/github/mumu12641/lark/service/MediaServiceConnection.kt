@@ -37,7 +37,13 @@ import java.util.*
 class MediaServiceConnection(context: Context, componentName: ComponentName) {
 
     private val job = Job()
-    private val scope = CoroutineScope(job + Dispatchers.IO)
+    private val scope = CoroutineScope(job + Dispatchers.IO + CoroutineExceptionHandler { _, e ->
+        Log.e(
+            TAG,
+            e.message.toString(),
+
+            )
+    })
 
     private val _isConnected = MutableStateFlow(false)
     val isConnected = _isConnected
@@ -71,6 +77,7 @@ class MediaServiceConnection(context: Context, componentName: ComponentName) {
 
     private val mediaBrowserConnectionCallback = object : MediaBrowserCompat.ConnectionCallback() {
         override fun onConnected() {
+            Log.d(TAG, "onConnected: ")
             _isConnected.value = true
             mediaController = MediaControllerCompat(context, mediaBrowser.sessionToken).apply {
                 registerCallback(controllerCallback)

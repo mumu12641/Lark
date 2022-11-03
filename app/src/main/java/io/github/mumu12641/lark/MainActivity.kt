@@ -49,7 +49,7 @@ class MainActivity : AppCompatActivity() {
     private val userViewModel: UserViewModel by viewModels()
     private val songListDetailsViewModel: SongListDetailsViewModel by viewModels()
     private val artistViewModel: ArtistViewModel by viewModels()
-    private val searchViewModel: SearchViewModel by viewModels()
+//    private val searchViewModel: SearchViewModel by viewModels()
     private val playViewModel: PlayViewModel by viewModels()
 
     @RequiresApi(Build.VERSION_CODES.Q)
@@ -80,7 +80,7 @@ class MainActivity : AppCompatActivity() {
                             userViewModel,
                             songListDetailsViewModel,
                             artistViewModel,
-                            searchViewModel,
+//                            searchViewModel,
                             playViewModel
                         )
                     }

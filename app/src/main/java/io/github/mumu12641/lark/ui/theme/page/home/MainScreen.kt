@@ -41,7 +41,7 @@ fun MainScreen(
     userViewModel: UserViewModel,
     songListDetailsViewModel: SongListDetailsViewModel,
     artistViewModel: ArtistViewModel,
-    searchViewModel: SearchViewModel,
+//    searchViewModel: SearchViewModel,
     playViewModel: PlayViewModel
 ) {
     val navController = rememberAnimatedNavController()
@@ -174,11 +174,11 @@ fun MainScreen(
         animatedComposable(Route.ROUTE_UNIVERSAL) {
             UniversalSettingPage(navController = navController, mainViewModel)
         }
-        animatedComposable(Route.ROUTE_SEARCH) {
-            SearchPage(
-                navController = navController,
-                searchViewModel,
-                addBannerSongToList = { mainViewModel.addSongToCurrentList(it) })
-        }
+//        animatedComposable(Route.ROUTE_SEARCH) {
+//            SearchPage(
+//                navController = navController,
+//                searchViewModel,
+//                addBannerSongToList = { mainViewModel.addSongToCurrentList(it) })
+//        }
     }
 }

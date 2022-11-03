@@ -400,11 +400,13 @@ private fun SheetContent(
                             fabPosition = FabPosition.End,
                             onClick = {
                                 scope.launch {
-                                    state.animateScrollToItem(
-                                        currentPlaySongs.indexOf(
-                                            currentPlaySong
+                                    if (currentPlaySongs.contains(currentPlaySong)) {
+                                        state.animateScrollToItem(
+                                            currentPlaySongs.indexOf(
+                                                currentPlaySong
+                                            )
                                         )
-                                    )
+                                    }
                                 }
                             },
                             FabContent = {

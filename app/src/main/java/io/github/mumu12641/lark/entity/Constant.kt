@@ -1,7 +1,10 @@
 package io.github.mumu12641.lark.entity
 
+import android.util.Log
 import io.github.mumu12641.lark.BaseApplication.Companion.context
 import io.github.mumu12641.lark.R
+import kotlinx.coroutines.CoroutineExceptionHandler
+import kotlinx.coroutines.Dispatchers
 
 object Route {
     val ROUTE_HOME = context.getString(R.string.app_name)
@@ -88,3 +91,10 @@ const val NEXT_TO_PLAY_PAGE = 0
 const val LYRICS_PAGE = 1
 
 const val VIP_DURATION = 30000
+
+val coroutineContext = Dispatchers.IO + CoroutineExceptionHandler { _, e ->
+    Log.d("⚠ CoroutineException ", e.message.toString())
+}
+val coroutineExceptionHandler = CoroutineExceptionHandler { _, e ->
+    Log.d("⚠ CoroutineException ", e.message.toString())
+}

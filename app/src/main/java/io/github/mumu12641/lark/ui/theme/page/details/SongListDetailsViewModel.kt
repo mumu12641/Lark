@@ -5,6 +5,8 @@ import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import io.github.mumu12641.lark.entity.Song
 import io.github.mumu12641.lark.entity.SongList
+import io.github.mumu12641.lark.entity.coroutineContext
+import io.github.mumu12641.lark.entity.coroutineExceptionHandler
 import io.github.mumu12641.lark.room.DataBaseUtils
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.*
@@ -18,7 +20,7 @@ class SongListDetailsViewModel @Inject constructor() : ViewModel() {
     val songListDetailUiState = _songListDetailUiState
 
     fun initData(id: Long) {
-        viewModelScope.launch {
+        viewModelScope.launch(coroutineExceptionHandler) {
             _songListDetailUiState.update {
                 it.copy(isLoading = true, currentSongListId = id)
             }
@@ -37,7 +39,7 @@ class SongListDetailsViewModel @Inject constructor() : ViewModel() {
     }
 
     fun updateSongListDescription(description: String) {
-        viewModelScope.launch(Dispatchers.IO) {
+        viewModelScope.launch(coroutineContext) {
             DataBaseUtils.updateSongList(
                 DataBaseUtils.querySongListById(_songListDetailUiState.value.currentSongListId)
                     .copy(description = description)
@@ -46,7 +48,7 @@ class SongListDetailsViewModel @Inject constructor() : ViewModel() {
     }
 
     fun changeSongListImage(uri: String) {
-        viewModelScope.launch(Dispatchers.IO) {
+        viewModelScope.launch(coroutineContext) {
             DataBaseUtils.updateSongList(
                 DataBaseUtils.querySongListById(_songListDetailUiState.value.currentSongListId)
                     .copy(imageFileUri = uri)
@@ -55,7 +57,7 @@ class SongListDetailsViewModel @Inject constructor() : ViewModel() {
     }
 
     fun deletePlaylistSongCrossRef(songId:Long){
-        viewModelScope.launch (Dispatchers.IO){
+        viewModelScope.launch (coroutineContext){
             DataBaseUtils.deleteRef(_songListDetailUiState.value.currentSongListId,songId)
         }
     }

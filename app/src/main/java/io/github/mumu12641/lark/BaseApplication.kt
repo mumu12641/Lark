@@ -11,6 +11,7 @@ import com.tencent.mmkv.MMKV
 import com.yausername.youtubedl_android.YoutubeDL
 import com.yausername.youtubedl_android.YoutubeDLException
 import dagger.hilt.android.HiltAndroidApp
+import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.SupervisorJob
 
@@ -23,7 +24,9 @@ class BaseApplication : Application() {
     override fun onCreate() {
         super.onCreate()
         context = applicationContext
-        applicationScope = CoroutineScope(SupervisorJob())
+        applicationScope = CoroutineScope(SupervisorJob() + CoroutineExceptionHandler { _, e ->
+            Log.d(TAG, "onCreate: " + e.message)
+        })
         MMKV.initialize(this)
         kv = MMKV.defaultMMKV()
         if (kv.decodeInt("first") == 0) {

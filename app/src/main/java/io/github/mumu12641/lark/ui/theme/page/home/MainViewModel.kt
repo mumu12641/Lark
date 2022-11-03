@@ -28,7 +28,6 @@ import io.github.mumu12641.lark.ui.theme.util.PreferenceUtil.REPEAT_ONE_NOT_REMI
 import io.github.mumu12641.lark.ui.theme.util.UpdateUtil.checkForUpdate
 import io.github.mumu12641.lark.ui.theme.util.UpdateUtil.getUpdateInfo
 import io.github.mumu12641.lark.ui.theme.util.YoutubeDLUtil
-import io.github.mumu12641.lark.ui.theme.util.YoutubeDLUtil.getThumbnail
 import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
@@ -78,8 +77,9 @@ class MainViewModel @Inject constructor() : ViewModel() {
 
 
     init {
+        Log.d(TAG, "init: ")
         viewModelScope.launch(Dispatchers.IO + CoroutineExceptionHandler { _, e ->
-            e.message?.let { Log.d(TAG, it) }
+            e.message?.let { Log.d(TAG, it + Thread.currentThread().name) }
         }) {
             _bannerState.value = networkService.getBanner().banners.filter {
                 it.targetType == 1
@@ -254,7 +254,9 @@ class MainViewModel @Inject constructor() : ViewModel() {
     }
 
     fun refreshArtist() {
-        viewModelScope.launch(Dispatchers.IO) {
+        viewModelScope.launch(Dispatchers.IO + CoroutineExceptionHandler { _, e ->
+            e.message?.let { Log.d(TAG, it) }
+        }) {
             val songLists = DataBaseUtils.querySongListsByType(ARTIST_SONGLIST_TYPE)
             for (i in songLists) {
                 if (i.description == context.getString(R.string.no_description_text)) {
@@ -312,7 +314,8 @@ class MainViewModel @Inject constructor() : ViewModel() {
             )
             val listId = DataBaseUtils.insertSongList(songList)
             for (i in playListInfo.entries) {
-                val thumbnail = getThumbnail(i.id)?:i.thumbnails.last().url
+//                val thumbnail = getThumbnail(i.id)?:i.thumbnails.last().url
+                val thumbnail = i.thumbnails.last().url
                 val song = Song(
                     0L,
                     i.title,

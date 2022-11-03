@@ -25,7 +25,7 @@ android {
         applicationId = "io.github.mumu12641.lark"
         minSdk = 21
         targetSdk = 33
-        versionCode = 33
+        versionCode = 34
         versionName = "0.9.0-beta.1"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
@@ -37,12 +37,12 @@ android {
                 arguments += mapOf("room.schemaLocation" to "$projectDir/schemas")
             }
         }
-        ndk{
-            abiFilters.add("x86")
-            abiFilters.add("arm64-v8a")
-            abiFilters.add("x86_64")
-            abiFilters.add("armeabi-v7a")
-        }
+//        ndk{
+//            abiFilters.add("x86")
+//            abiFilters.add("x86_64")
+//            abiFilters.add("armeabi-v7a")
+//            abiFilters.add("arm64-v8a")
+//        }
     }
 
     splits {
@@ -50,7 +50,7 @@ android {
             isEnable = true
             reset()
             include("x86", "x86_64", "armeabi-v7a", "arm64-v8a")
-            isUniversalApk = true
+            isUniversalApk = false
         }
     }
 

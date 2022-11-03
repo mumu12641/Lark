@@ -21,8 +21,8 @@ object NetworkCreator {
         .addInterceptor(ReceivedCookiesInterceptor())
         .build()
     private val retrofit: Retrofit = Retrofit.Builder()
-        .addConverterFactory(GsonConverterFactory.create())
         .baseUrl(BASE_URL)
+        .addConverterFactory(GsonConverterFactory.create())
         .client(client)
         .build()
 
