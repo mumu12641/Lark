@@ -48,6 +48,8 @@ sealed class LoadState(val msg: String) {
     class None(msg: String = "") : LoadState(msg)
 }
 
+
+
 const val LocalSongListId = 1L
 const val LikeSongListId = 2L
 const val HistorySongListId = 3L
@@ -92,7 +94,7 @@ const val LYRICS_PAGE = 1
 
 const val VIP_DURATION = 30000
 
-val coroutineContext = Dispatchers.IO + CoroutineExceptionHandler { _, e ->
+val handleIOExceptionContext = Dispatchers.IO + CoroutineExceptionHandler { _, e ->
     Log.d("⚠ CoroutineException ", e.message.toString())
 }
 val coroutineExceptionHandler = CoroutineExceptionHandler { _, e ->

@@ -1,5 +1,5 @@
 <p align="center"> 
-	<img src="assert/icon.png "  >
+	<img src="assert/icon.png "  width=160 height=160 >
 </p>
 <div align="center">
     <img alt="GitHub" src="https://img.shields.io/github/license/mumu12641/Lark?color=brigntgreen&style=flat-square">
@@ -16,7 +16,6 @@
 &nbsp;&nbsp;| &nbsp;&nbsp;
 简体中文
 </div>
-
 
 ## :framed_picture: 屏幕截图
 
@@ -35,16 +34,16 @@
 
 ## :book:功能特色
 
-- :floppy_disk:获取并播放本地歌曲
-- :rocket:导入来自网易云音乐以及 Youtube Music 的歌单
-- :bulb:根据当前播放歌曲更改主题
-- :art:遵循 [Material Design 3](https://m3.material.io/) 设计规范，实现了 [动态色彩](https://m3.material.io/foundations/customization) 主题的应用界面 
+- :floppy_disk: 获取并播放本地歌曲
+- :rocket: 导入来自网易云音乐以及 Youtube Music 的歌单
+- :bulb: 根据当前播放歌曲更改主题
+- :art: 遵循 [Material Design 3](https://m3.material.io/) 设计规范，实现了 [动态色彩](https://m3.material.io/foundations/customization) 主题的应用界面 
 
 ## :pushpin:计划
 
-- :sparkles:UI设计
-- :mag_right:搜索来自网易云音乐以及 Youtube Music 的歌曲
-- :link:更多音源
+- :sparkles: UI设计
+- :mag_right: 搜索来自网易云音乐以及 Youtube Music 的歌曲
+- :link: 更多音源
 
 ## :open_file_folder:下载
 
@@ -58,13 +57,13 @@
 
  [Howl](https://github.com/Iamlooker/Howl)
 
-[NeteaseCloudMusicApi](https://github.com/Binaryify/NeteaseCloudMusicApi).
+[NeteaseCloudMusicApi](https://github.com/Binaryify/NeteaseCloudMusicApi)
 
 [yt_dlp](https://github.com/yt-dlp/yt-dlp) 
 
 [youtubedl-android](https://github.com/yausername/youtubedl-android)
 
-[material color utilities](https://github.com/material-foundation/material-color-utilities).
+[material color utilities](https://github.com/material-foundation/material-color-utilities)
 
 ## :scroll:开源许可证
 

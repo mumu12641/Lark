@@ -16,7 +16,6 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
 import androidx.compose.material.icons.rounded.*
-import androidx.compose.material.icons.sharp.PlayArrow
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -42,6 +41,7 @@ import io.github.mumu12641.lark.MainActivity.Companion.context
 import io.github.mumu12641.lark.R
 import io.github.mumu12641.lark.entity.*
 import io.github.mumu12641.lark.entity.network.Banner.BannerX
+import io.github.mumu12641.lark.network.LoadResult
 import io.github.mumu12641.lark.network.NetworkCreator.networkService
 import io.github.mumu12641.lark.room.DataBaseUtils
 import io.github.mumu12641.lark.ui.theme.component.*
@@ -205,7 +205,7 @@ fun HomeContent(
         ) { navController.navigate(Route.ROUTE_SONG_LIST_DETAILS + it.toString()) }
         ArtistRow(navController, artistSongList)
     }
-    if (loadState.loadState is LoadState.Loading) {
+    if (loadState.loadState is LoadResult.Loading<String>) {
         AlertDialog(onDismissRequest = { }, confirmButton = {
         }, title = {
             Row {
@@ -214,8 +214,8 @@ fun HomeContent(
             }
         }, text = {
             Column {
-                LinearProgressIndicator(progress = (loadState.loadState.msg.toFloat() / (loadState.num.toFloat() + 1)))
-                Text(text = loadState.loadState.msg + "/" + loadState.num.toString())
+                LinearProgressIndicator(progress = (loadState.loadState.data!!.toFloat() / (loadState.num.toFloat() + 1)))
+                Text(text = loadState.loadState.data + "/" + loadState.num.toString())
             }
         })
     }

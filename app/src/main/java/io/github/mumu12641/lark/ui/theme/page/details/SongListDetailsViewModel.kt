@@ -5,10 +5,9 @@ import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import io.github.mumu12641.lark.entity.Song
 import io.github.mumu12641.lark.entity.SongList
-import io.github.mumu12641.lark.entity.coroutineContext
+import io.github.mumu12641.lark.entity.handleIOExceptionContext
 import io.github.mumu12641.lark.entity.coroutineExceptionHandler
 import io.github.mumu12641.lark.room.DataBaseUtils
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -39,7 +38,7 @@ class SongListDetailsViewModel @Inject constructor() : ViewModel() {
     }
 
     fun updateSongListDescription(description: String) {
-        viewModelScope.launch(coroutineContext) {
+        viewModelScope.launch(handleIOExceptionContext) {
             DataBaseUtils.updateSongList(
                 DataBaseUtils.querySongListById(_songListDetailUiState.value.currentSongListId)
                     .copy(description = description)
@@ -48,7 +47,7 @@ class SongListDetailsViewModel @Inject constructor() : ViewModel() {
     }
 
     fun changeSongListImage(uri: String) {
-        viewModelScope.launch(coroutineContext) {
+        viewModelScope.launch(handleIOExceptionContext) {
             DataBaseUtils.updateSongList(
                 DataBaseUtils.querySongListById(_songListDetailUiState.value.currentSongListId)
                     .copy(imageFileUri = uri)
@@ -57,7 +56,7 @@ class SongListDetailsViewModel @Inject constructor() : ViewModel() {
     }
 
     fun deletePlaylistSongCrossRef(songId:Long){
-        viewModelScope.launch (coroutineContext){
+        viewModelScope.launch (handleIOExceptionContext){
             DataBaseUtils.deleteRef(_songListDetailUiState.value.currentSongListId,songId)
         }
     }

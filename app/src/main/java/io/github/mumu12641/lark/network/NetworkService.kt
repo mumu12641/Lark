@@ -31,7 +31,7 @@ interface NetworkService {
     suspend fun logout(): Any
 
     @GET("banner?type=1")
-    suspend fun getBanner(): Banner
+    suspend fun getBanner(): Call<Banner>
 
     @GET("song/url")
     suspend fun getSongUrl(@Query("id") id: Long): SongUrl
