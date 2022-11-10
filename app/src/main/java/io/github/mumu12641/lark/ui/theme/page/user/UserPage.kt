@@ -27,7 +27,7 @@ import com.skydoves.landscapist.glide.GlideImage
 import io.github.mumu12641.lark.BaseApplication.Companion.context
 import io.github.mumu12641.lark.BaseApplication.Companion.kv
 import io.github.mumu12641.lark.R
-import io.github.mumu12641.lark.entity.LoadState
+import io.github.mumu12641.lark.network.LoadState
 import io.github.mumu12641.lark.ui.theme.component.AsyncImage
 import io.github.mumu12641.lark.ui.theme.component.GlideAsyncImage
 import io.github.mumu12641.lark.ui.theme.component.LarkAlertDialog

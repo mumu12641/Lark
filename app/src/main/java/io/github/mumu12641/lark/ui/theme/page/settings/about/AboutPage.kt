@@ -22,7 +22,7 @@ import io.github.mumu12641.lark.BaseApplication.Companion.context
 import io.github.mumu12641.lark.BaseApplication.Companion.version
 import io.github.mumu12641.lark.LocalAutoUpdateSwitch
 import io.github.mumu12641.lark.R
-import io.github.mumu12641.lark.entity.network.UpdateInfo
+import io.github.mumu12641.lark.entity.network.netease.UpdateInfo
 import io.github.mumu12641.lark.ui.theme.component.LarkAlertDialog
 import io.github.mumu12641.lark.ui.theme.component.LarkTopBar
 import io.github.mumu12641.lark.ui.theme.component.SettingItem

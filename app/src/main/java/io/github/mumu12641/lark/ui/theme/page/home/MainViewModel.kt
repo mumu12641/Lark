@@ -1,12 +1,10 @@
 package io.github.mumu12641.lark.ui.theme.page.home
 
 import android.content.ComponentName
-import android.os.Build
 import android.os.Bundle
 import android.support.v4.media.session.PlaybackStateCompat
 import android.util.Log
 import android.widget.Toast
-import androidx.annotation.RequiresApi
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -15,11 +13,8 @@ import io.github.mumu12641.lark.BaseApplication.Companion.context
 import io.github.mumu12641.lark.BaseApplication.Companion.kv
 import io.github.mumu12641.lark.R
 import io.github.mumu12641.lark.entity.*
-import io.github.mumu12641.lark.entity.network.Banner
-import io.github.mumu12641.lark.entity.network.UpdateInfo
-import io.github.mumu12641.lark.network.LoadResult
-import io.github.mumu12641.lark.network.LoadStatus
-import io.github.mumu12641.lark.network.NetworkCreator.networkService
+import io.github.mumu12641.lark.entity.network.netease.Banner
+import io.github.mumu12641.lark.entity.network.netease.UpdateInfo
 import io.github.mumu12641.lark.network.Repository
 import io.github.mumu12641.lark.room.DataBaseUtils
 import io.github.mumu12641.lark.service.MediaPlaybackService
@@ -80,24 +75,15 @@ class MainViewModel @Inject constructor() : ViewModel() {
 
 
     init {
-        Log.d(TAG, "init: ")
         viewModelScope.launch(handleIOExceptionContext) {
+            _bannerState.value = Repository.getBanner().banners.filter {
+                it.targetType == 1
+            }
             if (kv.encode(AUTO_UPDATE, true)) {
                 _checkForUpdate.update {
                     val info = getUpdateInfo()
                     it.copy(info = info, showDialog = checkForUpdate(info))
                 }
-            }
-        }
-        viewModelScope.launch {
-            if (Repository.getSafeCallBanner().status != LoadStatus.ERROR) {
-                Repository.getSafeCallBanner().data?.let { it ->
-                    _bannerState.value = it.banners.filter {
-                        it.targetType == 1
-                    }
-                }
-            }else{
-                Log.d(TAG, "error")
             }
         }
     }
@@ -109,8 +95,8 @@ class MainViewModel @Inject constructor() : ViewModel() {
 
     data class LoadState(
         val num: Int = 0,
-//        val loadState: io.github.mumu12641.lark.entity.LoadState = io.github.mumu12641.lark.entity.LoadState.None()
-        val loadState: LoadResult<String> = LoadResult.None()
+        val loadState: io.github.mumu12641.lark.network.LoadState = io.github.mumu12641.lark.network.LoadState.None()
+//        val loadState: LoadResult<String> = LoadResult.None()
     )
 
     data class RepeatState(
@@ -256,7 +242,6 @@ class MainViewModel @Inject constructor() : ViewModel() {
     }
 
 
-    @RequiresApi(Build.VERSION_CODES.M)
     override fun onCleared() {
         super.onCleared()
         Log.d(TAG, "onCleared: ")
@@ -270,10 +255,10 @@ class MainViewModel @Inject constructor() : ViewModel() {
                 if (i.description == context.getString(R.string.no_description_text)) {
                     try {
                         val artistId =
-                            networkService.getSearchArtistResponse(i.songListTitle).result.artists[0].artistId
+                            Repository.getSearchArtistResponse(i.songListTitle).result.artists[0].artistId
                         artistId?.let {
                             val artistDetails =
-                                networkService.getArtistDetail(artistId).data.artist
+                                Repository.getArtistDetail(artistId).data.artist
                             DataBaseUtils.updateSongList(
                                 i.copy(
                                     imageFileUri = artistDetails.cover,
@@ -290,19 +275,23 @@ class MainViewModel @Inject constructor() : ViewModel() {
     }
 
     fun getYoutubePlayList(url: String) {
-        viewModelScope.launch(Dispatchers.IO + CoroutineExceptionHandler { _, e ->
-                _loadState.update { state ->
-//                    state.copy(loadState = io.github.mumu12641.lark.entity.LoadState.Fail("0"))
-                    state.copy(loadState = LoadResult.Error(_data = "0"))
-                }
-
+        viewModelScope.launch(Dispatchers.IO + CoroutineExceptionHandler { _, _ ->
+            _loadState.update { state ->
+                state.copy(loadState = io.github.mumu12641.lark.network.LoadState.Fail("0"))
+            }
             applicationScope.launch(Dispatchers.Main) {
-                Toast.makeText(context, context.getString(R.string.check_network),Toast.LENGTH_SHORT).show()
+                Toast.makeText(
+                    context,
+                    context.getString(R.string.check_network),
+                    Toast.LENGTH_SHORT
+                ).show()
             }
         }) {
             _loadState.update {
-//                it.copy(num = 0,loadState = io.github.mumu12641.lark.entity.LoadState.Loading("0"))
-                it.copy(loadState = LoadResult.Loading("0"))
+                it.copy(
+                    num = 0,
+                    loadState = io.github.mumu12641.lark.network.LoadState.Loading("0")
+                )
             }
             val playListInfo = YoutubeDLUtil.getPlayListInfo(url)
             Log.d(TAG, "getYoutubePlayList: " + playListInfo.playlist_count)
@@ -343,13 +332,7 @@ class MainViewModel @Inject constructor() : ViewModel() {
                 }
                 _loadState.update {
                     it.copy(
-//                        loadState = io.github.mumu12641.lark.entity.LoadState.Loading(
-//                            (playListInfo.entries.indexOf(
-//                                i
-//                            ) + 1).toString()
-//                        )
-                        loadState = LoadResult.Loading(
-                            _data =
+                        loadState = io.github.mumu12641.lark.network.LoadState.Loading(
                             (playListInfo.entries.indexOf(
                                 i
                             ) + 1).toString()
@@ -359,8 +342,7 @@ class MainViewModel @Inject constructor() : ViewModel() {
 
             }
             _loadState.update {
-//                it.copy(loadState = io.github.mumu12641.lark.entity.LoadState.Success("0"))
-                it.copy(loadState = LoadResult.Success("0"))
+                it.copy(loadState = io.github.mumu12641.lark.network.LoadState.Success("0"))
             }
         }
     }
@@ -368,17 +350,15 @@ class MainViewModel @Inject constructor() : ViewModel() {
     fun getNeteaseSongList(id: Long) {
         viewModelScope.launch(Dispatchers.IO + CoroutineExceptionHandler { _, _ ->
             _loadState.update { state ->
-//                    state.copy(loadState = io.github.mumu12641.lark.entity.LoadState.Fail(it))
-                state.copy(loadState = LoadResult.Error(_data = "0"))
+                state.copy(loadState = io.github.mumu12641.lark.network.LoadState.Fail("0"))
             }
         }
         ) {
             _loadState.update {
-//                it.copy(loadState = io.github.mumu12641.lark.entity.LoadState.Loading("0"))
-                it.copy(loadState = LoadResult.Loading(_data = "0"))
+                it.copy(loadState = io.github.mumu12641.lark.network.LoadState.Loading("0"))
             }
-            val list = networkService.getNeteaseSongList(id)
-            val tracks = networkService.getNeteaseSongListTracks(id)
+            val list = Repository.getNeteaseSongList(id)
+            val tracks = Repository.getNeteaseSongListTracks(id)
             val songlist = SongList(
                 0L,
                 list.playlist.name,
@@ -415,13 +395,7 @@ class MainViewModel @Inject constructor() : ViewModel() {
                 }
                 _loadState.update {
                     it.copy(
-//                        loadState = io.github.mumu12641.lark.entity.LoadState.Loading(
-//                            (tracks.songs.indexOf(
-//                                i
-//                            ) + 1).toString()
-//                        )
-                        loadState = LoadResult.Loading(
-                            _data =
+                        loadState = io.github.mumu12641.lark.network.LoadState.Loading(
                             (tracks.songs.indexOf(
                                 i
                             ) + 1).toString()
@@ -431,8 +405,7 @@ class MainViewModel @Inject constructor() : ViewModel() {
             }
 
             _loadState.update {
-//                it.copy(loadState = io.github.mumu12641.lark.entity.LoadState.Success("0"))
-                it.copy(loadState = LoadResult.Success("0"))
+                it.copy(loadState = io.github.mumu12641.lark.network.LoadState.Success("0"))
             }
         }
     }

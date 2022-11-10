@@ -567,7 +567,6 @@ fun PlayPageContent(
                 verticalArrangement = Arrangement.Center,
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
-
                 Box(modifier = Modifier.fillMaxWidth(), contentAlignment = Alignment.Center) {
                     if (currentPlaySong.songId == -1L || currentPlayState.state == PlaybackStateCompat.STATE_BUFFERING) {
                         Row(
@@ -597,6 +596,7 @@ fun PlayPageContent(
                     modifier = Modifier.padding(top = 30.dp),
                     color = MaterialTheme.colorScheme.onBackground
                 )
+
                 Text(
                     text = currentPlaySong.songSinger,
                     maxLines = 1,

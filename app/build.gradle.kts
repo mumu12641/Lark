@@ -23,7 +23,7 @@ android {
 
     defaultConfig {
         applicationId = "io.github.mumu12641.lark"
-        minSdk = 21
+        minSdk = 23
         targetSdk = 33
         versionCode = 34
         versionName = "0.9.0-beta.1"

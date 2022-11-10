@@ -17,7 +17,6 @@ import android.support.v4.media.session.MediaSessionCompat
 import android.support.v4.media.session.PlaybackStateCompat
 import android.util.Log
 import android.widget.Toast
-import androidx.annotation.RequiresApi
 import androidx.core.app.NotificationCompat
 import androidx.media.MediaBrowserServiceCompat
 import com.bumptech.glide.Glide
@@ -26,13 +25,14 @@ import com.google.android.exoplayer2.MediaItem
 import com.google.android.exoplayer2.PlaybackException
 import com.google.android.exoplayer2.Player
 import com.google.android.exoplayer2.Player.REPEAT_MODE_ALL
+import com.google.android.exoplayer2.Player.STATE_READY
 import io.github.mumu12641.lark.BaseApplication.Companion.applicationScope
 import io.github.mumu12641.lark.BaseApplication.Companion.kv
 import io.github.mumu12641.lark.MainActivity
 import io.github.mumu12641.lark.MainActivity.Companion.context
 import io.github.mumu12641.lark.R
 import io.github.mumu12641.lark.entity.*
-import io.github.mumu12641.lark.network.NetworkCreator.networkService
+import io.github.mumu12641.lark.network.Repository
 import io.github.mumu12641.lark.room.DataBaseUtils
 import io.github.mumu12641.lark.ui.theme.util.PreferenceUtil
 import io.github.mumu12641.lark.ui.theme.util.YoutubeDLUtil
@@ -183,20 +183,28 @@ class MediaPlaybackService : MediaBrowserServiceCompat() {
 
     private val mExoPlayerListener: Player.Listener =
         object : Player.Listener {
-            @RequiresApi(Build.VERSION_CODES.M)
+
+
+            override fun onPlaybackStateChanged(playbackState: Int) {
+                super.onPlaybackStateChanged(playbackState)
+                Log.d(TAG, "onPlaybackStateChanged: $playbackState")
+                if (playbackState == STATE_READY) {
+                    updatePlayBackState(PlaybackStateCompat.STATE_PLAYING)
+                }
+            }
+
             override fun onPlayerError(error: PlaybackException) {
                 super.onPlayerError(error)
                 val index = mExoPlayer.currentMediaItemIndex
                 if (currentPlayList[index].isBuffered > NOT_BUFFERED) {
                     if (currentPlayList[index].youtubeId != null) {
-                        bufferYoutubeSteam(currentPlayList[index], index)
+                        bufferYoutubeSrteam(currentPlayList[index], index)
                     } else {
                         bufferSong(currentPlayList[index], index)
                     }
                 }
             }
 
-            @RequiresApi(Build.VERSION_CODES.M)
             override fun onMediaItemTransition(mediaItem: MediaItem?, reason: Int) {
                 super.onMediaItemTransition(mediaItem, reason)
                 val song = currentPlayList[mExoPlayer.currentMediaItemIndex]
@@ -204,7 +212,7 @@ class MediaPlaybackService : MediaBrowserServiceCompat() {
                 when (song.isBuffered) {
                     NOT_BUFFERED -> {
                         if (currentPlayList[index].youtubeId != null) {
-                            bufferYoutubeSteam(currentPlayList[index], index)
+                            bufferYoutubeSrteam(currentPlayList[index], index)
                         } else {
                             bufferSong(currentPlayList[index], index)
                         }
@@ -221,7 +229,6 @@ class MediaPlaybackService : MediaBrowserServiceCompat() {
 
     private val mSessionCallback: MediaSessionCompat.Callback =
         object : MediaSessionCompat.Callback() {
-            @RequiresApi(Build.VERSION_CODES.M)
             override fun onPlay() {
                 super.onPlay()
                 if (mPlaybackState.state == PlaybackStateCompat.STATE_PAUSED || mPlaybackState.state == PlaybackStateCompat.STATE_NONE
@@ -234,7 +241,6 @@ class MediaPlaybackService : MediaBrowserServiceCompat() {
                 }
             }
 
-            @RequiresApi(Build.VERSION_CODES.M)
             override fun onPause() {
                 super.onPause()
                 if (mPlaybackState.state == PlaybackStateCompat.STATE_PLAYING && currentPlayList.isNotEmpty()) {
@@ -253,7 +259,6 @@ class MediaPlaybackService : MediaBrowserServiceCompat() {
                 updatePlayBackState(mPlaybackState.state)
             }
 
-            @RequiresApi(Build.VERSION_CODES.M)
             override fun onSkipToNext() {
                 super.onSkipToNext()
                 if (currentPlayList.isNotEmpty()) {
@@ -262,7 +267,6 @@ class MediaPlaybackService : MediaBrowserServiceCompat() {
                 }
             }
 
-            @RequiresApi(Build.VERSION_CODES.M)
             override fun onSkipToPrevious() {
                 super.onSkipToPrevious()
                 if (currentPlayList.isNotEmpty()) {
@@ -276,7 +280,6 @@ class MediaPlaybackService : MediaBrowserServiceCompat() {
                 mExoPlayer.repeatMode = repeatMode
             }
 
-            @RequiresApi(Build.VERSION_CODES.M)
             override fun onCustomAction(action: String?, extras: Bundle?) {
                 super.onCustomAction(action, extras)
                 when (action) {
@@ -297,7 +300,6 @@ class MediaPlaybackService : MediaBrowserServiceCompat() {
         }
 
 
-    @RequiresApi(Build.VERSION_CODES.M)
     private fun changePlayList(extras: Bundle?) {
         scope.launch {
             val songId = extras?.getLong("songId")
@@ -344,7 +346,6 @@ class MediaPlaybackService : MediaBrowserServiceCompat() {
         isBuffering = false
     }
 
-    @RequiresApi(Build.VERSION_CODES.M)
     private fun seekToSong(extras: Bundle?) {
         scope.launch {
             val songId = extras?.getLong("songId")
@@ -422,7 +423,6 @@ class MediaPlaybackService : MediaBrowserServiceCompat() {
         mediaSession.setMetadata(mediaMetadataCompat)
     }
 
-    @RequiresApi(Build.VERSION_CODES.M)
     private fun updateAllData() {
         updatePlayBackState(PlaybackStateCompat.STATE_PLAYING)
         updateMetadata(createMetadataFromSong(currentPlayList[mExoPlayer.currentMediaItemIndex]))
@@ -432,7 +432,6 @@ class MediaPlaybackService : MediaBrowserServiceCompat() {
         )
     }
 
-    @RequiresApi(Build.VERSION_CODES.M)
     private fun updateQueue(
         songList: List<Song>,
         song: Song? = null,
@@ -456,8 +455,7 @@ class MediaPlaybackService : MediaBrowserServiceCompat() {
         }
     }
 
-    @RequiresApi(Build.VERSION_CODES.M)
-    private fun bufferYoutubeSteam(song: Song, index: Int) {
+    private fun bufferYoutubeSrteam(song: Song, index: Int) {
         var song1 = song
         applicationScope.launch(Dispatchers.IO + CoroutineExceptionHandler { _, _ ->
             Log.d(TAG, "bufferSong: error")
@@ -483,6 +481,7 @@ class MediaPlaybackService : MediaBrowserServiceCompat() {
                 }
             } catch (e: Exception) {
                 withContext(Dispatchers.Main) {
+                    Log.d(TAG, "bufferYoutubeStream: " + e.message)
                     context.getString(R.string.check_network).suspendToast()
                     setEmptyPlayList()
                 }
@@ -490,7 +489,6 @@ class MediaPlaybackService : MediaBrowserServiceCompat() {
         }
     }
 
-    @RequiresApi(Build.VERSION_CODES.M)
     private fun bufferSong(song: Song, index: Int) {
         var song1 = song
         applicationScope.launch(Dispatchers.IO + CoroutineExceptionHandler { _, _ ->
@@ -500,8 +498,8 @@ class MediaPlaybackService : MediaBrowserServiceCompat() {
                 isBuffering = true
                 updateMetadata(createMetadataFromSong(BUFFER_SONG))
             }
-            val detail = networkService.getSongDetail(song1.neteaseId.toString())
-            val songQuality = networkService.getLevelMusic(
+            val detail = Repository.getSongDetail(song1.neteaseId.toString())
+            val songQuality = Repository.getLevelMusic(
                 song1.neteaseId, kv.decodeString(
                     PreferenceUtil.MUSIC_QUALITY, "standard"
                 )!!
@@ -522,7 +520,7 @@ class MediaPlaybackService : MediaBrowserServiceCompat() {
                     }
                 }
             } else {
-                val searchSong = networkService.getSongUrl(song1.neteaseId)
+                val searchSong = Repository.getSongUrl(song1.neteaseId)
                 if (searchSong.data[0].url != null) {
                     song1 = song1.copy(
                         isBuffered = BUFFERED,
@@ -571,7 +569,6 @@ class MediaPlaybackService : MediaBrowserServiceCompat() {
         }
     }
 
-    @RequiresApi(Build.VERSION_CODES.M)
     private fun createNotification(state: Int, song: Song) {
         val controller = mediaSession.controller
         val mediaMetadata = controller.metadata

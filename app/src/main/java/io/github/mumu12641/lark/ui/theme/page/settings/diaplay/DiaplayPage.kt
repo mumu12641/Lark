@@ -11,9 +11,6 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
-import androidx.compose.material.icons.sharp.ArrowBack
-import androidx.compose.material.icons.sharp.Bedtime
-import androidx.compose.material.icons.sharp.Language
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -124,19 +121,19 @@ fun DisplayPageContent(modifier: Modifier) {
                 ElevatedCard(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .height(300.dp)
+                        .height(280.dp)
                         .clip(RoundedCornerShape(20.dp))
                         .clickable {},
                     shape = MaterialTheme.shapes.small,
                 ) {
                     Column(
                         modifier = Modifier
-                            .fillMaxWidth()
-                            .background(MaterialTheme.colorScheme.secondaryContainer),
+                            .fillMaxWidth(),
                         horizontalAlignment = Alignment.CenterHorizontally
                     ) {
                         Image(
                             painter = painterResource(id = R.drawable.unnamed),
+                            modifier = Modifier.clip(RoundedCornerShape(20.dp)),
                             contentDescription = "failure"
                         )
                     }
@@ -144,19 +141,19 @@ fun DisplayPageContent(modifier: Modifier) {
                     Column(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .height(80.dp)
-                            .padding(10.dp),
+                            .height(60.dp)
+                            .padding(8.dp),
                         verticalArrangement = Arrangement.Center
                     ) {
                         Text(
                             text = "SongList sample text",
-                            style = MaterialTheme.typography.titleLarge,
+                            style = MaterialTheme.typography.titleMedium,
                             color = MaterialTheme.colorScheme.onSurface
                         )
                         Text(
                             text = "SongList description sample text",
-                            style = MaterialTheme.typography.titleSmall,
-                            color = MaterialTheme.colorScheme.onSurface
+                            style = MaterialTheme.typography.bodyMedium,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
                         )
                     }
 

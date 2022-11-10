@@ -1,7 +1,7 @@
 package io.github.mumu12641.lark.network
 
 import io.github.mumu12641.lark.BaseApplication.Companion.kv
-import io.github.mumu12641.lark.entity.network.*
+import io.github.mumu12641.lark.entity.network.netease.*
 import io.github.mumu12641.lark.ui.theme.util.PreferenceUtil.MUSIC_QUALITY
 import retrofit2.Call
 import retrofit2.http.GET
@@ -10,59 +10,82 @@ import retrofit2.http.Query
 interface NetworkService {
 
     @GET("cloudsearch?type=100")
-    suspend fun getSearchArtistResponse(@Query("keywords") keywords: String): SearchArtistResponse
+    fun getSearchArtistResponse(@Query("keywords") keywords: String): Call<SearchArtistResponse>
 
     @GET("artist/detail")
-    suspend fun getArtistDetail(@Query("id") id: Long): ArtistDetailsResponse
+    fun getArtistDetail(@Query("id") id: Long): Call<ArtistDetailsResponse>
 
     @GET("login/cellphone")
-    suspend fun cellphoneLogin(
+    fun cellphoneLogin(
         @Query("phone") phoneNumber: String,
         @Query("password") Password: String
-    ): NeteaseUser
+    ): Call<NeteaseUser>
 
     @GET("user/detail")
-    suspend fun getUserDetail(@Query("uid") uid: Long): UserDetail
+    fun getUserDetail(
+        @Query("uid") uid: Long,
+        @Query("cookie") cookie: String = kv.decodeString(
+            "Cookie",
+            "null"
+        )!!,
+    ): Call<UserDetail>
 
     @GET("search/hot/detail")
-    suspend fun getSearchHot(): SearchHot
+    fun getSearchHot(): SearchHot
 
     @GET("logout")
-    suspend fun logout(): Any
+    fun logout(): Call<Any>
 
     @GET("banner?type=1")
-    suspend fun getBanner(): Call<Banner>
+    fun getBanner(): Call<Banner>
 
     @GET("song/url")
-    suspend fun getSongUrl(@Query("id") id: Long): SongUrl
+    fun getSongUrl(
+        @Query("id") id: Long,
+        @Query("cookie") cookie: String = kv.decodeString(
+            "Cookie",
+            "null"
+        )!!,
+    ): Call<SongUrl>
 
     @GET("song/detail")
-    suspend fun getSongDetail(@Query("ids") ids: String): SongDetail
+    fun getSongDetail(@Query("ids") ids: String): Call<SongDetail>
 
     @GET("/playlist/detail")
-    suspend fun getNeteaseSongList(@Query("id") id: Long): NeteaseSongList
+    fun getNeteaseSongList(
+        @Query("id") id: Long,
+        @Query("cookie") cookie: String = kv.decodeString(
+            "Cookie",
+            "null"
+        )!!,
+    ): Call<NeteaseSongList>
 
     @GET("/playlist/track/all")
-    suspend fun getNeteaseSongListTracks(@Query("id") id: Long): Tracks
+    fun getNeteaseSongListTracks(
+        @Query("id") id: Long,
+        @Query("cookie") cookie: String = kv.decodeString(
+            "Cookie",
+            "null"
+        )!!,
+    ): Call<Tracks>
 
     @GET("/cloudsearch")
-    suspend fun getSearchSongResponse(@Query("keywords") keywords: String): SearchSongResponse
+    fun getSearchSongResponse(@Query("keywords") keywords: String): SearchSongResponse
 
     @GET("/lyric")
-    suspend fun getLyric(@Query("id") id: Long): Lyrics
+    fun getLyric(@Query("id") id: Long): Call<Lyrics>
 
-    @GET("/check/music")
-    suspend fun getCheckMusic(@Query("id") id: Long): MusicCheck
 
     @GET("/song/url/v1")
-    suspend fun getLevelMusic(
+    fun getLevelMusic(
         @Query("id") id: Long,
         @Query("level") level: String = kv.decodeString(
             MUSIC_QUALITY,
             "standard"
-        )!!
-    ): SongUrl
+        )!!,
+        @Query("cookie") cookie: String = kv.decodeString("Cookie", "null")!!,
+    ): Call<SongUrl>
 
     @GET("/register/anonimous")
-    suspend fun anonymousLogin(): Any
+    fun anonymousLogin(): Call<Anonymous>
 }

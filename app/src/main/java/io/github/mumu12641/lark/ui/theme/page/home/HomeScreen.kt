@@ -40,9 +40,8 @@ import io.github.mumu12641.lark.BaseApplication.Companion.applicationScope
 import io.github.mumu12641.lark.MainActivity.Companion.context
 import io.github.mumu12641.lark.R
 import io.github.mumu12641.lark.entity.*
-import io.github.mumu12641.lark.entity.network.Banner.BannerX
-import io.github.mumu12641.lark.network.LoadResult
-import io.github.mumu12641.lark.network.NetworkCreator.networkService
+import io.github.mumu12641.lark.entity.network.netease.Banner.BannerX
+import io.github.mumu12641.lark.network.LoadState
 import io.github.mumu12641.lark.room.DataBaseUtils
 import io.github.mumu12641.lark.ui.theme.component.*
 import io.github.mumu12641.lark.ui.theme.page.details.JumpToPlayPageSnackbar
@@ -205,7 +204,7 @@ fun HomeContent(
         ) { navController.navigate(Route.ROUTE_SONG_LIST_DETAILS + it.toString()) }
         ArtistRow(navController, artistSongList)
     }
-    if (loadState.loadState is LoadResult.Loading<String>) {
+    if (loadState.loadState is LoadState.Loading) {
         AlertDialog(onDismissRequest = { }, confirmButton = {
         }, title = {
             Row {
@@ -214,8 +213,8 @@ fun HomeContent(
             }
         }, text = {
             Column {
-                LinearProgressIndicator(progress = (loadState.loadState.data!!.toFloat() / (loadState.num.toFloat() + 1)))
-                Text(text = loadState.loadState.data + "/" + loadState.num.toString())
+                LinearProgressIndicator(progress = (loadState.loadState.msg.toFloat() / (loadState.num.toFloat() + 1)))
+                Text(text = loadState.loadState.msg + "/" + loadState.num.toString())
             }
         })
     }
@@ -256,7 +255,6 @@ private fun Banner(
 
     val onClick: (page: Int) -> Unit = { page ->
         applicationScope.launch(Dispatchers.IO) {
-            val lyrics = networkService.getLyric(banner[page].song.id.toLong()).lrc.lyric
             val song = Song(
                 0L,
                 banner[page].song.name,
@@ -265,8 +263,7 @@ private fun Banner(
                 mediaFileUri = EMPTY_URI + banner[page].song.al.picUrl,
                 duration = 0,
                 isBuffered = NOT_BUFFERED,
-                neteaseId = banner[page].song.id.toLong(),
-                lyrics = lyrics
+                neteaseId = banner[page].song.id.toLong()
             )
             val async = async {
                 if (!DataBaseUtils.isNeteaseIdExist(song.neteaseId)) {
@@ -310,7 +307,8 @@ private fun Banner(
                             stop = 1f,
                             fraction = 1f - pageOffset.coerceIn(0f, 1f)
                         )
-                    },
+                    }
+                    .clickable { },
                 imageModel = banner[page].pic,
                 failure = R.drawable.lark
             )

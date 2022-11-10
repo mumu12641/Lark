@@ -23,9 +23,9 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import io.github.mumu12641.lark.BaseApplication.Companion.context
 import io.github.mumu12641.lark.R
-import io.github.mumu12641.lark.entity.LoadState
 import io.github.mumu12641.lark.entity.Song
 import io.github.mumu12641.lark.entity.SongList
+import io.github.mumu12641.lark.network.LoadState
 import io.github.mumu12641.lark.ui.theme.component.AsyncImage
 import io.github.mumu12641.lark.ui.theme.component.LarkSmallTopBar
 import io.github.mumu12641.lark.ui.theme.component.TextFieldDialog

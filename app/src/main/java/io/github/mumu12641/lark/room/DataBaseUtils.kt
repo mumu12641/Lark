@@ -1,11 +1,10 @@
 package io.github.mumu12641.lark.room
 
-import androidx.room.Query
 import io.github.mumu12641.lark.BaseApplication
 import io.github.mumu12641.lark.BaseApplication.Companion.applicationScope
 import io.github.mumu12641.lark.R
 import io.github.mumu12641.lark.entity.*
-import io.github.mumu12641.lark.network.NetworkCreator
+import io.github.mumu12641.lark.network.Repository
 import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
@@ -103,9 +102,9 @@ class DataBaseUtils {
             val id = musicDao.insertSongList(songList)
             if (songList.type == ARTIST_SONGLIST_TYPE) {
                 applicationScope.launch(Dispatchers.IO + CoroutineExceptionHandler { _, _ -> }) {
-                    NetworkCreator.networkService.getSearchArtistResponse(songList.songListTitle).result.artists[0].artistId?.let {
+                    Repository.getSearchArtistResponse(songList.songListTitle).result.artists[0].artistId?.let {
                         val artistDetails =
-                            NetworkCreator.networkService.getArtistDetail(it).data.artist
+                            Repository.getArtistDetail(it).data.artist
                         updateSongList(
                             querySongListById(id).copy(
                                 imageFileUri = artistDetails.cover,

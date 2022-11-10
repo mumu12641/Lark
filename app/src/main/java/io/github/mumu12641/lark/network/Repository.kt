@@ -1,10 +1,7 @@
 package io.github.mumu12641.lark.network
 
-import android.util.Log
-import io.github.mumu12641.lark.entity.network.Banner
-import kotlinx.coroutines.CoroutineDispatcher
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.withContext
+import io.github.mumu12641.lark.BaseApplication
+import io.github.mumu12641.lark.ui.theme.util.PreferenceUtil
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -18,16 +15,53 @@ private const val TAG = "Repository"
 object Repository {
     private val service = NetworkCreator.networkService
 
-    //    suspend fun getBanner(): ApiResult<Banner> {
-//        return safeApiCall(Dispatchers.IO) { service.getBanner() }
-//    }
+    suspend fun getSearchArtistResponse(keywords: String) =
+        service.getSearchArtistResponse(keywords).await()
+
+    suspend fun getArtistDetail(id: Long) =
+        service.getArtistDetail(id).await()
+
+    suspend fun cellphoneLogin(
+        phoneNumber: String,
+        Password: String
+    ) = service.cellphoneLogin(phoneNumber, Password)
+        .await()
+
+    suspend fun getUserDetail(uid: Long) =
+        service.getUserDetail(uid).await()
+
+    suspend fun logout() =
+        service.logout().await()
+
+    suspend fun getSongUrl(id: Long) =
+        service.getSongUrl(id).await()
+
+    suspend fun getSongDetail(ids: String) =
+        service.getSongDetail(ids).await()
+
+    suspend fun getNeteaseSongList(id: Long) =
+        service.getNeteaseSongList(id).await()
+
+    suspend fun getNeteaseSongListTracks(id: Long) =
+        service.getNeteaseSongListTracks(id).await()
+
+    suspend fun getLyric(id: Long) =
+        service.getLyric(id).await()
 
     suspend fun getBanner() =
         service.getBanner().await()
 
-    suspend fun getSafeCallBanner(): LoadResult<Banner> = safeApiCall {
-        service.getBanner().await()
-    }
+    suspend fun getLevelMusic(
+        id: Long,
+        level: String = BaseApplication.kv.decodeString(
+            PreferenceUtil.MUSIC_QUALITY,
+            "standard"
+        )!!
+    ) = service.getLevelMusic(id, level).await()
+
+    suspend fun anonymousLogin() =
+        service.anonymousLogin().await()
+
 
     private suspend fun <T> Call<T>.await() = suspendCoroutine<T> { continuation ->
         enqueue(object : Callback<T> {
@@ -45,25 +79,5 @@ object Repository {
                 t.printStackTrace()
             }
         })
-    }
-
-    private suspend fun <T> safeApiCall(
-        dispatcher: CoroutineDispatcher = Dispatchers.IO,
-        apiCall: suspend () -> T
-    ): LoadResult<T> {
-        return withContext(dispatcher) {
-            try {
-                LoadResult.Success<T>(_data = apiCall.invoke())
-            } catch (e: Exception) {
-                LoadResult.Error<T>(_data = null)
-            }
-        }
-    }
-
-    inline fun <T> returnFunction(result: LoadResult<T>){
-        if (result.status == LoadStatus.ERROR){
-            return
-        }
-
     }
 }

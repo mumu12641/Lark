@@ -1,14 +1,12 @@
 package io.github.mumu12641.lark.ui.theme.util
 
 import android.util.Log
-import android.widget.Toast
 import com.yausername.youtubedl_android.YoutubeDL
-import io.github.mumu12641.lark.BaseApplication
 import io.github.mumu12641.lark.BaseApplication.Companion.context
 import io.github.mumu12641.lark.BaseApplication.Companion.version
 import io.github.mumu12641.lark.BaseApplication.Companion.ytDlpVersion
 import io.github.mumu12641.lark.R
-import io.github.mumu12641.lark.entity.network.UpdateInfo
+import io.github.mumu12641.lark.entity.network.netease.UpdateInfo
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import kotlinx.serialization.decodeFromString

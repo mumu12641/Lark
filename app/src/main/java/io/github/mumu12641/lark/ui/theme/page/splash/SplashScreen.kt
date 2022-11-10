@@ -13,7 +13,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
-import androidx.navigation.NavGraph.Companion.findStartDestination
 import com.airbnb.lottie.compose.*
 import com.google.accompanist.pager.ExperimentalPagerApi
 import com.google.accompanist.pager.HorizontalPager
@@ -21,8 +20,8 @@ import com.google.accompanist.pager.HorizontalPagerIndicator
 import com.google.accompanist.pager.rememberPagerState
 import io.github.mumu12641.lark.BaseApplication.Companion.kv
 import io.github.mumu12641.lark.R
-import io.github.mumu12641.lark.entity.LoadState
 import io.github.mumu12641.lark.entity.Route
+import io.github.mumu12641.lark.network.LoadState
 import io.github.mumu12641.lark.ui.theme.page.user.LoginDialog
 import io.github.mumu12641.lark.ui.theme.page.user.UserViewModel
 import io.github.mumu12641.lark.ui.theme.util.PreferenceUtil
@@ -89,7 +88,9 @@ fun SplashPage(navController: NavController, userViewModel: UserViewModel) {
                         0 -> {
                             Column(horizontalAlignment = Alignment.CenterHorizontally) {
                                 Column(
-                                    modifier = Modifier.height(200.dp).padding(horizontal = 20.dp),
+                                    modifier = Modifier
+                                        .height(200.dp)
+                                        .padding(horizontal = 20.dp),
                                     horizontalAlignment = Alignment.CenterHorizontally,
                                     verticalArrangement = Arrangement.Center
                                 ) {
@@ -114,7 +115,9 @@ fun SplashPage(navController: NavController, userViewModel: UserViewModel) {
                         }
                         1 -> {
                             Column (horizontalAlignment = Alignment.CenterHorizontally) {
-                                Column(modifier = Modifier.height(200.dp).padding(horizontal = 20.dp),
+                                Column(modifier = Modifier
+                                    .height(200.dp)
+                                    .padding(horizontal = 20.dp),
                                     horizontalAlignment = Alignment.CenterHorizontally,
                                     verticalArrangement = Arrangement.Center) {
                                     Text(
@@ -137,7 +140,9 @@ fun SplashPage(navController: NavController, userViewModel: UserViewModel) {
                         }
                         2 -> {
                             Column (horizontalAlignment = Alignment.CenterHorizontally) {
-                                Column(modifier = Modifier.height(200.dp).padding(horizontal = 20.dp),
+                                Column(modifier = Modifier
+                                    .height(200.dp)
+                                    .padding(horizontal = 20.dp),
                                     horizontalAlignment = Alignment.CenterHorizontally,
                                     verticalArrangement = Arrangement.Center) {
                                     Row {
@@ -193,13 +198,7 @@ fun SplashPage(navController: NavController, userViewModel: UserViewModel) {
                 TextButton(
                     onClick = {
                         showLoginDialog = false
-                        navController.navigate(Route.ROUTE_HOME){
-                            popUpTo(0)
-                        }
-                        kv.encode(
-                            PreferenceUtil.SPLASH_SCREEN,
-                            false
-                        )
+                        userViewModel.guestLogin()
                     }
                 ) {
                     Text(stringResource(id = R.string.not_login_text))

@@ -7,8 +7,8 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import io.github.mumu12641.lark.BaseApplication.Companion.context
 import io.github.mumu12641.lark.BaseApplication.Companion.kv
 import io.github.mumu12641.lark.R
-import io.github.mumu12641.lark.entity.LoadState
-import io.github.mumu12641.lark.network.NetworkCreator.networkService
+import io.github.mumu12641.lark.network.LoadState
+import io.github.mumu12641.lark.network.Repository
 import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
@@ -52,18 +52,17 @@ class UserViewModel @Inject constructor() : ViewModel() {
     fun logout() {
         viewModelScope.launch(Dispatchers.IO + CoroutineExceptionHandler { _, e ->
             _loadState.value = LoadState.Fail(e.message ?: "Load Fail")
-            e.message?.let { Log.d(TAG, it) }
         }) {
             _loadState.value = LoadState.Loading()
             val async = async {
-                val s = networkService.logout()
+                val s = Repository.logout()
             }
             async.await()
             changeNameValue(context.getString(R.string.user))
             changeIconValue("")
             changeBackgroundValue(null)
             saveInformation()
-            kv.removeValueForKey("cookie")
+//            kv.removeValueForKey("cookie")
             kv.removeValueForKey("neteaseId")
             _loadState.value = LoadState.Success()
         }
@@ -76,8 +75,9 @@ class UserViewModel @Inject constructor() : ViewModel() {
             e.message?.let { Log.d(TAG, it) }
         }) {
             _loadState.value = LoadState.Loading()
-            val user = networkService.cellphoneLogin(phoneNumber, password)
-            Log.d(TAG, "loginUser: $user")
+            val user = Repository.cellphoneLogin(phoneNumber, password)
+            Log.d(TAG, "loginUser: ${user.cookie}")
+            kv.encode("Cookie", user.cookie)
             kv.encode("neteaseId", user.account.id.toLong())
             getNeteaseUserDetail()
             _loadState.value = LoadState.Success()
@@ -91,7 +91,7 @@ class UserViewModel @Inject constructor() : ViewModel() {
             e.message?.let { Log.d(TAG, it) }
         }) {
             _loadState.value = LoadState.Loading()
-            val detail = networkService.getUserDetail(kv.decodeLong("neteaseId"))
+            val detail = Repository.getUserDetail(kv.decodeLong("neteaseId"))
             changeNameValue(detail.profile.nickname)
             changeIconValue(detail.profile.avatarUrl)
             changeBackgroundValue(detail.profile.backgroundUrl)
@@ -106,8 +106,10 @@ class UserViewModel @Inject constructor() : ViewModel() {
             e.message?.let { Log.d(TAG, it) }
         }) {
             _loadState.value = LoadState.Loading()
-            val s = networkService.anonymousLogin()
-            Log.d(TAG, "guestLogin: $s")
+            val s = Repository.anonymousLogin()
+//            Log.d(TAG, "guestLogin: $s")
+            Log.d(TAG, "guestLogin: " + s.cookie)
+            kv.encode("Cookie", s.cookie)
             _loadState.value = LoadState.Success()
         }
     }

@@ -1,4 +1,4 @@
-package io.github.mumu12641.lark.entity.network
+package io.github.mumu12641.lark.entity.network.netease
 
 data class NeteaseUser(
     val account: Account,
@@ -9,3 +9,4 @@ data class NeteaseUser(
         val id: Int,
     )
 }
+

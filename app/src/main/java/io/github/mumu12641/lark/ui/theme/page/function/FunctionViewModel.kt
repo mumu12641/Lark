@@ -9,11 +9,8 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import io.github.mumu12641.lark.BaseApplication.Companion.context
-import io.github.mumu12641.lark.R
 import io.github.mumu12641.lark.entity.*
 import io.github.mumu12641.lark.room.DataBaseUtils
-import kotlinx.coroutines.CoroutineExceptionHandler
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -60,9 +57,7 @@ class FunctionViewModel @Inject constructor() : ViewModel() {
 
     @SuppressLint("Range", "Recycle")
     fun reFreshLocalMusicList() {
-        viewModelScope.launch(Dispatchers.IO + CoroutineExceptionHandler { _, e ->
-            e.message?.let { Log.d(TAG, it) }
-        }) {
+        viewModelScope.launch(handleIOExceptionContext) {
             _loadState.value = Load.LOADING
             Log.d(TAG, "reFreshLocalMusicList: $loadLocal")
             val allMediaFileUri = DataBaseUtils.queryAllMediaFileUri()

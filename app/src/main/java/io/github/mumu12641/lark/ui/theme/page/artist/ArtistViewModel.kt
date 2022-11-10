@@ -4,10 +4,10 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import io.github.mumu12641.lark.entity.ARTIST_SONGLIST_TYPE
-import io.github.mumu12641.lark.entity.LoadState
 import io.github.mumu12641.lark.entity.Song
 import io.github.mumu12641.lark.entity.SongList
-import io.github.mumu12641.lark.network.NetworkCreator
+import io.github.mumu12641.lark.network.LoadState
+import io.github.mumu12641.lark.network.Repository
 import io.github.mumu12641.lark.room.DataBaseUtils
 import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.Dispatchers
@@ -75,10 +75,10 @@ class ArtistViewModel @Inject constructor() : ViewModel() {
         }) {
             showLoading()
             val artistId =
-                NetworkCreator.networkService.getSearchArtistResponse(keywords).result.artists[0].artistId
+                Repository.getSearchArtistResponse(keywords).result.artists[0].artistId
             artistId?.let { it ->
                 val artistDetails =
-                    NetworkCreator.networkService.getArtistDetail(it).data.artist
+                    Repository.getArtistDetail(it).data.artist
                 DataBaseUtils.updateSongList(
                     DataBaseUtils.querySongListById(_artistUiState.value.currentSongListId).copy(
                         imageFileUri = artistDetails.cover,

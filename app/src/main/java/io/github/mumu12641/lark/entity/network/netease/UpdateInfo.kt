@@ -1,4 +1,4 @@
-package io.github.mumu12641.lark.entity.network
+package io.github.mumu12641.lark.entity.network.netease
 
 import kotlinx.serialization.Serializable
 

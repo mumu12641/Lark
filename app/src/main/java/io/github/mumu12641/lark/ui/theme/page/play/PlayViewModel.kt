@@ -7,7 +7,7 @@ import androidx.annotation.RequiresApi
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
-import io.github.mumu12641.lark.network.NetworkCreator.networkService
+import io.github.mumu12641.lark.network.Repository
 import io.github.mumu12641.lark.room.DataBaseUtils
 import io.github.mumu12641.lark.service.MediaServiceConnection
 import io.github.mumu12641.lark.service.MediaServiceConnection.Companion.regexTime
@@ -31,12 +31,12 @@ class PlayViewModel @Inject constructor() : ViewModel() {
         _playUiState.update {
             it.copy(isLoading = true, currentPlayId = id)
         }
-        viewModelScope.launch(Dispatchers.IO + CoroutineExceptionHandler { _, e ->
+        viewModelScope.launch(Dispatchers.IO + CoroutineExceptionHandler { _, _ ->
             _playUiState.update {
                 it.copy(lyrics = listOf("", ""), isLoading = false)
             }
         }) {
-            networkService.getLyric(id).lrc.lyric.let {
+            Repository.getLyric(id).lrc.lyric.let {
                 DataBaseUtils.updateSong(
                     DataBaseUtils.querySongById(
                         DataBaseUtils.querySongIdByNeteaseId(id)

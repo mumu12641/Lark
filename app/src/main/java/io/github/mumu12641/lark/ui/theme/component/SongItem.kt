@@ -97,13 +97,19 @@ fun SongItemRow(
                 .padding(10.dp)
                 .weight(1f)
         ) {
-            Text(
+            MarqueeText(
                 text = song.songTitle,
                 style = MaterialTheme.typography.bodyLarge,
                 softWrap = false,
-                overflow = TextOverflow.Ellipsis
+                overflow = TextOverflow.Ellipsis,
+                gradientEdgeColor = Color.Transparent
             )
-            Text(text = song.songSinger, style = MaterialTheme.typography.bodySmall)
+            MarqueeText(
+                text = song.songSinger,
+                style = MaterialTheme.typography.bodySmall,
+                color = MaterialTheme.colorScheme.onBackground,
+                gradientEdgeColor = Color.Transparent
+            )
         }
         AnimatedVisibility(visible = isCurrentSong,modifier = Modifier.weight(0.15f)) {
                 LottieAnimation(
