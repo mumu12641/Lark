@@ -51,7 +51,7 @@ class MainViewModel @Inject constructor() : ViewModel() {
 
     private val currentPlayState by lazy { mediaServiceConnection.playState }
 
-    private val _loadState = MutableStateFlow(LoadState())
+    private val _loadState = MutableStateFlow(ExpandLoadState())
     val loadState = _loadState
 
     val currentPosition by lazy { mediaServiceConnection.currentPosition }
@@ -93,7 +93,7 @@ class MainViewModel @Inject constructor() : ViewModel() {
         val showDialog: Boolean = false,
     )
 
-    data class LoadState(
+    data class ExpandLoadState(
         val num: Int = 0,
         val loadState: io.github.mumu12641.lark.network.LoadState = io.github.mumu12641.lark.network.LoadState.None()
 //        val loadState: LoadResult<String> = LoadResult.None()
@@ -327,9 +327,8 @@ class MainViewModel @Inject constructor() : ViewModel() {
                     DataBaseUtils.insertSong(song)
                 }
                 val songId = DataBaseUtils.querySongIdByYoutubeId(i.id)
-                if (!DataBaseUtils.isRefExist(listId, songId)) {
-                    DataBaseUtils.insertRef(PlaylistSongCrossRef(listId, songId))
-                }
+                DataBaseUtils.insertRef(PlaylistSongCrossRef(listId, songId))
+
                 _loadState.update {
                     it.copy(
                         loadState = io.github.mumu12641.lark.network.LoadState.Loading(
@@ -390,9 +389,8 @@ class MainViewModel @Inject constructor() : ViewModel() {
                     DataBaseUtils.insertSong(song)
                 }
                 val songId = DataBaseUtils.querySongIdByNeteaseId(i.id.toLong())
-                if (!DataBaseUtils.isRefExist(listId, songId)) {
-                    DataBaseUtils.insertRef(PlaylistSongCrossRef(listId, songId))
-                }
+                DataBaseUtils.insertRef(PlaylistSongCrossRef(listId, songId))
+
                 _loadState.update {
                     it.copy(
                         loadState = io.github.mumu12641.lark.network.LoadState.Loading(

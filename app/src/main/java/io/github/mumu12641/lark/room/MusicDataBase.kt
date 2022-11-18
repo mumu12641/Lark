@@ -11,10 +11,10 @@ import io.github.mumu12641.lark.entity.SongList
 
 @Database(
     entities = [SongList::class, Song::class, PlaylistSongCrossRef::class],
-    version = 23,
+    version = 24,
     exportSchema = true,
     autoMigrations = [
-        AutoMigration(from = 22, to = 23)
+        AutoMigration(from = 23, to = 24)
     ]
 )
 @TypeConverters(Converters::class)

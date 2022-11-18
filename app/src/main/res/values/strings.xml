@@ -129,4 +129,6 @@
     <string name="auto_update">Auto update</string>
     <string name="auto_update_desc">Automatically check and update to the latest version on Github</string>
     <string name="already_latest">Already the latest version</string>
+    <string name="refreshing_text">Refreshing</string>
+    <string name="refresh_successful">Refresh successfully</string>
 </resources>

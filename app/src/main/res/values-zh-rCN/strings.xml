@@ -126,5 +126,7 @@
     <string name="auto_update">自动更新</string>
     <string name="auto_update_desc">自动检查并更新到 Github 上的最新版本</string>
     <string name="already_latest">已经是最新版本</string>
+    <string name="refreshing_text">正在刷新中</string>
+    <string name="refresh_successful">刷新成功</string>
 
 </resources>

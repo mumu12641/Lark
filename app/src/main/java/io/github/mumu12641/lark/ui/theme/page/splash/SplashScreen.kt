@@ -1,5 +1,6 @@
 package io.github.mumu12641.lark.ui.theme.page.splash
 
+import android.widget.Toast
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.foundation.layout.*
@@ -25,6 +26,7 @@ import io.github.mumu12641.lark.network.LoadState
 import io.github.mumu12641.lark.ui.theme.page.user.LoginDialog
 import io.github.mumu12641.lark.ui.theme.page.user.UserViewModel
 import io.github.mumu12641.lark.ui.theme.util.PreferenceUtil
+import io.github.mumu12641.lark.ui.theme.util.suspendToast
 import kotlinx.coroutines.launch
 
 @OptIn(
@@ -164,7 +166,9 @@ fun SplashPage(navController: NavController, userViewModel: UserViewModel) {
                                                         false
                                                     )
                                                 }
-                                                else -> {}
+                                                else -> {
+                                                    stringResource(id = R.string.check_network).suspendToast()
+                                                }
                                             }
                                         }
                                     }
@@ -201,7 +205,7 @@ fun SplashPage(navController: NavController, userViewModel: UserViewModel) {
                         userViewModel.guestLogin()
                     }
                 ) {
-                    Text(stringResource(id = R.string.not_login_text))
+                    Text(stringResource(id = R.string.guest_login))
                 }
             }
         }

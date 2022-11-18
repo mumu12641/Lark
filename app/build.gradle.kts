@@ -25,8 +25,8 @@ android {
         applicationId = "io.github.mumu12641.lark"
         minSdk = 23
         targetSdk = 33
-        versionCode = 34
-        versionName = "0.9.0-beta.1"
+        versionCode = 35
+        versionName = "0.9.0-beta.2"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables {
@@ -159,5 +159,5 @@ dependencies {
     implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.4.0")
 
 
-    implementation ("com.github.yausername.youtubedl-android:library:3a0252d88b4ae573068c63c3d08fc52c66102d55")
+    implementation ("com.github.yausername.youtubedl-android:library:8bc8e77349")
 }

@@ -55,6 +55,12 @@ interface MusicDao {
     @Query("SELECT * FROM SongList WHERE songListId = :songListId")
     suspend fun querySongListById(songListId: Long): SongList
 
+    @Query("SELECT neteaseId FROM SongList WHERE songListId=:songListId")
+    suspend fun queryNeteaseIdBySongListId(songListId: Long):Long
+
+    @Query("SELECT youtubeId FROM SongList WHERE songListId=:songListId")
+    suspend fun queryYoutubeIdBySongListId(songListId: Long):String
+
     @Query("SELECT EXISTS(SELECT * FROM songlist WHERE songListTitle = :title AND type = :type)")
     suspend fun isSongListExist(title: String, type: Int): Boolean
 

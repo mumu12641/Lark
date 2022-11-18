@@ -82,22 +82,16 @@ class FunctionViewModel @Inject constructor() : ViewModel() {
                         )
                         if (!allMediaFileUri.contains(song.mediaFileUri)) {
                             id = DataBaseUtils.insertSong(song)
-                            if (!DataBaseUtils.isRefExist(LocalSongListId, id)) {
-                                DataBaseUtils.insertRef(PlaylistSongCrossRef(LocalSongListId, id))
-                            }
+                            DataBaseUtils.insertRef(PlaylistSongCrossRef(LocalSongListId, id))
+
                         } else {
-                            if (!DataBaseUtils.isRefExist(
-                                    LocalSongListId,
-                                    DataBaseUtils.querySongIdByMediaUri(song.mediaFileUri)
-                                )
-                            ) {
                                 DataBaseUtils.insertRef(
                                     PlaylistSongCrossRef(
                                         LocalSongListId,
                                         DataBaseUtils.querySongIdByMediaUri(song.mediaFileUri)
                                     )
                                 )
-                            }
+
                         }
                     }
                 }

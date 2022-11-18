@@ -20,10 +20,7 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Checklist
-import androidx.compose.material.icons.filled.DeleteSweep
-import androidx.compose.material.icons.filled.Edit
-import androidx.compose.material.icons.filled.PlayArrow
+import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FabPosition
@@ -46,9 +43,11 @@ import androidx.compose.ui.zIndex
 import androidx.navigation.NavController
 import io.github.mumu12641.lark.R
 import io.github.mumu12641.lark.entity.*
+import io.github.mumu12641.lark.network.LoadState
 import io.github.mumu12641.lark.ui.theme.component.*
 import io.github.mumu12641.lark.ui.theme.page.function.CustomSnackbarVisuals
 import io.github.mumu12641.lark.ui.theme.page.play.ScaffoldWithFab
+import io.github.mumu12641.lark.ui.theme.util.suspendToast
 import kotlinx.coroutines.launch
 
 @OptIn(
@@ -65,6 +64,7 @@ fun SongListDetailsPage(
     val uiState by viewModel.songListDetailUiState.collectAsState()
     val songList by uiState.songList.collectAsState(initial = INIT_SONG_LIST)
     val songs by uiState.songs.collectAsState(initial = emptyList())
+    val loadState by viewModel.loadState.collectAsState()
 
     val bottomSheetScaffoldState = rememberBottomSheetScaffoldState(
         bottomSheetState = BottomSheetState(BottomSheetValue.Collapsed)
@@ -162,7 +162,13 @@ fun SongListDetailsPage(
 
             sheetShape = RoundedCornerShape(topStart = 20.dp, topEnd = 20.dp),
             topBar = {
-                LarkSmallTopBar(title = "", navIconClick = { navController.popBackStack() })
+                LarkSmallTopBar(
+                    title = "",
+                    navIconClick = { navController.popBackStack() },
+                    actionIcon = Icons.Filled.Refresh,
+                    singleActionClick = {
+                        viewModel.refreshNeteaseSongList()
+                    })
             },
             content = { paddingValues ->
                 SongListDetailsContent(
@@ -188,6 +194,27 @@ fun SongListDetailsPage(
                 )
             }
         )
+    }
+    when (loadState) {
+        is LoadState.Loading -> {
+            androidx.compose.material3.AlertDialog(
+                onDismissRequest = { },
+                confirmButton = {},
+                title = {
+                    Row {
+                        Text(text = stringResource(id = R.string.refreshing_text))
+                        androidx.compose.material3.CircularProgressIndicator(modifier = Modifier.size(20.dp))
+                    }
+                })
+        }
+        is LoadState.Fail -> {
+            stringResource(id = R.string.check_network).suspendToast()
+        }
+        is LoadState.Success -> {
+            stringResource(id = R.string.refresh_successful).suspendToast()
+        }
+        else -> {}
+
     }
 
 }

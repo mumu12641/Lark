@@ -1,5 +1,6 @@
 package io.github.mumu12641.lark.room
 
+import androidx.room.Query
 import io.github.mumu12641.lark.BaseApplication
 import io.github.mumu12641.lark.BaseApplication.Companion.applicationScope
 import io.github.mumu12641.lark.R
@@ -69,13 +70,12 @@ class DataBaseUtils {
                     i,
                     ARTIST_SONGLIST_TYPE
                 )
-                if (!isRefExist(songListId, id)) {
-                    insertRef(
+                insertRef(
                         PlaylistSongCrossRef(
                             songListId, id
                         )
                     )
-                }
+
             }
 
             return id
@@ -96,6 +96,14 @@ class DataBaseUtils {
 
         suspend fun querySongListById(songListId: Long): SongList {
             return musicDao.querySongListById(songListId)
+        }
+
+        suspend fun queryNeteaseIdBySongListId(songListId: Long):Long{
+            return musicDao.queryNeteaseIdBySongListId(songListId)
+        }
+
+        suspend fun queryYoutubeIdBySongListId(songListId: Long):String{
+            return musicDao.queryYoutubeIdBySongListId(songListId)
         }
 
         suspend fun insertSongList(songList: SongList): Long {
@@ -138,21 +146,23 @@ class DataBaseUtils {
         }
 
         suspend fun insertRef(playlistSongCrossRef: PlaylistSongCrossRef) {
-            musicDao.insertRef(playlistSongCrossRef)
-            if (playlistSongCrossRef.songListId == LikeSongListId) {
+            if (!isRefExist(playlistSongCrossRef.songListId, playlistSongCrossRef.songId)) {
+                musicDao.insertRef(playlistSongCrossRef)
+                if (playlistSongCrossRef.songListId == LikeSongListId) {
+                    updateSongList(
+                        querySongListById(LikeSongListId).copy(
+                            imageFileUri = querySongById(playlistSongCrossRef.songId).songAlbumFileUri
+                        )
+                    )
+                }
                 updateSongList(
-                    querySongListById(LikeSongListId).copy(
-                        imageFileUri = querySongById(playlistSongCrossRef.songId).songAlbumFileUri
+                    querySongListById(playlistSongCrossRef.songListId).copy(
+                        songNumber = querySongListWithSongsBySongListId(
+                            playlistSongCrossRef.songListId
+                        ).songs.size
                     )
                 )
             }
-            updateSongList(
-                querySongListById(playlistSongCrossRef.songListId).copy(
-                    songNumber = querySongListWithSongsBySongListId(
-                        playlistSongCrossRef.songListId
-                    ).songs.size
-                )
-            )
         }
 
         fun querySongListWithSongsBySongListIdFlow(songListId: Long): Flow<SongListWithSongs> {

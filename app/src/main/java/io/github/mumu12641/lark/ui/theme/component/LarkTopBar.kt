@@ -65,17 +65,6 @@ fun LarkSmallTopBar(
             }
         },
         actions = {
-//            actionClick?.let {
-//                IconButton(onClick = { actionMenu = !actionMenu }) {
-//                    Icon(actionIcon, contentDescription = "Menu")
-//                }
-//                DropdownMenu(expanded = actionMenu, onDismissRequest = { actionMenu = false }) {
-//                    DropdownMenuItem(
-//                        text = { Text(text = stringResource(id = R.string.reset_artist_text)) },
-//                        onClick = actionClick
-//                    )
-//                }
-//            }
             actions?.let {
                 it()
             }

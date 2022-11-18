@@ -133,16 +133,14 @@ class MediaServiceConnection(context: Context, componentName: ComponentName) {
                 song.let {
                     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
                         DataBaseUtils.updateSong(it.copy(recentPlay = Date()))
-                        if (!DataBaseUtils.isRefExist(HistorySongListId, id)) {
-                            DataBaseUtils.insertRef(PlaylistSongCrossRef(HistorySongListId, id))
-                        }
+                        DataBaseUtils.insertRef(PlaylistSongCrossRef(HistorySongListId, id))
+
                     }
                 }
             }
 
         }
 
-        @RequiresApi(Build.VERSION_CODES.M)
         override fun onPlaybackStateChanged(state: PlaybackStateCompat?) {
             _playState.value = state ?: EMPTY_PLAYBACK_STATE
             updateWidgetPlayState(state)

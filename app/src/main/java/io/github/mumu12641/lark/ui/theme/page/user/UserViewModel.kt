@@ -13,6 +13,7 @@ import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -37,15 +38,21 @@ class UserViewModel @Inject constructor() : ViewModel() {
 
 
     fun changeNameValue(value: String) {
-        _userState.value = _userState.value.copy(name = value)
+        _userState.update {
+            it.copy(name = value)
+        }
     }
 
     fun changeBackgroundValue(uri: String?) {
-        _userState.value = _userState.value.copy(backgroundImageUri = uri)
+        _userState.update {
+            it.copy(backgroundImageUri = uri)
+        }
     }
 
     fun changeIconValue(uri: String) {
-        _userState.value = _userState.value.copy(iconImageUri = uri)
+        _userState.update {
+            it.copy(iconImageUri = uri)
+        }
 
     }
 
@@ -58,12 +65,15 @@ class UserViewModel @Inject constructor() : ViewModel() {
                 val s = Repository.logout()
             }
             async.await()
-            changeNameValue(context.getString(R.string.user))
-            changeIconValue("")
-            changeBackgroundValue(null)
+            _userState.update {
+                it.copy(
+                    name = context.getString(R.string.user),
+                    iconImageUri = "",
+                    backgroundImageUri = null
+                )
+            }
             saveInformation()
-//            kv.removeValueForKey("cookie")
-            kv.removeValueForKey("neteaseId")
+            kv.encode("Cookie", "null")
             _loadState.value = LoadState.Success()
         }
     }
@@ -92,9 +102,13 @@ class UserViewModel @Inject constructor() : ViewModel() {
         }) {
             _loadState.value = LoadState.Loading()
             val detail = Repository.getUserDetail(kv.decodeLong("neteaseId"))
-            changeNameValue(detail.profile.nickname)
-            changeIconValue(detail.profile.avatarUrl)
-            changeBackgroundValue(detail.profile.backgroundUrl)
+            _userState.update {
+                it.copy(
+                    name = detail.profile.nickname,
+                    iconImageUri = detail.profile.avatarUrl,
+                    backgroundImageUri = detail.profile.backgroundUrl
+                )
+            }
             saveInformation()
             _loadState.value = LoadState.Success()
         }
@@ -107,7 +121,6 @@ class UserViewModel @Inject constructor() : ViewModel() {
         }) {
             _loadState.value = LoadState.Loading()
             val s = Repository.anonymousLogin()
-//            Log.d(TAG, "guestLogin: $s")
             Log.d(TAG, "guestLogin: " + s.cookie)
             kv.encode("Cookie", s.cookie)
             _loadState.value = LoadState.Success()
