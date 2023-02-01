@@ -17,6 +17,9 @@ English
 <a href="https://github.com/mumu12641/Lark/blob/master/README-zh.md">简体中文</a> 
 </div>
 
+## :warning: Warning
+This projetc will no longer be updated.
+
 ## :framed_picture: ScreenShot
 
 <div>
