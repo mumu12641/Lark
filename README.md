@@ -18,7 +18,7 @@ English
 </div>
 
 ## :warning: Warning
-This projetc will no longer be updated.
+This project will no longer be updated.
 
 ## :framed_picture: ScreenShot
 
