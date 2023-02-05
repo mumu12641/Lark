@@ -9,7 +9,7 @@
 	Lark
 </h1>
 <p align="center">
-  Netease Cloud Music and Youtube Music Player,developed by using Jetpack Compose
+  Netease Cloud Music,developed by using Jetpack Compose
 </p>
 <p align="center">
 English
